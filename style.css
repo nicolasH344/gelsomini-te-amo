@@ -518,7 +518,7 @@ body {
 
 
 .text-muted {
-    color: var(--text-light) !important; 
+    color: var(--text-black) !important; 
 }
 
 
@@ -541,6 +541,8 @@ body {
 
 .mb-3 {
     margin-bottom: 1rem !important;
+        
+
 }
 
 /* ===== ELEMENTOS DE TEXTO ===== */
@@ -892,5 +894,60 @@ label {
     to {
         opacity: 1;
         
+    }
+}
+/* =================================================================== */
+/* ===== AUMENTAR E ESTILIZAR A SEÇÃO 'PRONTO PARA COMEÇAR?' ===== */
+/* =================================================================== */
+
+/* 
+  Este bloco aumenta a altura da seção, centraliza o conteúdo
+  e adiciona um preenchimento maior para dar mais destaque,
+  conforme solicitado.
+*/
+
+#cta-section {
+    padding-top: 6rem;      /* Aumenta o espaçamento superior */
+    padding-bottom: 6rem;   /* Aumenta o espaçamento inferior */
+    min-height: 60vh;       /* Define uma altura mínima de 60% da tela */
+    display: flex;          /* Ativa o Flexbox para alinhamento */
+    align-items: center;    /* Centraliza o conteúdo verticalmente */
+    justify-content: center;/* Centraliza o conteúdo horizontalmente */
+}
+
+/* Ajusta o tamanho da fonte do título principal da seção */
+#cta-section .display-5 {
+    font-size: 2.8rem; /* Um pouco maior que o padrão */
+}
+
+/* Ajusta o tamanho da fonte do parágrafo da seção */
+#cta-section .lead {
+    font-size: 1.2rem; /* Um pouco maior para melhor legibilidade */
+    max-width: 700px;  /* Limita a largura para não ficar muito extenso */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Adiciona um efeito de sombra e transição aos botões nesta seção */
+#cta-section .btn {
+    box-shadow: var(--shadow-lg);
+    transform: scale(1.05); /* Deixa os botões um pouco maiores */
+}
+
+#cta-section .btn:hover {
+    transform: scale(1.1) translateY(-3px); /* Efeito de crescimento ao passar o mouse */
+    box-shadow: 0 1.2rem 3.5rem rgba(111, 66, 193, 0.25);
+}
+
+/* Ajuste para telas menores (celulares) */
+@media (max-width: 768px) {
+    #cta-section {
+        padding-top: 4rem;
+        padding-bottom: 4rem;
+        min-height: auto; /* Remove a altura mínima em telas pequenas */
+    }
+
+    #cta-section .display-5 {
+        font-size: 2.2rem; /* Ajusta o título para telas menores */
     }
 }

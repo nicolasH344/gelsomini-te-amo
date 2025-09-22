@@ -11,6 +11,7 @@ $stats = getStats();
 include 'header.php';
 ?>
 
+<!-- Hero Section -->
 <section class="hero-section py-5 text-white position-relative">
     <div class="container py-5">
         <div class="row align-items-center min-vh-75">
@@ -45,6 +46,7 @@ include 'header.php';
                         <?php endif; ?>
                     </div>
                     
+                    <!-- Estatísticas rápidas -->
                     <div class="row text-center fade-in-up" style="animation-delay: 0.6s;">
                         <div class="col-6 col-md-3">
                             <div class="stat-item">
@@ -77,6 +79,7 @@ include 'header.php';
             <div class="col-lg-6">
                 <div class="hero-image text-center fade-in-up" style="animation-delay: 0.8s;">
                     <div class="position-relative">
+                        <!-- Código animado -->
                         <div class="code-animation bg-dark rounded-3 p-4 shadow-lg">
                             <div class="d-flex align-items-center mb-3-1">
                                 <div class="d-flex gap-2">
@@ -89,6 +92,7 @@ include 'header.php';
                             <pre class="text-start text-light mb-0" style="font-size: 0.9rem;"><code id="typingCode"></code></pre>
                         </div>
                         
+                        <!-- Elementos flutuantes -->
                         <div class="floating-elements">
                             <div class="floating-icon" style="top: 10%; left: 10%; animation-delay: 0s;">
                                 <i class="fab fa-html5 text-warning fa-2x"></i>
@@ -110,6 +114,7 @@ include 'header.php';
     </div>
 </section>
 
+<!-- Seção de Recursos -->
 <section class="py-5 bg-light">
     <div class="container">
         <div class="row">
@@ -211,6 +216,7 @@ include 'header.php';
     </div>
 </section>
 
+<!-- Seção de Trilhas de Aprendizado -->
 <section class="py-5">
     <div class="container">
         <div class="row">
@@ -302,59 +308,121 @@ include 'header.php';
     </div>
 </section>
 
-<section class="py-5 bg-light">
+
+    
+        
+      <section class="py-5 bg-light">
     <div class="container">
         <div class="row">
             <div class="col-12 text-center mb-5">
                 <h2 class="display-5 fw-bold text-gradient">
-                    <?php echo t('testimonials', 'Depoimentos'); ?>
+                    <?php echo t('testimonials', 'O que nossos alunos dizem'); ?>
                 </h2>
-                <p class="lead text-muted10">
-                    <?php echo t('testimonials_desc', 'Veja o que nossos estudantes dizem sobre a plataforma'); ?>
+                <p class="lead text-muted">
+                    <?php echo t('testimonials_desc', 'Histórias de sucesso de quem já passou por aqui'); ?>
                 </p>
             </div>
         </div>
         
-        <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="testimonial-card">
-                        <img src="https://via.placeholder.com/80x80/6f42c1/ffffff?text=M" alt="<?php echo t('student_photo', 'Foto do estudante'); ?>" class="testimonial-avatar">
-                        <p class="testimonial-text">"<?php echo t('testimonial_1', 'A plataforma me ajudou a conseguir meu primeiro emprego como desenvolvedor. Os exercícios práticos fizeram toda a diferença!'); ?>"</p>
-                        <h5 class="testimonial-author">- Maria Silva</h5>
-                        <small class="testimonial-role"><?php echo t('frontend_developer', 'Desenvolvedora Frontend'); ?></small>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="testimonial-card">
-                        <img src="https://via.placeholder.com/80x80/e83e8c/ffffff?text=J" alt="<?php echo t('student_photo', 'Foto do estudante'); ?>" class="testimonial-avatar">
-                        <p class="testimonial-text">"<?php echo t('testimonial_2', 'Excelente plataforma! O feedback instantâneo me ajudou a aprender muito mais rápido. Recomendo para todos!'); ?>"</p>
-                        <h5 class="testimonial-author">- João Santos</h5>
-                        <small class="testimonial-role"><?php echo t('fullstack_developer', 'Desenvolvedor Fullstack'); ?></small>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="testimonial-card">
-                        <img src="https://via.placeholder.com/80x80/fd7e14/ffffff?text=A" alt="<?php echo t('student_photo', 'Foto do estudante'); ?>" class="testimonial-avatar">
-                        <p class="testimonial-text">"<?php echo t('testimonial_3', 'A comunidade é incrível! Sempre encontro ajuda no fórum e aprendo com outros desenvolvedores.'); ?>"</p>
-                        <h5 class="testimonial-author">- Ana Costa</h5>
-                        <small class="testimonial-role"><?php echo t('ui_designer', 'UI/UX Designer'); ?></small>
+        <div class="row g-4">
+            <!-- Depoimento 1 -->
+            <div class="col-lg-4 d-flex align-items-stretch">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="mb-3">
+                            <img src="https://i.pravatar.cc/100?u=1" 
+                                 alt="<?php echo t('student_photo', 'Foto do estudante' ); ?>" 
+                                 class="rounded-circle border border-2 border-primary p-1">
+                        </div>
+                        <blockquote class="blockquote flex-grow-1">
+                            <p class="mb-3">
+                                "<?php echo t('testimonial_1', 'A plataforma é incrível! Os exercícios práticos me ajudaram a consolidar o conhecimento de uma forma que nenhum curso online tinha conseguido antes.'); ?>"
+                            </p>
+                        </blockquote>
+                        <footer class="blockquote-footer mt-auto">
+                            <strong class="d-block">Joana Silva</strong>
+                            <cite title="<?php echo t('job_title', 'Cargo'); ?>">
+                                <?php echo t('frontend_developer', 'Desenvolvedora Front-end'); ?>
+                            </cite>
+                        </footer>
+                        <div class="mt-3 text-warning">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+            <!-- Depoimento 2 -->
+            <div class="col-lg-4 d-flex align-items-stretch">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="mb-3">
+                            <img src="https://i.pravatar.cc/100?u=2" 
+                                 alt="<?php echo t('student_photo', 'Foto do estudante' ); ?>" 
+                                 class="rounded-circle border border-2 border-primary p-1">
+                        </div>
+                        <blockquote class="blockquote flex-grow-1">
+                            <p class="mb-3">
+                                "<?php echo t('testimonial_2', 'O feedback instantâneo é um divisor de águas. Consegui corrigir meus erros e evoluir muito mais rápido. Recomendo a todos!'); ?>"
+                            </p>
+                        </blockquote>
+                        <footer class="blockquote-footer mt-auto">
+                            <strong class="d-block">Carlos Souza</strong>
+                            <cite title="<?php echo t('job_title', 'Cargo'); ?>">
+                                <?php echo t('fullstack_developer', 'Estudante de Análise de Sistemas'); ?>
+                            </cite>
+                        </footer>
+                        <div class="mt-3 text-warning">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star-half-alt" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Depoimento 3 -->
+            <div class="col-lg-4 d-flex align-items-stretch">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="mb-3">
+                            <img src="https://i.pravatar.cc/100?u=3" 
+                                 alt="<?php echo t('student_photo', 'Foto do estudante' ); ?>" 
+                                 class="rounded-circle border border-2 border-primary p-1">
+                        </div>
+                        <blockquote class="blockquote flex-grow-1">
+                            <p class="mb-3">
+                                "<?php echo t('testimonial_3', 'A comunidade é muito ativa e prestativa. Sempre que tive dúvidas, encontrei ajuda no fórum. Isso faz toda a diferença no aprendizado.'); ?>"
+                            </p>
+                        </blockquote>
+                        <footer class="blockquote-footer mt-auto">
+                            <strong class="d-block">Mariana Lima</strong>
+                            <cite title="<?php echo t('job_title', 'Cargo'); ?>">
+                                <?php echo t('ui_designer', 'Designer UI/UX'); ?>
+                            </cite>
+                        </footer>
+                        <div class="mt-3 text-warning">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="far fa-star" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</section>
 
+
+
+<!-- Call to Action -->
 <section class="py-5 bg-primary text-white">
     <div class="container text-center">
         <div class="row">
@@ -400,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </head>
 <body>
     <h1>Olá, Mundo!</h1>
-    <p>Bem-vindo ao Jornada Desenvolvedor</p>
+    <p>Bem-vindo ao JOrnada Desenvolvedor</p>
 </body>
 </html>`;
     
@@ -425,6 +493,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
+/* Estilos específicos da página inicial */
 .hero-section {
     min-height: 100vh;
     display: flex;
@@ -510,51 +579,8 @@ document.addEventListener('DOMContentLoaded', function() {
    
 }
 
-}
-.testimonial-card {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 2.5rem;
-    background-color: var(--bg-primary, #ffffff);
-    border-radius: var(--border-radius-lg, 0.5rem);
-    box-shadow: var(--shadow, 0 0.5rem 1rem rgba(0,0,0,0.15));
-    text-align: center;
-    border: 1px solid var(--border-color, #dee2e6);
-}
 
-.testimonial-avatar {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    border: 4px solid var(--primary-color, #6f42c1);
-    margin-bottom: 1.5rem;
-    object-fit: cover;
 }
-
-.testimonial-text {
-    font-size: 1.1rem;
-    font-style: italic;
-    color: var(--text-primary, #212529);
-    margin-bottom: 1.5rem;
-}
-
-.testimonial-author {
-    font-weight: 700;
-    color: var(--text-primary, #212529);
-    margin-bottom: 0.25rem;
-}
-
-.testimonial-role {
-    color: var(--text-secondary, #6c757d);
-}
-
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-    background-color: var(--primary-color, #6f42c1);
-    border-radius: 50%;
-    padding: 1.2rem;
-}
-
 </style>
 
 <?php include 'footer.php'; ?>
