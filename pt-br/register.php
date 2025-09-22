@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($result['success']) {
         $_SESSION['success'] = $result['message'];
-        header('Location: login.php');
+        header('Location: database.php');
         exit;
     } else {
         $_SESSION['error'] = $result['message'];
