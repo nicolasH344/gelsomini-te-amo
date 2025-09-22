@@ -1,4 +1,3 @@
-/* ===== VARIÁVEIS CSS PARA TEMAS ===== */
 
 /* Tema Roxo Moderno (Padrão) */
 :root,
@@ -26,6 +25,9 @@
     --text-secondary: #6c757d;
     --text-light: #ffffff;
     --text-muted: #6c757d;
+    --footer-text-color: #212529;
+    --footer-text-muted: #6c757d;
+    --footer-bg: #f8f9fa;
     
     /* Cores de estado */
     --success-color: #28a745;
@@ -59,6 +61,9 @@
     --gradient-primary: linear-gradient(135deg, #007bff 0%, #66b3ff 50%, #17a2b8 100%);
     --gradient-secondary: linear-gradient(45deg, #007bff, #17a2b8);
     --gradient-hero: linear-gradient(135deg, #007bff 0%, #66b3ff 25%, #17a2b8 50%, #6c757d 75%, #007bff 100%);
+    --footer-text-color: #212529;
+    --footer-text-muted: #6c757d;
+    --footer-bg: #f8f9fa;
 }
 
 /* Tema Verde Natural */
@@ -72,6 +77,9 @@
     --gradient-primary: linear-gradient(135deg, #28a745 0%, #71dd8a 50%, #6f42c1 100%);
     --gradient-secondary: linear-gradient(45deg, #28a745, #6f42c1);
     --gradient-hero: linear-gradient(135deg, #28a745 0%, #71dd8a 25%, #6f42c1 50%, #fd7e14 75%, #28a745 100%);
+    --footer-text-color: #212529;
+    --footer-text-muted: #6c757d;
+    --footer-bg: #f8f9fa;
 }
 
 /* Tema Escuro */
@@ -91,6 +99,9 @@
     --text-secondary: #b3b3b3;
     --text-light: #ffffff;
     --text-muted: #888888;
+    --footer-text-color: #ffffff;
+    --footer-text-muted: #b3b3b3;
+    --footer-bg: #1e1e1e;
     
     --border-color: #333333;
     
@@ -117,6 +128,9 @@
     --gradient-primary: linear-gradient(135deg, #0066cc 0%, #3388dd 100%);
     --gradient-secondary: linear-gradient(45deg, #0066cc, #ff6600);
     --gradient-hero: linear-gradient(135deg, #0066cc 0%, #3388dd 50%, #ff6600 100%);
+    --footer-text-color: #000000;
+    --footer-text-muted: #333333;
+    --footer-bg: #ffffff;
 }
 
 /* Padrões visuais para acessibilidade */
@@ -476,122 +490,59 @@ body {
     color: white;
 }
 
+/* ===== FOOTER ===== */
+.footer {
+    background: var(--footer-bg);
+    color: var(--footer-text-color);
+    padding: 2rem 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.footer .text-muted {
+    color: var(--footer-text-primary) !important;
+   
+}
+
 /* ===== CLASSES DE TEXTO PERSONALIZADAS ===== */
 
-/* Classes text-mutedX individuais */
-.text-muted1 {
-    color: var(--text-primary) !important;
-}
 
-.text-muted2 {
-    color: var(--text-primary) !important;
-}
 
-.text-muted3 {
-    color: var(--text-primary) !important;
-}
-
-.text-muted4 {
-    color: var(--text-primary) !important;
-}
-
-.text-muted5 {
-    color: var(--text-primary) !important;
-}
-
-.text-muted6 {
-    color: var(--text-primary) !important;
-}
-
-.text-muted7 {
-    color: var(--text-primary) !important;
-}
-
-.text-muted8 {
-    color: var(--text-primary) !important;
-}
-
-.text-muted9 {
-    color: var(--text-primary) !important;
-}
-
-.text-muted10 {
-    color: var(--text-primary) !important;
-}
-
-/* Sobrescrever a classe text-muted original */
 .text-muted {
+    color: var(--text-black) !important; 
+}
+
+
+.footer .text-muted {
+  
     color: var(--text-primary) !important;
 }
 
-/* ===== CLASSES DE MARGEM PERSONALIZADAS ===== */
 
-/* Classes mb-3-X individuais */
-.mb-3-1 {
-    margin-bottom: 1rem !important;
-    color:white;
-}
+/* ===== CLASSES DE MARGEM (APENAS ESPAÇAMENTO) ===== */
 
-.mb-3-2 {
-    margin-bottom: 1rem !important;
-    color: var(--text-primary);
-}
 
-.mb-3-3 {
-    margin-bottom: 1rem !important;
-    color: var(--text-primary);
-}
-
-.mb-3-4 {
-    margin-bottom: 1rem !important;
-    color: var(--text-primary);
-}
-
-.mb-3-5 {
-    margin-bottom: 1rem !important;
-    color: var(--text-primary);
-}
-
-.mb-3-6 {
-    margin-bottom: 1rem !important;
-    color: var(--text-primary);
-}
-
-.mb-3-7 {
-    margin-bottom: 1rem !important;
-    color: var(--text-primary);
-}
-
-.mb-3-8 {
-    margin-bottom: 1rem !important;
-    color: var(--text-primary);
-}
-
-.mb-3-9 {
-    margin-bottom: 1rem !important;
-    color: var(--text-primary);
-}
-
-.mb-3-10 {
-    margin-bottom: 1rem !important;
-    color: var(--text-primary);
-}
-
-/* Sobrescrever a classe mb-3 original */
-.mb-3 {
-    margin-bottom: 1rem !important;
-    color: var(--text-primary);
-}
-
-/* ===== OUTRAS CLASSES DE MARGEM ===== */
 .mb-0 {
     margin-bottom: 0 !important;
-    color: var(--text-primary);
 }
 
 .mb-2 {
     margin-bottom: .5rem !important;
-    color: var(--text-primary);
+}
+
+.mb-3 {
+    margin-bottom: 1rem !important;
+        
+
 }
 
 /* ===== ELEMENTOS DE TEXTO ===== */
@@ -939,10 +890,64 @@ label {
     opacity: 0;
     animation: fadeIn 0.3s ease-in-out forwards;
 }
-
 @keyframes fadeIn {
     to {
         opacity: 1;
+        
     }
 }
+/* =================================================================== */
+/* ===== AUMENTAR E ESTILIZAR A SEÇÃO 'PRONTO PARA COMEÇAR?' ===== */
+/* =================================================================== */
 
+/* 
+  Este bloco aumenta a altura da seção, centraliza o conteúdo
+  e adiciona um preenchimento maior para dar mais destaque,
+  conforme solicitado.
+*/
+
+#cta-section {
+    padding-top: 6rem;      /* Aumenta o espaçamento superior */
+    padding-bottom: 6rem;   /* Aumenta o espaçamento inferior */
+    min-height: 60vh;       /* Define uma altura mínima de 60% da tela */
+    display: flex;          /* Ativa o Flexbox para alinhamento */
+    align-items: center;    /* Centraliza o conteúdo verticalmente */
+    justify-content: center;/* Centraliza o conteúdo horizontalmente */
+}
+
+/* Ajusta o tamanho da fonte do título principal da seção */
+#cta-section .display-5 {
+    font-size: 2.8rem; /* Um pouco maior que o padrão */
+}
+
+/* Ajusta o tamanho da fonte do parágrafo da seção */
+#cta-section .lead {
+    font-size: 1.2rem; /* Um pouco maior para melhor legibilidade */
+    max-width: 700px;  /* Limita a largura para não ficar muito extenso */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Adiciona um efeito de sombra e transição aos botões nesta seção */
+#cta-section .btn {
+    box-shadow: var(--shadow-lg);
+    transform: scale(1.05); /* Deixa os botões um pouco maiores */
+}
+
+#cta-section .btn:hover {
+    transform: scale(1.1) translateY(-3px); /* Efeito de crescimento ao passar o mouse */
+    box-shadow: 0 1.2rem 3.5rem rgba(111, 66, 193, 0.25);
+}
+
+/* Ajuste para telas menores (celulares) */
+@media (max-width: 768px) {
+    #cta-section {
+        padding-top: 4rem;
+        padding-bottom: 4rem;
+        min-height: auto; /* Remove a altura mínima em telas pequenas */
+    }
+
+    #cta-section .display-5 {
+        font-size: 2.2rem; /* Ajusta o título para telas menores */
+    }
+}

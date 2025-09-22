@@ -181,7 +181,7 @@ include 'header.php';
                 <span class="page-link">1</span>
             </li>
             <li class="page-item">
-                <a class="page-link" href="#" aria-label="Ir para página 2">2</a>
+                <a class="page-link" href="exercicios2.php" aria-label="Ir para página 2">2</a>
             </li>
             <li class="page-item">
                 <a class="page-link" href="#" aria-label="Ir para página 3">3</a>

@@ -470,8 +470,9 @@
             z-index: 1000;
             opacity: 0;
             animation: fadeInTooltip 0.5s ease-in-out 1s forwards;
+            
         }
-        
+  
         @keyframes fadeInTooltip {
             to { opacity: 1; }
         }
@@ -484,5 +485,6 @@
                 padding: 6px 10px;
             }
         }
+        
     </style>
 

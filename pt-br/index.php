@@ -308,113 +308,119 @@ include 'header.php';
     </div>
 </section>
 
-<!-- Seção de Depoimentos -->
-<section class="py-5 bg-light">
+
+    
+        
+      <section class="py-5 bg-light">
     <div class="container">
         <div class="row">
             <div class="col-12 text-center mb-5">
                 <h2 class="display-5 fw-bold text-gradient">
-                    <?php echo t('testimonials', 'Depoimentos'); ?>
+                    <?php echo t('testimonials', 'O que nossos alunos dizem'); ?>
                 </h2>
-                <p class="lead text-muted10">
-                    <?php echo t('testimonials_desc', 'Veja o que nossos estudantes dizem sobre a plataforma'); ?>
+                <p class="lead text-muted">
+                    <?php echo t('testimonials_desc', 'Histórias de sucesso de quem já passou por aqui'); ?>
                 </p>
             </div>
         </div>
         
         <div class="row g-4">
-            <div class="col-lg-4">
+            <!-- Depoimento 1 -->
+            <div class="col-lg-4 d-flex align-items-stretch">
                 <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="mb-3-8">
-                            <img src="https://via.placeholder.com/80x80/6f42c1/ffffff?text=M" 
-                                 alt="<?php echo t('student_photo', 'Foto do estudante'); ?>" 
-                                 class="rounded-circle">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="mb-3">
+                            <img src="https://i.pravatar.cc/100?u=1" 
+                                 alt="<?php echo t('student_photo', 'Foto do estudante' ); ?>" 
+                                 class="rounded-circle border border-2 border-primary p-1">
                         </div>
-                        <blockquote class="blockquote">
-                            <p class="mb-3-9">
-                                "<?php echo t('testimonial_1', 'A plataforma me ajudou a conseguir meu primeiro emprego como desenvolvedor. Os exercícios práticos fizeram toda a diferença!'); ?>"
+                        <blockquote class="blockquote flex-grow-1">
+                            <p class="mb-3">
+                                "<?php echo t('testimonial_1', 'A plataforma é incrível! Os exercícios práticos me ajudaram a consolidar o conhecimento de uma forma que nenhum curso online tinha conseguido antes.'); ?>"
                             </p>
                         </blockquote>
-                        <footer class="blockquote-footer">
-                            <strong>Maria Silva</strong>
+                        <footer class="blockquote-footer mt-auto">
+                            <strong class="d-block">Joana Silva</strong>
                             <cite title="<?php echo t('job_title', 'Cargo'); ?>">
-                                <?php echo t('frontend_developer', 'Desenvolvedora Frontend'); ?>
+                                <?php echo t('frontend_developer', 'Desenvolvedora Front-end'); ?>
                             </cite>
                         </footer>
-                        <div class="mt-2">
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
+                        <div class="mt-3 text-warning">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="col-lg-4">
+            <!-- Depoimento 2 -->
+            <div class="col-lg-4 d-flex align-items-stretch">
                 <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="mb-3-10">
-                            <img src="https://via.placeholder.com/80x80/e83e8c/ffffff?text=J" 
-                                 alt="<?php echo t('student_photo', 'Foto do estudante'); ?>" 
-                                 class="rounded-circle">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="mb-3">
+                            <img src="https://i.pravatar.cc/100?u=2" 
+                                 alt="<?php echo t('student_photo', 'Foto do estudante' ); ?>" 
+                                 class="rounded-circle border border-2 border-primary p-1">
                         </div>
-                        <blockquote class="blockquote">
-                            <p class="mb-3-11">
-                                "<?php echo t('testimonial_2', 'Excelente plataforma! O feedback instantâneo me ajudou a aprender muito mais rápido. Recomendo para todos!'); ?>"
+                        <blockquote class="blockquote flex-grow-1">
+                            <p class="mb-3">
+                                "<?php echo t('testimonial_2', 'O feedback instantâneo é um divisor de águas. Consegui corrigir meus erros e evoluir muito mais rápido. Recomendo a todos!'); ?>"
                             </p>
                         </blockquote>
-                        <footer class="blockquote-footer">
-                            <strong>João Santos</strong>
+                        <footer class="blockquote-footer mt-auto">
+                            <strong class="d-block">Carlos Souza</strong>
                             <cite title="<?php echo t('job_title', 'Cargo'); ?>">
-                                <?php echo t('fullstack_developer', 'Desenvolvedor Fullstack'); ?>
+                                <?php echo t('fullstack_developer', 'Estudante de Análise de Sistemas'); ?>
                             </cite>
                         </footer>
-                        <div class="mt-2">
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
+                        <div class="mt-3 text-warning">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star-half-alt" aria-hidden="true"></i>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="col-lg-4">
+            <!-- Depoimento 3 -->
+            <div class="col-lg-4 d-flex align-items-stretch">
                 <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="mb-3-12">
-                            <img src="https://via.placeholder.com/80x80/fd7e14/ffffff?text=A" 
-                                 alt="<?php echo t('student_photo', 'Foto do estudante'); ?>" 
-                                 class="rounded-circle">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="mb-3">
+                            <img src="https://i.pravatar.cc/100?u=3" 
+                                 alt="<?php echo t('student_photo', 'Foto do estudante' ); ?>" 
+                                 class="rounded-circle border border-2 border-primary p-1">
                         </div>
-                        <blockquote class="blockquote">
-                            <p class="mb-3-13">
-                                "<?php echo t('testimonial_3', 'A comunidade é incrível! Sempre encontro ajuda no fórum e aprendo com outros desenvolvedores.'); ?>"
+                        <blockquote class="blockquote flex-grow-1">
+                            <p class="mb-3">
+                                "<?php echo t('testimonial_3', 'A comunidade é muito ativa e prestativa. Sempre que tive dúvidas, encontrei ajuda no fórum. Isso faz toda a diferença no aprendizado.'); ?>"
                             </p>
                         </blockquote>
-                        <footer class="blockquote-footer">
-                            <strong>Ana Costa</strong>
+                        <footer class="blockquote-footer mt-auto">
+                            <strong class="d-block">Mariana Lima</strong>
                             <cite title="<?php echo t('job_title', 'Cargo'); ?>">
-                                <?php echo t('ui_designer', 'UI/UX Designer'); ?>
+                                <?php echo t('ui_designer', 'Designer UI/UX'); ?>
                             </cite>
                         </footer>
-                        <div class="mt-2">
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
-                            <i class="fas fa-star text-warning" aria-hidden="true"></i>
+                        <div class="mt-3 text-warning">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="far fa-star" aria-hidden="true"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
+
+
 
 <!-- Call to Action -->
 <section class="py-5 bg-primary text-white">
@@ -501,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
 .stat-item {
     padding: 1rem;
     border-radius: 0.5rem;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(228, 226, 226, 0.1);
     backdrop-filter: blur(10px);
     margin-bottom: 1rem;
 }
@@ -572,6 +578,7 @@ document.addEventListener('DOMContentLoaded', function() {
     color: #ffffffff !important;
    
 }
+
 
 }
 </style>
