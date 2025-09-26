@@ -133,7 +133,7 @@ include 'header.php';
             <!-- Lista de posts -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="h5 mb-0">Posts Recentes</h2>
+                    <h2 class="h5 mb-0 ">Posts Recentes</h2>
                 </div>
                 <div class="card-body p-0">
                     <?php foreach ($forum_posts as $index => $post): ?>
@@ -142,7 +142,10 @@ include 'header.php';
                                 <div class="col-md-8">
                                     <div class="d-flex align-items-center mb-2">
                                         <span class="badge bg-<?php 
-                                            $categoryColor = 'secondary';
+                              
+                              
+                              
+                              $categoryColor = 'secondary';
                                             foreach ($categories as $cat) {
                                                 if (strtolower($cat['name']) === strtolower($post['category'])) {
                                                     $categoryColor = $cat['color'];

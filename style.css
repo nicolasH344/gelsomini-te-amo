@@ -1,4 +1,3 @@
-
 /* Tema Roxo Moderno (Padrão) */
 :root,
 .theme-purple {
@@ -98,7 +97,7 @@
     --text-primary: #ffffff;
     --text-secondary: #b3b3b3;
     --text-light: #ffffff;
-    --text-muted: #888888;
+    --text-muted: #b3b3b3;
     --footer-text-color: #ffffff;
     --footer-text-muted: #b3b3b3;
     --footer-bg: #1e1e1e;
@@ -393,6 +392,7 @@ body {
 
 .card-body {
     padding: 1.5rem;
+    color: var(--text-primary);
 }
 
 .card-footer {
