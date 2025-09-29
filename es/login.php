@@ -34,13 +34,13 @@ include 'header.php';
                 <div class="card-header bg-primary text-white">
                     <h1 class="h4 mb-0">
                         <i class="fas fa-sign-in-alt" aria-hidden="true"></i> 
-                        Entrar na sua conta
+                        Iniciar sesión en su cuenta
                     </h1>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="login.php" novalidate>
                         <div class="mb-3">
-                            <label for="username" class="form-label required">Usuário ou Email</label>
+                            <label for="username" class="form-label required">Usuario o correo electrónico</label>
                             <input type="text" 
                                    class="form-control" 
                                    id="username" 
@@ -50,12 +50,12 @@ include 'header.php';
                                    aria-describedby="username-help"
                                    value="<?php echo isset($_POST['username']) ? sanitize($_POST['username']) : ''; ?>">
                             <div id="username-help" class="form-text">
-                                Digite seu nome de usuário ou endereço de email
+                               Ingrese su nombre de usuario o dirección de correo electrónico
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="password" class="form-label required">Senha</label>
+                            <label for="password" class="form-label required">Contraseña</label>
                             <div class="input-group">
                                 <input type="password" 
                                        class="form-control" 
@@ -72,7 +72,7 @@ include 'header.php';
                                 </button>
                             </div>
                             <div id="password-help" class="form-text">
-                                Digite sua senha
+                                Ingrese su contraseña
                             </div>
                         </div>
                         
@@ -83,7 +83,7 @@ include 'header.php';
                                    name="remember"
                                    <?php echo isset($_POST['remember']) ? 'checked' : ''; ?>>
                             <label class="form-check-label" for="remember">
-                                Lembrar de mim neste dispositivo
+                               Recordarme en este dispositivo
                             </label>
                         </div>
                         
@@ -97,16 +97,16 @@ include 'header.php';
                     
                     <div class="text-center">
                         <p class="mb-2">
-                            Não tem uma conta? 
-                            <a href="register.php" class="text-decoration-none">Registre-se aqui</a>
+                            ¿No tienes una cuenta? 
+                            <a href="register.php" class="text-decoration-none">Regístrese aquí</a>
                         </p>
                         <p class="mb-0">
-                            <a href="#" class="text-decoration-none">Esqueceu sua senha?</a>
+                            <a href="#" class="text-decoration-none">¿Olvidó su contraseña?</a>
                         </p>
                     </div>
                     
                     <div class="alert alert-info mt-3" role="alert">
-                        <strong>Contas de teste:</strong><br>
+                        <strong>Cuentas de prueba:</strong><br>
                         Admin: <code>admin</code> / <code>admin123</code><br>
                         Usuário: <code>usuario</code> / <code>123456</code>
                     </div>
@@ -132,11 +132,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (type === 'password') {
                 toggleIcon.classList.remove('fa-eye-slash');
                 toggleIcon.classList.add('fa-eye');
-                togglePassword.setAttribute('aria-label', 'Mostrar senha');
+                togglePassword.setAttribute('aria-label', 'Mostrar contraseña');
             } else {
                 toggleIcon.classList.remove('fa-eye');
                 toggleIcon.classList.add('fa-eye-slash');
-                togglePassword.setAttribute('aria-label', 'Ocultar senha');
+                togglePassword.setAttribute('aria-label', 'Ocultar contraseña');
             }
         });
     }

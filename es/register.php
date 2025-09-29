@@ -23,7 +23,7 @@ if (isLoggedIn()) {
 }
 
 // Definir título da página
-$title = 'Criar Conta';
+$title = 'Crear cuenta';
 
 include 'header.php'; 
 ?>
@@ -35,17 +35,17 @@ include 'header.php';
                 <div class="card-header bg-success text-white">
                     <h1 class="h4 mb-0">
                         <i class="fas fa-user-plus" aria-hidden="true"></i> 
-                        Criar Nova Conta
+                       Crear nueva cuenta
                     </h1>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="register.php" novalidate>
                         <fieldset>
-                            <legend class="visually-hidden">Informações pessoais</legend>
+                            <legend class="visually-hidden">Información personal</legend>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="first_name" class="form-label required">Nome</label>
+                                        <label for="first_name" class="form-label required">Nombre</label>
                                         <input type="text" 
                                                class="form-control" 
                                                id="first_name" 
@@ -55,13 +55,13 @@ include 'header.php';
                                                aria-describedby="first_name-help"
                                                value="<?php echo isset($_SESSION['form_data']['first_name']) ? sanitize($_SESSION['form_data']['first_name']) : ''; ?>">
                                         <div id="first_name-help" class="form-text">
-                                            Digite seu primeiro nome
+                                           Ingrese su nombre de pila
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="last_name" class="form-label required">Sobrenome</label>
+                                        <label for="last_name" class="form-label required">Apellido</label>
                                         <input type="text" 
                                                class="form-control" 
                                                id="last_name" 
@@ -71,7 +71,7 @@ include 'header.php';
                                                aria-describedby="last_name-help"
                                                value="<?php echo isset($_SESSION['form_data']['last_name']) ? sanitize($_SESSION['form_data']['last_name']) : ''; ?>">
                                         <div id="last_name-help" class="form-text">
-                                            Digite seu sobrenome
+                                             Ingrese su apellido
                                         </div>
                                     </div>
                                 </div>
@@ -79,9 +79,9 @@ include 'header.php';
                         </fieldset>
                         
                         <fieldset>
-                            <legend class="visually-hidden">Informações de acesso</legend>
+                            <legend class="visually-hidden">Información de acceso</legend>
                             <div class="mb-3">
-                                <label for="username" class="form-label required">Nome de Usuário</label>
+                                <label for="username" class="form-label required">Nombre de usuario</label>
                                 <input type="text" 
                                        class="form-control" 
                                        id="username" 
@@ -92,7 +92,7 @@ include 'header.php';
                                        pattern="[a-zA-Z0-9_]{3,}"
                                        value="<?php echo isset($_SESSION['form_data']['username']) ? sanitize($_SESSION['form_data']['username']) : ''; ?>">
                                 <div id="username-help" class="form-text">
-                                    Apenas letras, números e underscore. Mínimo 3 caracteres.
+                                      Solo letras, números y guiones bajos. Mínimo 3 caracteres.
                                 </div>
                             </div>
                             
@@ -107,17 +107,17 @@ include 'header.php';
                                        aria-describedby="email-help"
                                        value="<?php echo isset($_SESSION['form_data']['email']) ? sanitize($_SESSION['form_data']['email']) : ''; ?>">
                                 <div id="email-help" class="form-text">
-                                    Digite um endereço de email válido
+                                    Ingrese una dirección de correo electrónico válida.
                                 </div>
                             </div>
                         </fieldset>
                         
                         <fieldset>
-                            <legend class="visually-hidden">Definir senha</legend>
+                            <legend class="visually-hidden">Establecer contraseña</legend>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="password" class="form-label required">Senha</label>
+                                        <label for="password" class="form-label required">contraseña</label>
                                         <div class="input-group">
                                             <input type="password" 
                                                    class="form-control" 
@@ -135,13 +135,13 @@ include 'header.php';
                                             </button>
                                         </div>
                                         <div id="password-help" class="form-text">
-                                            Mínimo 6 caracteres. Use uma combinação de letras, números e símbolos.
+                                            Mínimo 6 caracteres. Utilice una combinación de letras, números y símbolos.
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="confirm_password" class="form-label required">Confirmar Senha</label>
+                                        <label for="confirm_password" class="form-label required">Confirmar contraseña</label>
                                         <div class="input-group">
                                             <input type="password" 
                                                    class="form-control" 
@@ -158,7 +158,7 @@ include 'header.php';
                                             </button>
                                         </div>
                                         <div id="confirm_password-help" class="form-text">
-                                            Digite a mesma senha novamente
+                                          Vuelva a escribir la misma contraseña.
                                         </div>
                                     </div>
                                 </div>
@@ -173,16 +173,16 @@ include 'header.php';
                                    required
                                    aria-describedby="terms-help">
                             <label class="form-check-label" for="terms">
-                                Concordo com os termos de uso e política de privacidade
+                                Acepto los términos de uso y la política de privacidad.
                             </label>
                             <div id="terms-help" class="form-text">
-                                É necessário aceitar os termos para criar uma conta
+                                 Es necesario aceptar los términos para crear una cuenta.
                             </div>
                         </div>
                         
                         <button type="submit" class="btn btn-success w-100 mb-3">
                             <i class="fas fa-user-plus" aria-hidden="true"></i> 
-                            Criar Conta
+                             Crear cuenta
                         </button>
                     </form>
                     
@@ -190,8 +190,8 @@ include 'header.php';
                     
                     <div class="text-center">
                         <p class="mb-0">
-                            Já tem uma conta? 
-                            <a href="login.php" class="text-decoration-none">Faça login aqui</a>
+                           ¿Ya tienes una cuenta? 
+                            <a href="login.php" class="text-decoration-none">Inicie sesión aquí</a>
                         </p>
                     </div>
                 </div>
@@ -223,11 +223,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (type === 'password') {
                     icon.classList.remove('fa-eye-slash');
                     icon.classList.add('fa-eye');
-                    button.setAttribute('aria-label', 'Mostrar senha');
+                    button.setAttribute('aria-label', 'Mostrar contraseña');
                 } else {
                     icon.classList.remove('fa-eye');
                     icon.classList.add('fa-eye-slash');
-                    button.setAttribute('aria-label', 'Ocultar senha');
+                    button.setAttribute('aria-label', 'Ocultar contraseña');
                 }
             });
         }
@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function validatePasswordMatch() {
         if (confirmPasswordField && passwordField) {
             if (confirmPasswordField.value && passwordField.value !== confirmPasswordField.value) {
-                confirmPasswordField.setCustomValidity('As senhas não coincidem');
+                confirmPasswordField.setCustomValidity('Las contraseñas no coinciden.');
             } else {
                 confirmPasswordField.setCustomValidity('');
             }

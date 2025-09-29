@@ -16,13 +16,13 @@ if (empty($type) || $id <= 0) {
 // Definir título da página baseado no tipo
 switch ($type) {
     case 'exercise':
-        $title = 'Exercício';
+        $title = 'Ejercicio';
         break;
     case 'tutorial':
         $title = 'Tutorial';
         break;
     case 'forum':
-        $title = 'Post do Fórum';
+        $title = 'Publicación del foro';
         break;
     default:
         header('Location: index.php');
@@ -34,22 +34,22 @@ if ($type === 'exercise') {
     $exercises = [
         1 => [
             'id' => 1,
-            'title' => 'Estrutura Básica HTML',
-            'description' => 'Aprenda a criar a estrutura básica de uma página HTML',
-            'difficulty' => 'Iniciante',
+            'title' => 'Estructura básica HTML',
+            'description' => 'Aprenda a crear la estructura básica de una página HTML.',
+            'difficulty' => 'Principiante',
             'category' => 'HTML',
-            'content' => '<h2>Objetivo</h2><p>Criar uma página HTML básica com estrutura semântica.</p><h2>Instruções</h2><ol><li>Crie a estrutura básica do HTML5</li><li>Adicione um cabeçalho com título</li><li>Inclua um parágrafo de introdução</li><li>Adicione uma lista não ordenada</li></ol>',
-            'starter_code' => '<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Minha Página</title>\n</head>\n<body>\n    <!-- Seu código aqui -->\n</body>\n</html>',
-            'solution' => '<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Minha Página</title>\n</head>\n<body>\n    <header>\n        <h1>Bem-vindo ao meu site</h1>\n    </header>\n    <main>\n        <p>Esta é uma página HTML básica.</p>\n        <ul>\n            <li>Item 1</li>\n            <li>Item 2</li>\n            <li>Item 3</li>\n        </ul>\n    </main>\n</body>\n</html>'
+            'content' => '<h2>Objetivo</h2><p>Crear una página HTML básica con estructura semántica.</p><h2>Instrucciones</h2><ol><li>Crear la estructura básica de HTML5</li><li>Añadir un encabezado con título</li><li>Incluir un párrafo de introducción</li><li>Añadir una lista no ordenada</li></ol>',
+            'starter_code' => '<!DOCTYPE html>\n<html lang="es-MX">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\ n    <title>Mi página</title>\n</head>\n<body>\n    <!-- Su código aquí -->\n</body>\n</html>',
+            'solution' => '<!DOCTYPE html>\n<html lang="es-MX">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\ n    <title>Mi página</title>\n</head>\n<body>\n    <header>\n        <h1>Bienvenido a mi sitio web</h1>\n    </header>\n       <main>\n        <p>Esta es una página HTML básica. </p>\n        <ul>\n            <li>Elemento 1</li>\n            <li>Elemento 2</li>\n            <li>Elemento 3</li>\n        </ul>\n    </main>\n</body>\n</html>'
         ],
         2 => [
             'id' => 2,
-            'title' => 'Estilização com CSS',
-            'description' => 'Pratique estilização básica com CSS',
-            'difficulty' => 'Iniciante',
+            'title' => 'Estilización con CSS',
+            'description' => 'Practique la estilización básica con CSS.',
+            'difficulty' => 'Principiante',
             'category' => 'CSS',
-            'content' => '<h2>Objetivo</h2><p>Aplicar estilos CSS básicos a uma página HTML.</p><h2>Instruções</h2><ol><li>Defina cores para o texto</li><li>Altere a fonte</li><li>Adicione margem e padding</li><li>Estilize a lista</li></ol>',
-            'starter_code' => '/* Adicione seus estilos CSS aqui */\nbody {\n    \n}\n\nh1 {\n    \n}\n\np {\n    \n}\n\nul {\n    \n}',
+            'content' => '<h2>Objetivo</h2><p>Aplicar estilos CSS básicos a una página HTML.</p><h2>Instrucciones</h2><ol><li>Definir colores para el texto</li><li>Cambiar la fuente</li><li>Añadir margen y relleno</li><li>Estilizar la lista</li></ol>',
+            'starter_code' => '/* Agregue aquí sus estilos CSS */\nbody {\n    \n}\n\nh1 {\n    \n}\n\np {\n    \n}\n\nul {\n    \n}',
             'solution' => 'body {\n    font-family: Arial, sans-serif;\n    margin: 20px;\n    background-color: #f5f5f5;\n}\n\nh1 {\n    color: #333;\n    text-align: center;\n}\n\np {\n    color: #666;\n    line-height: 1.6;\n}\n\nul {\n    background-color: white;\n    padding: 20px;\n    border-radius: 5px;\n}'
         ]
     ];
@@ -60,21 +60,21 @@ if ($type === 'exercise') {
     $tutorials = [
         1 => [
             'id' => 1,
-            'title' => 'Introdução ao HTML5',
-            'description' => 'Aprenda os fundamentos do HTML5 e suas principais tags',
+            'title' => 'Introducción a HTML5',
+            'description' => 'Aprenda los fundamentos de HTML5 y sus principales etiquetas.',
             'category' => 'HTML',
-            'content' => '<h2>O que é HTML5?</h2><p>HTML5 é a quinta versão da linguagem HTML, que trouxe muitas melhorias e novos elementos semânticos.</p><h2>Principais Tags</h2><ul><li><code>&lt;header&gt;</code> - Cabeçalho da página ou seção</li><li><code>&lt;nav&gt;</code> - Navegação</li><li><code>&lt;main&gt;</code> - Conteúdo principal</li><li><code>&lt;article&gt;</code> - Artigo independente</li><li><code>&lt;section&gt;</code> - Seção de conteúdo</li><li><code>&lt;aside&gt;</code> - Conteúdo lateral</li><li><code>&lt;footer&gt;</code> - Rodapé</li></ul><h2>Exemplo Prático</h2><pre><code>&lt;!DOCTYPE html&gt;\n&lt;html lang="pt-BR"&gt;\n&lt;head&gt;\n    &lt;meta charset="UTF-8"&gt;\n    &lt;title&gt;Minha Página&lt;/title&gt;\n&lt;/head&gt;\n&lt;body&gt;\n    &lt;header&gt;\n        &lt;h1&gt;Título Principal&lt;/h1&gt;\n    &lt;/header&gt;\n    &lt;main&gt;\n        &lt;p&gt;Conteúdo principal aqui&lt;/p&gt;\n    &lt;/main&gt;\n&lt;/body&gt;\n&lt;/html&gt;</code></pre>',
+            'content' => '<h2>¿Qué es HTML5?</h2><p>HTML5 es la quinta versión del lenguaje HTML, que ha incorporado muchas mejoras y nuevos elementos semánticos. </p><h2>Etiquetas principales</h2><ul><li><code>&lt;header&gt;</code> - Encabezado de la página o sección</li><li><code>&lt;nav&gt;</code> - Navegación</li><li><code>&lt;main&gt;</code> - Contenido principal</li><li><code>&lt;article&gt;</code> - Artículo independiente</li><li><code>&lt;section&gt;</code> - Sección de contenido</li><li><code>&lt;aside&gt;</code> - Contenido lateral</li><li><code>&lt;footer&gt;</code> - Pie de página</li></ul><h2>Ejemplo práctico</h2><pre><code>&lt;!DOCTYPE html&gt;\n&lt;html lang="es-ES"&gt;\n&lt;head&gt;\n    &lt;meta charset="UTF-8"&gt;\n    &lt;title&gt; Mi página&lt;/title&gt;\n&lt;/head&gt;\n&lt;body&gt;\n    &lt;header&gt;\n        &lt;h1&gt;Título principal&lt;/h1&gt;\n    &lt;/header&gt;\n    &lt;main&gt;\n        &lt;p&gt; Contenido principal aquí&lt;/p&gt;\n    &lt;/main&gt;\n&lt;/body&gt;\n&lt;/html&gt;</code></pre>',
             'duration' => '15 min',
-            'level' => 'Iniciante'
+            'level' => 'Principiante'
         ],
         2 => [
             'id' => 2,
             'title' => 'CSS Grid Layout',
-            'description' => 'Domine o sistema de grid do CSS para layouts modernos',
+            'description' => 'Domina el sistema de cuadrículas CSS para diseños modernos',
             'category' => 'CSS',
-            'content' => '<h2>CSS Grid</h2><p>CSS Grid é um sistema de layout bidimensional que permite criar layouts complexos de forma simples.</p><h2>Propriedades Básicas</h2><ul><li><code>display: grid</code> - Define um container grid</li><li><code>grid-template-columns</code> - Define as colunas</li><li><code>grid-template-rows</code> - Define as linhas</li><li><code>gap</code> - Espaçamento entre itens</li></ul><h2>Exemplo</h2><pre><code>.container {\n    display: grid;\n    grid-template-columns: 1fr 2fr 1fr;\n    gap: 20px;\n}</code></pre>',
+            'content' => '<h2>CSS Grid</h2><p>CSS Grid es un sistema de diseño bidimensional que permite crear diseños complejos de forma sencilla. </p><h2>Propiedades básicas</h2><ul><li><code>display: grid</code>: define un contenedor de cuadrícula. </li><li><code>grid-template-columns</code>: define las columnas. </li><li><code>grid-template-rows</code>: define las filas. </li><li><code>gap</code> - Espacio entre elementos</li></ul><h2>Ejemplo</h2><pre><code>.container {\n    display: grid;\n    grid-template-columns: 1fr 2fr 1fr;\n    gap: 20px;\n}</code></pre>',
             'duration' => '25 min',
-            'level' => 'Intermediário'
+            'level' => 'Intermedio'
         ]
     ];
     
@@ -84,20 +84,20 @@ if ($type === 'exercise') {
     $forum_posts = [
         1 => [
             'id' => 1,
-            'title' => 'Como começar com HTML?',
-            'content' => '<p>Estou começando agora e gostaria de dicas sobre por onde começar com HTML. Já li alguns tutoriais, mas ainda tenho dúvidas sobre a estrutura básica.</p><p>Alguém pode me dar algumas dicas práticas?</p>',
+            'title' => '¿Cómo empezar con HTML?',
+            'content' => '<p>Estoy empezando ahora y me gustaría recibir consejos sobre por dónde empezar con HTML. He leído algunos tutoriales, pero todavía tengo dudas sobre la estructura básica.</p><p>¿Alguien puede darme algunos consejos prácticos?</p>',
             'author' => 'João Silva',
             'category' => 'HTML',
             'created_at' => '2024-01-15 14:30:00',
             'replies' => [
                 [
                     'author' => 'Maria Santos',
-                    'content' => 'Recomendo começar com a estrutura básica: DOCTYPE, html, head e body. Pratique bastante!',
+                    'content' => 'Recomiendo empezar con la estructura básica: DOCTYPE, html, head y body. ¡Practique mucho!',
                     'created_at' => '2024-01-15 15:00:00'
                 ],
                 [
                     'author' => 'Pedro Costa',
-                    'content' => 'Concordo com a Maria. Também sugiro usar o MDN Web Docs como referência.',
+                    'content' => 'Estoy de acuerdo con María. También sugiero utilizar MDN Web Docs como referencia.',
                     'created_at' => '2024-01-15 16:30:00'
                 ]
             ]
@@ -164,13 +164,13 @@ include 'header.php';
                         <?php if (!$preview): ?>
                             <div class="mt-4">
                                 <button class="btn btn-success me-2" onclick="runCode()">
-                                    <i class="fas fa-play" aria-hidden="true"></i> Executar
+                                    <i class="fas fa-play" aria-hidden="true"></i> Ejecutar
                                 </button>
                                 <button class="btn btn-info me-2" onclick="showSolution()">
-                                    <i class="fas fa-lightbulb" aria-hidden="true"></i> Ver Solução
+                                    <i class="fas fa-lightbulb" aria-hidden="true"></i> Ver solución
                                 </button>
                                 <button class="btn btn-warning" onclick="resetCode()">
-                                    <i class="fas fa-undo" aria-hidden="true"></i> Resetar
+                                    <i class="fas fa-undo" aria-hidden="true"></i> Restablecer
                                 </button>
                             </div>
                         <?php endif; ?>
@@ -200,8 +200,8 @@ include 'header.php';
                 <?php else: ?>
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle me-2" aria-hidden="true"></i>
-                        <strong>Modo Visualização:</strong> Para praticar este exercício, 
-                        <a href="show.php?type=exercise&id=<?php echo $id; ?>">clique aqui</a>.
+                        <strong>Modo Visualización:</strong> Para practicar este ejercicio, 
+                        <a href="show.php?type=exercise&id=<?php echo $id; ?>">haga clic aquí</a>.
                     </div>
                 <?php endif; ?>
             </div>
@@ -244,12 +244,12 @@ include 'header.php';
                                     <i class="fas fa-thumbs-up" aria-hidden="true"></i> Útil
                                 </button>
                                 <button class="btn btn-outline-secondary">
-                                    <i class="fas fa-share" aria-hidden="true"></i> Compartilhar
+                                    <i class="fas fa-share" aria-hidden="true"></i> Compartir
                                 </button>
                             </div>
                             <div>
                                 <a href="exercises_index.php" class="btn btn-primary">
-                                    <i class="fas fa-tasks" aria-hidden="true"></i> Praticar Exercícios
+                                    <i class="fas fa-tasks" aria-hidden="true"></i> Practicar ejercicio
                                 </a>
                             </div>
                         </div>
@@ -311,7 +311,7 @@ include 'header.php';
                 <?php if (isLoggedIn()): ?>
                     <div class="card mt-4">
                         <div class="card-header">
-                            <h2 class="h6 mb-0">Sua Resposta</h2>
+                            <h2 class="h6 mb-0">Su respuesta</h2>
                         </div>
                         <div class="card-body">
                             <form>
@@ -327,7 +327,7 @@ include 'header.php';
                 <?php else: ?>
                     <div class="alert alert-info mt-4">
                         <i class="fas fa-info-circle me-2" aria-hidden="true"></i>
-                        <a href="login.php">Faça login</a> para participar da discussão.
+                        <a href="login.php">Faça login</a> para participar en el debate.
                     </div>
                 <?php endif; ?>
             </div>
@@ -335,10 +335,10 @@ include 'header.php';
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="h6 mb-0">Posts Relacionados</h2>
+                        <h2 class="h6 mb-0">Artículos relacionados</h2>
                     </div>
                     <div class="card-body">
-                        <p class="text-muted">Nenhum post relacionado encontrado.</p>
+                        <p class="text-muted">No se han encontrado entradas relacionadas.</p>
                     </div>
                 </div>
             </div>

@@ -328,8 +328,9 @@ body {
 }
 
 .btn-success {
-    background: var(--success-color);
-    color: var(--text-light);
+    /* A mágica acontece aqui! */
+    background: linear-gradient(to right, #8e2de2, #ff0080); 
+    color: var(--text-light); /* Mantém a cor do texto branca */
 }
 
 .btn-warning {
@@ -453,9 +454,9 @@ body {
     padding: 0.375rem 0.75rem;
 }
 
-.bg-primary { background: var(--primary-color) !important; }
+.bg-primary { background: linear-gradient(to right, #720bcc,#7e26cc ,#ff0080)  !important; }
 .bg-secondary { background: var(--secondary-color) !important; }
-.bg-success { background: var(--success-color) !important; }
+.bg-success { background: linear-gradient(to right, #8e2de2, #ff0080) !important; }
 .bg-warning { background: var(--warning-color) !important; }
 .bg-danger { background: var(--danger-color) !important; }
 .bg-info { background: var(--info-color) !important; }

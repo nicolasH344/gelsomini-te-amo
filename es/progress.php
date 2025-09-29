@@ -4,7 +4,7 @@ require_once 'config.php';
 
 // Verificar se usuário está logado
 if (!isLoggedIn()) {
-    $_SESSION['error'] = 'Você precisa estar logado para acessar esta página.';
+    $_SESSION['error'] = 'Debes iniciar sesión para acceder a esta página.';
     header('Location: login.php');
     exit;
 }
@@ -13,7 +13,7 @@ if (!isLoggedIn()) {
 $user = getCurrentUser();
 
 // Definir título da página
-$title = 'Meu Progresso';
+$title = 'Mi progreso';
 
 include 'header.php';
 ?>
@@ -25,7 +25,7 @@ include 'header.php';
                 <div class="card-header bg-info text-white">
                     <h1 class="h4 mb-0">
                         <i class="fas fa-chart-line" aria-hidden="true"></i> 
-                        Meu Progresso de Aprendizado
+                       Mi progreso en el aprendizaje
                     </h1>
                 </div>
                 <div class="card-body">
@@ -35,7 +35,7 @@ include 'header.php';
                                 <div class="card-body">
                                     <i class="fas fa-tasks text-primary" style="font-size: 2rem;" aria-hidden="true"></i>
                                     <h3 class="h4 mt-2">0</h3>
-                                    <p class="text-muted">Exercícios Concluídos</p>
+                                    <p class="text-muted">Ejercicios completados</p>
                                 </div>
                             </div>
                         </div>
@@ -45,7 +45,7 @@ include 'header.php';
                                 <div class="card-body">
                                     <i class="fas fa-book text-success" style="font-size: 2rem;" aria-hidden="true"></i>
                                     <h3 class="h4 mt-2">0</h3>
-                                    <p class="text-muted">Tutoriais Lidos</p>
+                                    <p class="text-muted">Tutoriales leídos</p>
                                 </div>
                             </div>
                         </div>
@@ -55,7 +55,7 @@ include 'header.php';
                                 <div class="card-body">
                                     <i class="fas fa-comments text-warning" style="font-size: 2rem;" aria-hidden="true"></i>
                                     <h3 class="h4 mt-2">0</h3>
-                                    <p class="text-muted">Posts no Fórum</p>
+                                    <p class="text-muted">Publicaciones en el foro</p>
                                 </div>
                             </div>
                         </div>
@@ -65,7 +65,7 @@ include 'header.php';
                                 <div class="card-body">
                                     <i class="fas fa-trophy text-danger" style="font-size: 2rem;" aria-hidden="true"></i>
                                     <h3 class="h4 mt-2">0</h3>
-                                    <p class="text-muted">Conquistas</p>
+                                    <p class="text-muted">Logros</p>
                                 </div>
                             </div>
                         </div>
@@ -73,7 +73,7 @@ include 'header.php';
                     
                     <hr>
                     
-                    <h2 class="h5">Progresso por Tecnologia</h2>
+                    <h2 class="h5">Progreso por tecnología</h2>
                     
                     <div class="row">
                         <div class="col-md-6">
@@ -115,18 +115,18 @@ include 'header.php';
                     
                     <div class="alert alert-info mt-4" role="alert">
                         <i class="fas fa-info-circle me-2" aria-hidden="true"></i>
-                        <strong>Dica:</strong> Comece fazendo alguns exercícios para ver seu progresso aqui!
+                        <strong>Consejo:</strong> ¡Empieza haciendo algunos ejercicios para ver tu progreso aquí!
                     </div>
                     
                     <div class="d-flex gap-2 flex-wrap">
                         <a href="exercises_index.php" class="btn btn-primary">
-                            <i class="fas fa-play" aria-hidden="true"></i> Começar Exercícios
+                            <i class="fas fa-play" aria-hidden="true"></i> Comience los ejercicios
                         </a>
                         <a href="tutorials_index.php" class="btn btn-success">
-                            <i class="fas fa-book" aria-hidden="true"></i> Ver Tutoriais
+                            <i class="fas fa-book" aria-hidden="true"></i> Ver tutoriales
                         </a>
                         <a href="profile.php" class="btn btn-secondary">
-                            <i class="fas fa-user" aria-hidden="true"></i> Voltar ao Perfil
+                            <i class="fas fa-user" aria-hidden="true"></i>  Volver al perfil
                         </a>
                     </div>
                 </div>

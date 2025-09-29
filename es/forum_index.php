@@ -3,14 +3,14 @@
 require_once 'config.php';
 
 // Definir título da página
-$title = 'Fórum';
+$title = 'Foro';
 
 // Dados fictícios de posts do fórum para demonstração
 $forum_posts = [
     [
         'id' => 1,
-        'title' => 'Como começar com HTML?',
-        'content' => 'Estou começando agora e gostaria de dicas sobre por onde começar com HTML...',
+        'title' => '¿Cómo empezar con HTML?',
+        'content' => 'Estoy empezando y me gustaría recibir algunos consejos sobre dónde empezar con HTML...',
         'author' => 'João Silva',
         'category' => 'HTML',
         'replies' => 5,
@@ -20,8 +20,8 @@ $forum_posts = [
     ],
     [
         'id' => 2,
-        'title' => 'Dúvida sobre CSS Grid',
-        'content' => 'Estou tentando criar um layout com CSS Grid mas não consigo alinhar os itens...',
+        'title' => 'Pregunta sobre CSS Grid',
+        'content' => 'Estoy intentando crear un diseño con CSS Grid pero no puedo alinear los elementos...',
         'author' => 'Maria Santos',
         'category' => 'CSS',
         'replies' => 3,
@@ -32,7 +32,7 @@ $forum_posts = [
     [
         'id' => 3,
         'title' => 'JavaScript assíncrono - async/await',
-        'content' => 'Alguém pode explicar melhor como funciona async/await em JavaScript?',
+        'content' => '¿Alguien puede explicar mejor cómo funciona async/await en JavaScript?',
         'author' => 'Pedro Costa',
         'category' => 'JavaScript',
         'replies' => 8,
@@ -42,8 +42,8 @@ $forum_posts = [
     ],
     [
         'id' => 4,
-        'title' => 'PHP e MySQL - Conexão',
-        'content' => 'Estou com problemas para conectar PHP com MySQL. Alguém pode ajudar?',
+        'title' => 'PHP y MySQL - Conexión',
+        'content' => 'Tengo problemas para conectar PHP con MySQL. ¿Alguien puede ayudarme?',
         'author' => 'Ana Oliveira',
         'category' => 'PHP',
         'replies' => 12,
@@ -53,8 +53,8 @@ $forum_posts = [
     ],
     [
         'id' => 5,
-        'title' => 'Responsividade em dispositivos móveis',
-        'content' => 'Meu site não fica bom no celular. Dicas para melhorar a responsividade?',
+        'title' => 'Responsividad en dispositivos móviles',
+        'content' => 'Mi sitio web no se ve bien en el celular. ¿Consejos para mejorar la capacidad de respuesta?',
         'author' => 'Carlos Ferreira',
         'category' => 'CSS',
         'replies' => 6,
@@ -79,17 +79,17 @@ include 'header.php';
     <!-- Header do fórum -->
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1><i class="fas fa-comments" aria-hidden="true"></i> Fórum da Comunidade</h1>
-            <p class="lead">Tire dúvidas, compartilhe conhecimento e conecte-se com outros desenvolvedores</p>
+            <h1><i class="fas fa-comments" aria-hidden="true"></i> Foro de la comunidad</h1>
+            <p class="lead">Resuelva sus dudas, comparta conocimientos y conéctese con otros desarrolladores.</p>
         </div>
         <div class="col-md-4 text-end">
             <?php if (isLoggedIn()): ?>
                 <a href="#" class="btn btn-primary" role="button">
-                    <i class="fas fa-plus" aria-hidden="true"></i> Novo Post
+                    <i class="fas fa-plus" aria-hidden="true"></i> Nueva publicación
                 </a>
             <?php else: ?>
                 <a href="login.php" class="btn btn-primary" role="button">
-                    <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Faça Login para Participar
+                    <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Inicie sesión para participar
                 </a>
             <?php endif; ?>
         </div>
@@ -101,12 +101,12 @@ include 'header.php';
             <!-- Filtros e busca -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <h2 class="h5 card-title">Filtrar Posts</h2>
+                    <h2 class="h5 card-title">Filtrar publicaciones</h2>
                     <form method="GET" action="forum_index.php" class="row g-3">
                         <div class="col-md-4">
                             <label for="category" class="form-label">Categoria</label>
                             <select class="form-select" id="category" name="category">
-                                <option value="">Todas as categorias</option>
+                                <option value="">Todas las categorías</option>
                                 <?php foreach ($categories as $cat): ?>
                                     <option value="<?php echo sanitize($cat['id']); ?>">
                                         <?php echo sanitize($cat['name']); ?>
@@ -133,7 +133,7 @@ include 'header.php';
             <!-- Lista de posts -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="h5 mb-0">Posts Recentes</h2>
+                    <h2 class="h5 mb-0">Publicaciones recientes</h2>
                 </div>
                 <div class="card-body p-0">
                     <?php foreach ($forum_posts as $index => $post): ?>
@@ -156,7 +156,7 @@ include 'header.php';
                                         
                                         <?php if ($post['is_solved']): ?>
                                             <span class="badge bg-success me-2">
-                                                <i class="fas fa-check" aria-hidden="true"></i> Resolvido
+                                                <i class="fas fa-check" aria-hidden="true"></i> Resuelto
                                             </span>
                                         <?php endif; ?>
                                     </div>
@@ -188,11 +188,11 @@ include 'header.php';
                                     <div class="row text-center">
                                         <div class="col-4">
                                             <div class="text-primary fw-bold"><?php echo $post['replies']; ?></div>
-                                            <small class="text-muted">Respostas</small>
+                                            <small class="text-muted">Respuestas</small>
                                         </div>
                                         <div class="col-4">
                                             <div class="text-info fw-bold"><?php echo $post['views']; ?></div>
-                                            <small class="text-muted">Visualizações</small>
+                                            <small class="text-muted">Visualizaciones</small>
                                         </div>
                                         <div class="col-4">
                                             <a href="show.php?type=forum&id=<?php echo $post['id']; ?>" 
@@ -241,18 +241,18 @@ include 'header.php';
             <div class="card mb-4">
                 <div class="card-header">
                     <h2 class="h6 mb-0">
-                        <i class="fas fa-chart-bar" aria-hidden="true"></i> Estatísticas
+                        <i class="fas fa-chart-bar" aria-hidden="true"></i> Estadísticas
                     </h2>
                 </div>
                 <div class="card-body">
                     <div class="row text-center">
                         <div class="col-6">
                             <div class="fw-bold text-primary"><?php echo count($forum_posts); ?></div>
-                            <small class="text-muted">Posts</small>
+                            <small class="text-muted">Publicaciones</small>
                         </div>
                         <div class="col-6">
                             <div class="fw-bold text-success">15</div>
-                            <small class="text-muted">Membros Ativos</small>
+                            <small class="text-muted">Miembros activos</small>
                         </div>
                     </div>
                 </div>
@@ -291,7 +291,7 @@ include 'header.php';
             <div class="card">
                 <div class="card-header">
                     <h2 class="h6 mb-0">
-                        <i class="fas fa-fire" aria-hidden="true"></i> Posts Populares
+                        <i class="fas fa-fire" aria-hidden="true"></i> Publicaciones populares
                     </h2>
                 </div>
                 <div class="card-body">
@@ -307,7 +307,7 @@ include 'header.php';
                                 </a>
                             </h3>
                             <small class="text-muted">
-                                <?php echo $post['views']; ?> visualizações
+                                <?php echo $post['views']; ?>visualizaciones
                             </small>
                         </div>
                     <?php endforeach; ?>
@@ -323,22 +323,22 @@ include 'header.php';
                 <div class="card-body">
                     <h2 class="h5 card-title">
                         <i class="fas fa-info-circle text-info" aria-hidden="true"></i> 
-                        Regras do Fórum
+                        Reglas del foro
                     </h2>
                     <div class="row">
                         <div class="col-md-6">
                             <ul class="list-unstyled mb-0">
                                 <li class="mb-2">
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
-                                    Seja respeitoso com outros membros
+                                   Sé respetuoso con los demás miembros.
                                 </li>
                                 <li class="mb-2">
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
-                                    Use títulos descritivos para seus posts
+                                  Utilice títulos descriptivos para sus publicaciones.
                                 </li>
                                 <li class="mb-0">
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
-                                    Pesquise antes de postar uma dúvida
+                                        Investiga antes de publicar una pregunta.
                                 </li>
                             </ul>
                         </div>
@@ -346,15 +346,15 @@ include 'header.php';
                             <ul class="list-unstyled mb-0">
                                 <li class="mb-2">
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
-                                    Não faça spam ou posts repetitivos
+                                     No envíes spam ni publicaciones repetitivas.
                                 </li>
                                 <li class="mb-2">
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
-                                    Evite linguagem ofensiva
+                                    Evite el lenguaje ofensivo.
                                 </li>
                                 <li class="mb-0">
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
-                                    Não compartilhe informações pessoais
+                                     No compartas información personal
                                 </li>
                             </ul>
                         </div>

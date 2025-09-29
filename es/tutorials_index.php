@@ -8,62 +8,62 @@ if (session_status() == PHP_SESSION_NONE) {
 require_once 'config.php';
 
 // Definir título da página
-$title = 'Tutoriais';
+$title = 'Tutoriales';
 
 // Dados fictícios de tutoriais para demonstração
 $tutorials = [
     [
         'id' => 1,
-        'title' => 'Introdução ao HTML5',
-        'description' => 'Aprenda os fundamentos do HTML5 e suas principais tags',
+        'title' => 'Introducción a HTML5',
+        'description' => 'Aprenda los fundamentos de HTML5 y sus principales etiquetas.',
         'category' => 'HTML',
         'duration' => '15 min',
-        'level' => 'Iniciante',
+        'level' => 'Principiante',
         'views' => 1250
     ],
     [
         'id' => 2,
         'title' => 'CSS Grid Layout',
-        'description' => 'Domine o sistema de grid do CSS para layouts modernos',
+        'description' => 'Domina el sistema de cuadrículas CSS para diseños modernos',
         'category' => 'CSS',
         'duration' => '25 min',
-        'level' => 'Intermediário',
+        'level' => 'Intermedio',
         'views' => 890
     ],
     [
         'id' => 3,
         'title' => 'JavaScript ES6+',
-        'description' => 'Conheça as funcionalidades modernas do JavaScript',
+        'description' => 'Conoce las modernas funcionalidades de JavaScript',
         'category' => 'JavaScript',
         'duration' => '30 min',
-        'level' => 'Intermediário',
+        'level' => 'Intermedio',
         'views' => 2100
     ],
     [
         'id' => 4,
-        'title' => 'Formulários Acessíveis',
-        'description' => 'Crie formulários que funcionam para todos os usuários',
+        'title' => 'Formularios accesibles',
+        'description' => 'Cree formularios que funcionen para todos los usuarios.',
         'category' => 'HTML',
         'duration' => '20 min',
-        'level' => 'Intermediário',
+        'level' => 'Intermedio',
         'views' => 650
     ],
     [
         'id' => 5,
-        'title' => 'Flexbox na Prática',
-        'description' => 'Aprenda a usar Flexbox para layouts flexíveis',
+        'title' => 'Flexbox en la práctica',
+        'description' => 'Aprenda a utilizar Flexbox para diseños flexibles',
         'category' => 'CSS',
         'duration' => '18 min',
-        'level' => 'Iniciante',
+        'level' => 'Principiante',
         'views' => 1800
     ],
     [
         'id' => 6,
         'title' => 'PHP Básico',
-        'description' => 'Primeiros passos com PHP para desenvolvimento web',
+        'description' => 'Primeros pasos con PHP para el desarrollo web',
         'category' => 'PHP',
         'duration' => '35 min',
-        'level' => 'Iniciante',
+        'level' => 'Principiante',
         'views' => 980
     ]
 ];
@@ -76,13 +76,13 @@ include 'header.php';
     <!-- Header da página -->
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1><i class="fas fa-book-open" aria-hidden="true"></i> Tutoriais</h1>
-            <p class="lead">Aprenda desenvolvimento web com nossos tutoriais detalhados</p>
+            <h1><i class="fas fa-book-open" aria-hidden="true"></i> Tutoriales</h1>
+            <p class="lead">Aprenda desarrollo web con nuestros tutoriales detallados.</p>
         </div>
         <div class="col-md-4 text-end">
             <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
                 <a href="admin.php" class="btn btn-success" role="button">
-                    <i class="fas fa-plus" aria-hidden="true"></i> Gerenciar Tutoriais
+                    <i class="fas fa-plus" aria-hidden="true"></i> Administrar tutoriales
                 </a>
             <?php endif; ?>
         </div>
@@ -91,12 +91,12 @@ include 'header.php';
     <!-- Filtros -->
     <div class="card mb-4">
         <div class="card-body">
-            <h2 class="h5 card-title">Filtrar Tutoriais</h2>
+            <h2 class="h5 card-title">Filtrar tutoriales</h2>
             <form method="GET" action="tutorials_index.php" class="row g-3">
                 <div class="col-md-3">
-                    <label for="category" class="form-label">Categoria</label>
+                    <label for="category" class="form-label">Categoría</label>
                     <select class="form-select" id="category" name="category">
-                        <option value="">Todas as categorias</option>
+                        <option value="">Todas las categorías</option>
                         <option value="HTML">HTML</option>
                         <option value="CSS">CSS</option>
                         <option value="JavaScript">JavaScript</option>
@@ -107,10 +107,10 @@ include 'header.php';
                 <div class="col-md-3">
                     <label for="level" class="form-label">Nível</label>
                     <select class="form-select" id="level" name="level">
-                        <option value="">Todos os níveis</option>
-                        <option value="Iniciante">Iniciante</option>
-                        <option value="Intermediário">Intermediário</option>
-                        <option value="Avançado">Avançado</option>
+                        <option value="">Todos los niveles</option>
+                        <option value="Iniciante">Principiante</option>
+                        <option value="Intermediário">Intermedio</option>
+                        <option value="Avançado">Avanzado</option>
                     </select>
                 </div>
                 
@@ -161,7 +161,7 @@ include 'header.php';
                             </span>
                             <span>
                                 <i class="fas fa-eye me-1" aria-hidden="true"></i>
-                                <?php echo number_format($tutorial['views']); ?> visualizações
+                                <?php echo number_format($tutorial['views']); ?> visualizaciones
                             </span>
                         </div>
                     </div>
@@ -170,7 +170,7 @@ include 'header.php';
                         <div class="d-flex gap-2">
                             <a href="show.php?type=tutorial&id=<?php echo $tutorial['id']; ?>" 
                                class="btn btn-primary btn-sm flex-fill">
-                                <i class="fas fa-play" aria-hidden="true"></i> Ler Tutorial
+                                <i class="fas fa-play" aria-hidden="true"></i> Leer tutorial
                             </a>
                             <a href="show.php?type=tutorial&id=<?php echo $tutorial['id']; ?>&preview=1" 
                                class="btn btn-outline-secondary btn-sm"
@@ -212,7 +212,7 @@ include 'header.php';
     <!-- Categorias populares -->
     <div class="row mt-5">
         <div class="col-12">
-            <h2 class="h4 mb-4">Categorias Populares</h2>
+            <h2 class="h4 mb-4">Categorías populares</h2>
         </div>
         
         <div class="col-md-3 col-sm-6 mb-3">
@@ -220,7 +220,7 @@ include 'header.php';
                 <div class="card-body text-center">
                     <i class="fab fa-html5" style="font-size: 2rem;" aria-hidden="true"></i>
                     <h3 class="h5 mt-2">HTML5</h3>
-                    <p class="mb-0">2 tutoriais</p>
+                    <p class="mb-0">2 tutoriales</p>
                 </div>
             </div>
         </div>
@@ -230,7 +230,7 @@ include 'header.php';
                 <div class="card-body text-center">
                     <i class="fab fa-css3-alt" style="font-size: 2rem;" aria-hidden="true"></i>
                     <h3 class="h5 mt-2">CSS3</h3>
-                    <p class="mb-0">2 tutoriais</p>
+                    <p class="mb-0">2  tutoriales</p>
                 </div>
             </div>
         </div>
@@ -240,7 +240,7 @@ include 'header.php';
                 <div class="card-body text-center">
                     <i class="fab fa-js-square" style="font-size: 2rem;" aria-hidden="true"></i>
                     <h3 class="h5 mt-2">JavaScript</h3>
-                    <p class="mb-0">1 tutorial</p>
+                    <p class="mb-0">1  tutorial</p>
                 </div>
             </div>
         </div>
@@ -263,20 +263,20 @@ include 'header.php';
                 <div class="card-body">
                     <h2 class="h5 card-title">
                         <i class="fas fa-graduation-cap text-success" aria-hidden="true"></i> 
-                        Como Aproveitar os Tutoriais
+                        Cómo aprovechar los tutoriales
                     </h2>
                     <ul class="list-unstyled mb-0">
                         <li class="mb-2">
                             <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
-                            Leia com atenção e pratique os exemplos
+                            Lee con atención y practica con los ejemplos.
                         </li>
                         <li class="mb-2">
                             <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
-                            Faça anotações dos pontos importantes
+                            Tome notas de los puntos importantes.
                         </li>
                         <li class="mb-0">
                             <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
-                            Aplique o conhecimento nos exercícios
+                            Aplique los conocimientos en los ejercicios.
                         </li>
                     </ul>
                 </div>
@@ -288,11 +288,11 @@ include 'header.php';
                 <div class="card-body">
                     <h2 class="h5 card-title">
                         <i class="fas fa-question-circle text-info" aria-hidden="true"></i> 
-                        Precisa de Ajuda?
+                               ¿Necesita ayuda?
                     </h2>
-                    <p class="mb-3">Tem dúvidas sobre algum tutorial? Nossa comunidade está aqui para ajudar!</p>
+                    <p class="mb-3">¿Tienes dudas sobre algún tutorial? ¡Nuestra comunidad está aquí para ayudarte!</p>
                     <a href="forum_index.php" class="btn btn-info btn-sm">
-                        <i class="fas fa-comments" aria-hidden="true"></i> Ir para o Fórum
+                        <i class="fas fa-comments" aria-hidden="true"></i> Ir al foro
                     </a>
                 </div>
             </div>
