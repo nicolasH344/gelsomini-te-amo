@@ -308,74 +308,7 @@ include 'header.php';
     </div>
 </section>
 
-<!-- Seção de Depoimentos -->
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="row">
-            <div class="col-12 text-center mb-5">
-                <h2 class="display-5 fw-bold text-gradient">
-                    <?php echo t('testimonials', 'Testimonios'); ?>
-                </h2>
-                <p class="lead text-muted">
-                    <?php echo t('testimonials_desc', 'Lo que dicen nuestros estudiantes'); ?>
-                </p>
-            </div>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="mb-3">
-                            <img src="assets/images/testimonial1.jpg" alt="María García" class="rounded-circle" width="80" height="80">
-                        </div>
-                        <blockquote class="blockquote">
-                            <p class="mb-3">"<?php echo t('testimonial1', 'Esta plataforma cambió mi carrera. Los ejercicios prácticos me ayudaron a conseguir mi primer trabajo como desarrolladora.'); ?>"</p>
-                        </blockquote>
-                        <footer class="blockquote-footer">
-                            <strong>María García</strong>
-                            <cite title="Source Title"><?php echo t('frontend_developer', 'Desarrolladora Frontend'); ?></cite>
-                        </footer>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="mb-3">
-                            <img src="assets/images/testimonial2.jpg" alt="Carlos Silva" class="rounded-circle" width="80" height="80">
-                        </div>
-                        <blockquote class="blockquote">
-                            <p class="mb-3">"<?php echo t('testimonial2', 'El feedback instantáneo y la comunidad activa hacen que aprender sea divertido y efectivo.'); ?>"</p>
-                        </blockquote>
-                        <footer class="blockquote-footer">
-                            <strong>Carlos Silva</strong>
-                            <cite title="Source Title"><?php echo t('fullstack_developer', 'Desarrollador Full Stack'); ?></cite>
-                        </footer>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="mb-3">
-                            <img src="assets/images/testimonial3.jpg" alt="Ana Rodríguez" class="rounded-circle" width="80" height="80">
-                        </div>
-                        <blockquote class="blockquote">
-                            <p class="mb-3">"<?php echo t('testimonial3', 'Desde cero hasta conseguir trabajo en 6 meses. Los proyectos reales me dieron la confianza que necesitaba.'); ?>"</p>
-                        </blockquote>
-                        <footer class="blockquote-footer">
-                            <strong>Ana Rodríguez</strong>
-                            <cite title="Source Title"><?php echo t('backend_developer', 'Desarrolladora Backend'); ?></cite>
-                        </footer>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+
 
         <div class="row g-4">
             <!-- Depoimento 1 -->
