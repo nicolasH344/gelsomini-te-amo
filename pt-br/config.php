@@ -5,7 +5,7 @@ if (!defined('SITE_NAME')) {
 }
 
 if (!defined('SITE_URL')) {
-    define('SITE_URL', 'http://localhost');
+    define('SITE_URL', 'localhost');
 }
 
 // Configurações de erro (desabilitar em produção)
@@ -21,6 +21,24 @@ if (function_exists('date_default_timezone_set')) {
 // Iniciar sessão se não estiver iniciada
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
+}
+
+// =================================================================
+// >> CONFIGURAÇÕES DO BANCO DE DADOS <<
+// =================================================================
+
+// Função para conexão com o banco de dados
+if (!function_exists('getDBConnection')) {
+    function getDBConnection() {
+        try {
+            $conn = new PDO("mysql:host=localhost;dbname=cursinho", "root", "");
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            return $conn;
+        } catch(PDOException $e) {
+            die("Erro de conexão com o banco de dados: " . $e->getMessage());
+        }
+    }
 }
 
 // =================================================================
@@ -132,20 +150,95 @@ if (!function_exists('getCurrentUser')) {
     }
 }
 
-// Demais funções do sistema
+// Função para processar login com banco de dados
 if (!function_exists('processLogin')) {
     function processLogin($username, $password) {
-        if (($username === 'admin' && $password === 'admin123') || ($username === 'usuario' && $password === '123456')) {
-            $_SESSION['user_id'] = ($username === 'admin') ? 1 : 2;
-            $_SESSION['username'] = $username;
-            $_SESSION['first_name'] = ($username === 'admin') ? 'Administrador' : 'Usuário';
-            $_SESSION['last_name'] = ($username === 'admin') ? 'Sistema' : 'Teste';
-            $_SESSION['is_admin'] = ($username === 'admin');
-            return ['success' => true, 'message' => 'Login realizado com sucesso!'];
+        try {
+            $conn = getDBConnection();
+            
+            $stmt = $conn->prepare("SELECT id, username, first_name, last_name, password_hash, is_admin FROM users WHERE username = ? OR email = ?");
+            $stmt->execute([$username, $username]);
+            $user = $stmt->fetch();
+            
+            if ($user && password_verify($password, $user['password_hash'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['first_name'] = $user['first_name'];
+                $_SESSION['last_name'] = $user['last_name'];
+                $_SESSION['is_admin'] = (bool)$user['is_admin'];
+                return ['success' => true, 'message' => 'Login realizado com sucesso!'];
+            }
+            
+            return ['success' => false, 'message' => 'Usuário ou senha incorretos.'];
+            
+        } catch(PDOException $e) {
+            return ['success' => false, 'message' => 'Erro no banco de dados: ' . $e->getMessage()];
         }
-        return ['success' => false, 'message' => 'Usuário ou senha incorretos.'];
     }
 }
+
+// Função para processar registro de usuário
+if (!function_exists('processRegister')) {
+    function processRegister($data) {
+        // Validações básicas
+        if (empty($data['first_name']) || empty($data['last_name']) || 
+            empty($data['username']) || empty($data['email']) || 
+            empty($data['password']) || empty($data['confirm_password'])) {
+            return ['success' => false, 'message' => 'Preencha todos os campos obrigatórios'];
+        }
+        
+        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            return ['success' => false, 'message' => 'Email inválido'];
+        }
+        
+        if (strlen($data['password']) < 6) {
+            return ['success' => false, 'message' => 'A senha deve ter no mínimo 6 caracteres'];
+        }
+        
+        if ($data['password'] !== $data['confirm_password']) {
+            return ['success' => false, 'message' => 'As senhas não coincidem'];
+        }
+        
+        if (!isset($data['terms']) || $data['terms'] !== 'on') {
+            return ['success' => false, 'message' => 'Você deve aceitar os termos de uso'];
+        }
+        
+        try {
+            $conn = getDBConnection();
+            
+            // Verificar se username já existe
+            $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+            $stmt->execute([$data['username']]);
+            if ($stmt->fetch()) {
+                return ['success' => false, 'message' => 'Nome de usuário já está em uso'];
+            }
+            
+            // Verificar se email já existe
+            $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+            $stmt->execute([$data['email']]);
+            if ($stmt->fetch()) {
+                return ['success' => false, 'message' => 'Email já está cadastrado'];
+            }
+            
+            // Inserir novo usuário
+            $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, username, email, password_hash, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
+            $password_hash = password_hash($data['password'], PASSWORD_DEFAULT);
+            $stmt->execute([
+                $data['first_name'],
+                $data['last_name'],
+                $data['username'],
+                $data['email'],
+                $password_hash
+            ]);
+            
+            return ['success' => true, 'message' => 'Conta criada com sucesso! Faça login para continuar.'];
+            
+        } catch(PDOException $e) {
+            return ['success' => false, 'message' => 'Erro no banco de dados: ' . $e->getMessage()];
+        }
+    }
+}
+
 if (!function_exists('processLogout')) {
     function processLogout() {
         $theme = $_SESSION['theme'] ?? 'purple';
@@ -160,7 +253,24 @@ if (!function_exists('processLogout')) {
 }
 if (!function_exists('getStats')) {
     function getStats() {
-        return ['total_users' => 1250, 'total_exercises' => 85, 'total_tutorials' => 42, 'total_forum_posts' => 3680];
+        try {
+            $conn = getDBConnection();
+            
+            // Total de usuários
+            $stmt = $conn->query("SELECT COUNT(*) as total_users FROM users");
+            $total_users = $stmt->fetch()['total_users'];
+            
+            // Estatísticas básicas (você pode adicionar mais tabelas depois)
+            return [
+                'total_users' => $total_users,
+                'total_exercises' => 85, 
+                'total_tutorials' => 42, 
+                'total_forum_posts' => 3680
+            ];
+            
+        } catch(PDOException $e) {
+            return ['total_users' => 0, 'total_exercises' => 0, 'total_tutorials' => 0, 'total_forum_posts' => 0];
+        }
     }
 }
 
@@ -168,12 +278,10 @@ if (!function_exists('getStats')) {
 // >> FIM: DEFINIÇÃO DE FUNÇÕES <<
 // =================================================================
 
-
 // Configurações padrão de sessão
 if (!isset($_SESSION['theme'])) { $_SESSION['theme'] = 'purple'; }
 if (!isset($_SESSION['language'])) { $_SESSION['language'] = 'pt-BR'; }
 if (!isset($_SESSION['accessibility_mode'])) { $_SESSION['accessibility_mode'] = false; }
-
 
 // >> CORREÇÃO: Processar mudanças de configuração com redirecionamento (Padrão Post-Redirect-Get)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -94,13 +94,46 @@
                 
                 <ul class="navbar-nav">
                     <?php if (isLoggedIn()): ?>
-                        <?php $user = getCurrentUser(); ?>
+                        <?php 
+                        // Buscar dados atualizados do usuário no banco de dados
+                        try {
+                            $conn = getDBConnection();
+                            $stmt = $conn->prepare("SELECT first_name, last_name, username, profile_image, is_admin FROM users WHERE id = ?");
+                            $stmt->execute([$_SESSION['user_id']]);
+                            $userData = $stmt->fetch();
+                            
+                            if ($userData) {
+                                $userDisplayName = $userData['first_name'];
+                                $userProfileImage = $userData['profile_image'];
+                                $isAdmin = (bool)$userData['is_admin'];
+                                
+                                // Atualizar sessão com dados do banco
+                                $_SESSION['first_name'] = $userData['first_name'];
+                                $_SESSION['last_name'] = $userData['last_name'];
+                                $_SESSION['is_admin'] = $isAdmin;
+                            } else {
+                                $userDisplayName = $_SESSION['username'] ?? 'Usuário';
+                                $userProfileImage = null;
+                                $isAdmin = $_SESSION['is_admin'] ?? false;
+                            }
+                        } catch (Exception $e) {
+                            // Fallback para dados da sessão se houver erro no banco
+                            $userDisplayName = $_SESSION['first_name'] ?? $_SESSION['username'] ?? 'Usuário';
+                            $userProfileImage = null;
+                            $isAdmin = $_SESSION['is_admin'] ?? false;
+                        }
+                        ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
                                data-bs-toggle="dropdown" aria-expanded="false" 
                                aria-label="<?php echo t('user_menu', 'Menu do usuário'); ?>">
-                                <i class="fas fa-user me-1" aria-hidden="true"></i>
-                                <?php echo sanitize($user['first_name']); ?>
+                                <?php if ($userProfileImage): ?>
+                                    <img src="<?php echo sanitize($userProfileImage); ?>" alt="<?php echo t('profile_picture', 'Foto de perfil'); ?>" 
+                                         class="rounded-circle me-1" width="25" height="25">
+                                <?php else: ?>
+                                    <i class="fas fa-user me-1" aria-hidden="true"></i>
+                                <?php endif; ?>
+                                <?php echo sanitize($userDisplayName); ?>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li>
@@ -115,6 +148,14 @@
                                         <?php echo t('progress'); ?>
                                     </a>
                                 </li>
+                                <?php if ($isAdmin): ?>
+                                <li>
+                                    <a class="dropdown-item" href="admin.php">
+                                        <i class="fas fa-crown me-2" aria-hidden="true"></i>
+                                        <?php echo t('admin_panel', 'Administração'); ?>
+                                    </a>
+                                </li>
+                                <?php endif; ?>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" href="#" onclick="toggleSettings()">
@@ -449,42 +490,3 @@
             }
         });
     </script>
-
-    <style>
-        /* Estilos específicos para melhorar a experiência do usuário */
-        .theme-selector.first-visit {
-            animation: pulse 2s infinite;
-        }
-        
-        .theme-selector.first-visit::after {
-            content: '<?php echo t("click_to_customize", "Clique para personalizar"); ?>';
-            position: absolute;
-            top: -40px;
-            right: 0;
-            background: var(--bg-dark);
-            color: var(--text-light);
-            padding: 8px 12px;
-            border-radius: var(--border-radius);
-            font-size: 0.8rem;
-            white-space: nowrap;
-            z-index: 1000;
-            opacity: 0;
-            animation: fadeInTooltip 0.5s ease-in-out 1s forwards;
-            
-        }
-  
-        @keyframes fadeInTooltip {
-            to { opacity: 1; }
-        }
-        
-        /* Melhorias para dispositivos móveis */
-        @media (max-width: 768px) {
-            .theme-selector.first-visit::after {
-                top: -35px;
-                font-size: 0.7rem;
-                padding: 6px 10px;
-            }
-        }
-        
-    </style>
-
