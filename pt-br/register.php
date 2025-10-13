@@ -1,88 +1,9 @@
 <?php
-// register.php - Versão simplificada
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Iniciar sessão
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Conexão com banco de dados
-function getDBConnection() {
-    try {
-        $conn = new PDO("mysql:host=localhost;dbname=cursinho", "root", "");
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $conn;
-    } catch(PDOException $e) {
-        die("Erro de conexão: " . $e->getMessage());
-    }
-}
-
-// Funções básicas
-function sanitize($data) {
-    return is_string($data) ? htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8') : $data;
-}
-
-function isLoggedIn() {
-    return !empty($_SESSION['user_id']);
-}
-
-// Processamento do registro
-function processRegister($data) {
-    // Validações rápidas
-    $required = ['first_name', 'last_name', 'username', 'email', 'password', 'confirm_password'];
-    foreach ($required as $field) {
-        if (empty($data[$field])) {
-            return ['success' => false, 'message' => 'Preencha todos os campos obrigatórios'];
-        }
-    }
-    
-    if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-        return ['success' => false, 'message' => 'Email inválido'];
-    }
-    
-    if (strlen($data['password']) < 6) {
-        return ['success' => false, 'message' => 'Senha deve ter no mínimo 6 caracteres'];
-    }
-    
-    if ($data['password'] !== $data['confirm_password']) {
-        return ['success' => false, 'message' => 'As senhas não coincidem'];
-    }
-    
-    if (empty($data['terms'])) {
-        return ['success' => false, 'message' => 'Aceite os termos de uso'];
-    }
-
-    $conn = getDBConnection();
-    
-    try {
-        // Verificar usuário/email existente
-        $stmt = $conn->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
-        $stmt->execute([$data['username'], $data['email']]);
-        if ($stmt->fetch()) {
-            return ['success' => false, 'message' => 'Usuário ou email já cadastrado'];
-        }
-        
-        // Inserir novo usuário
-        $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, username, email, password_hash, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
-        $stmt->execute([
-            $data['first_name'],
-            $data['last_name'],
-            $data['username'],
-            $data['email'],
-            password_hash($data['password'], PASSWORD_DEFAULT)
-        ]);
-        
-        return ['success' => true, 'message' => 'Conta criada com sucesso! Faça login.'];
-        
-    } catch(PDOException $e) {
-        return ['success' => false, 'message' => 'Erro no sistema. Tente novamente.'];
-    }
-}
+// Inclui o arquivo de configuração central
+require_once 'config.php';
 
 // Processar formulário
-if ($_POST) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = processRegister($_POST);
     
     if ($result['success']) {
@@ -108,30 +29,12 @@ if (isLoggedIn()) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Criar Conta - WebLearn</title>
+    <!-- Incluindo os estilos principais do site -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-        }
-        .card {
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        .btn-success {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            border: none;
-        }
-        .btn-success:hover {
-            transform: translateY(-2px);
-            transition: all 0.3s;
-        }
-    </style>
+    <link rel="stylesheet" href="../style.css">
 </head>
-<body>
+<body class="<?php echo getThemeClass(); ?> bg-gradient-body">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
@@ -144,7 +47,7 @@ if (isLoggedIn()) {
                 <?php endif; ?>
 
                 <div class="card">
-                    <div class="card-header bg-success text-white text-center">
+                    <div class="card-header text-center">
                         <h4 class="mb-0">
                             <i class="fas fa-user-plus"></i> Criar Nova Conta
                         </h4>
@@ -203,7 +106,7 @@ if (isLoggedIn()) {
                                 <label class="form-check-label">Aceito os termos de uso *</label>
                             </div>
                             
-                            <button type="submit" class="btn btn-success w-100 py-2">
+                            <button type="submit" class="btn btn-primary w-100 py-2">
                                 <i class="fas fa-user-plus"></i> Criar Conta
                             </button>
                         </form>

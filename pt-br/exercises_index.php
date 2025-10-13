@@ -123,17 +123,10 @@ include 'header.php';
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card h-100 shadow-sm">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <span class="badge bg-<?php 
-                            echo $exercise['category'] === 'HTML' ? 'danger' : 
-                                ($exercise['category'] === 'CSS' ? 'primary' : 
-                                ($exercise['category'] === 'JavaScript' ? 'warning' : 'info')); 
-                        ?>">
+                        <span class="badge badge-category-<?php echo strtolower(sanitize($exercise['category'])); ?>">
                             <?php echo sanitize($exercise['category']); ?>
                         </span>
-                        <span class="badge bg-<?php 
-                            echo $exercise['difficulty'] === 'Iniciante' ? 'success' : 
-                                ($exercise['difficulty'] === 'Intermediário' ? 'warning' : 'danger'); 
-                        ?>">
+                        <span class="badge badge-difficulty-<?php echo str_replace(' ', '-', strtolower(sanitize($exercise['difficulty']))); ?>">
                             <?php echo sanitize($exercise['difficulty']); ?>
                         </span>
                     </div>
@@ -246,4 +239,3 @@ include 'header.php';
 </div>
 
 <?php include 'footer.php'; ?>
-

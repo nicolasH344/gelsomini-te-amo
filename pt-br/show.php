@@ -1,6 +1,4 @@
 <?php
-//conexao com o banco de dados 
-require_once 'config/database.php';
 // Incluir configurações
 require_once 'config.php';
 
@@ -10,14 +8,14 @@ $id = (int)($_GET['id'] ?? 0);
 $preview = isset($_GET['preview']);
 
 // Verificar se tipo e ID são válidos
-if (empty($type) || $id <= 0) {
+if (!in_array($type, ['exercise', 'tutorial', 'forum']) || $id <= 0) {
     header('Location: index.php');
     exit;
 }
 
 // Definir título da página baseado no tipo
 switch ($type) {
-    case 'exercise':
+    case 'exercise': // O nome do tipo na URL
         $title = 'Exercício';
         break;
     case 'tutorial':
@@ -31,86 +29,13 @@ switch ($type) {
         exit;
 }
 
-// Dados fictícios baseados no tipo
-if ($type === 'exercise') {
-    $exercises = [
-        1 => [
-            'id' => 1,
-            'title' => 'Estrutura Básica HTML',
-            'description' => 'Aprenda a criar a estrutura básica de uma página HTML',
-            'difficulty' => 'Iniciante',
-            'category' => 'HTML',
-            'content' => '<h2>Objetivo</h2><p>Criar uma página HTML básica com estrutura semântica.</p><h2>Instruções</h2><ol><li>Crie a estrutura básica do HTML5</li><li>Adicione um cabeçalho com título</li><li>Inclua um parágrafo de introdução</li><li>Adicione uma lista não ordenada</li></ol>',
-            'starter_code' => '<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Minha Página</title>\n</head>\n<body>\n    <!-- Seu código aqui -->\n</body>\n</html>',
-            'solution' => '<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Minha Página</title>\n</head>\n<body>\n    <header>\n        <h1>Bem-vindo ao meu site</h1>\n    </header>\n    <main>\n        <p>Esta é uma página HTML básica.</p>\n        <ul>\n            <li>Item 1</li>\n            <li>Item 2</li>\n            <li>Item 3</li>\n        </ul>\n    </main>\n</body>\n</html>'
-        ],
-        2 => [
-            'id' => 2,
-            'title' => 'Estilização com CSS',
-            'description' => 'Pratique estilização básica com CSS',
-            'difficulty' => 'Iniciante',
-            'category' => 'CSS',
-            'content' => '<h2>Objetivo</h2><p>Aplicar estilos CSS básicos a uma página HTML.</p><h2>Instruções</h2><ol><li>Defina cores para o texto</li><li>Altere a fonte</li><li>Adicione margem e padding</li><li>Estilize a lista</li></ol>',
-            'starter_code' => '/* Adicione seus estilos CSS aqui */\nbody {\n    \n}\n\nh1 {\n    \n}\n\np {\n    \n}\n\nul {\n    \n}',
-            'solution' => 'body {\n    font-family: Arial, sans-serif;\n    margin: 20px;\n    background-color: #f5f5f5;\n}\n\nh1 {\n    color: #333;\n    text-align: center;\n}\n\np {\n    color: #666;\n    line-height: 1.6;\n}\n\nul {\n    background-color: white;\n    padding: 20px;\n    border-radius: 5px;\n}'
-        ]
-    ];
-    
-    $item = $exercises[$id] ?? null;
-    
-} elseif ($type === 'tutorial') {
-    $tutorials = [
-        1 => [
-            'id' => 1,
-            'title' => 'Introdução ao HTML5',
-            'description' => 'Aprenda os fundamentos do HTML5 e suas principais tags',
-            'category' => 'HTML',
-            'content' => '<h2>O que é HTML5?</h2><p>HTML5 é a quinta versão da linguagem HTML, que trouxe muitas melhorias e novos elementos semânticos.</p><h2>Principais Tags</h2><ul><li><code>&lt;header&gt;</code> - Cabeçalho da página ou seção</li><li><code>&lt;nav&gt;</code> - Navegação</li><li><code>&lt;main&gt;</code> - Conteúdo principal</li><li><code>&lt;article&gt;</code> - Artigo independente</li><li><code>&lt;section&gt;</code> - Seção de conteúdo</li><li><code>&lt;aside&gt;</code> - Conteúdo lateral</li><li><code>&lt;footer&gt;</code> - Rodapé</li></ul><h2>Exemplo Prático</h2><pre><code>&lt;!DOCTYPE html&gt;\n&lt;html lang="pt-BR"&gt;\n&lt;head&gt;\n    &lt;meta charset="UTF-8"&gt;\n    &lt;title&gt;Minha Página&lt;/title&gt;\n&lt;/head&gt;\n&lt;body&gt;\n    &lt;header&gt;\n        &lt;h1&gt;Título Principal&lt;/h1&gt;\n    &lt;/header&gt;\n    &lt;main&gt;\n        &lt;p&gt;Conteúdo principal aqui&lt;/p&gt;\n    &lt;/main&gt;\n&lt;/body&gt;\n&lt;/html&gt;</code></pre>',
-            'duration' => '15 min',
-            'level' => 'Iniciante'
-        ],
-        2 => [
-            'id' => 2,
-            'title' => 'CSS Grid Layout',
-            'description' => 'Domine o sistema de grid do CSS para layouts modernos',
-            'category' => 'CSS',
-            'content' => '<h2>CSS Grid</h2><p>CSS Grid é um sistema de layout bidimensional que permite criar layouts complexos de forma simples.</p><h2>Propriedades Básicas</h2><ul><li><code>display: grid</code> - Define um container grid</li><li><code>grid-template-columns</code> - Define as colunas</li><li><code>grid-template-rows</code> - Define as linhas</li><li><code>gap</code> - Espaçamento entre itens</li></ul><h2>Exemplo</h2><pre><code>.container {\n    display: grid;\n    grid-template-columns: 1fr 2fr 1fr;\n    gap: 20px;\n}</code></pre>',
-            'duration' => '25 min',
-            'level' => 'Intermediário'
-        ]
-    ];
-    
-    $item = $tutorials[$id] ?? null;
-    
-} elseif ($type === 'forum') {
-    $forum_posts = [
-        1 => [
-            'id' => 1,
-            'title' => 'Como começar com HTML?',
-            'content' => '<p>Estou começando agora e gostaria de dicas sobre por onde começar com HTML. Já li alguns tutoriais, mas ainda tenho dúvidas sobre a estrutura básica.</p><p>Alguém pode me dar algumas dicas práticas?</p>',
-            'author' => 'João Silva',
-            'category' => 'HTML',
-            'created_at' => '2024-01-15 14:30:00',
-            'replies' => [
-                [
-                    'author' => 'Maria Santos',
-                    'content' => 'Recomendo começar com a estrutura básica: DOCTYPE, html, head e body. Pratique bastante!',
-                    'created_at' => '2024-01-15 15:00:00'
-                ],
-                [
-                    'author' => 'Pedro Costa',
-                    'content' => 'Concordo com a Maria. Também sugiro usar o MDN Web Docs como referência.',
-                    'created_at' => '2024-01-15 16:30:00'
-                ]
-            ]
-        ]
-    ];
-    
-    $item = $forum_posts[$id] ?? null;
-}
+// Busca o item do banco de dados usando a nova função centralizada
+$item = fetchItemFromDatabase($type, $id);
 
 // Se item não encontrado, redirecionar
 if (!$item) {
+    // Adiciona uma mensagem de erro para o usuário
+    $_SESSION['error'] = 'O conteúdo solicitado não foi encontrado.';
     header('Location: index.php');
     exit;
 }
@@ -151,8 +76,8 @@ include 'header.php';
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <span class="badge bg-<?php echo $item['difficulty'] === 'Iniciante' ? 'success' : 'warning'; ?> me-2">
-                                <?php echo sanitize($item['difficulty']); ?>
+                            <span class="badge bg-<?php echo $item['difficulty_level'] === 'beginner' ? 'success' : 'warning'; ?> me-2">
+                                <?php echo sanitize(ucfirst($item['difficulty_level'])); ?>
                             </span>
                             <span class="badge bg-secondary">
                                 <?php echo sanitize($item['category']); ?>
@@ -160,7 +85,7 @@ include 'header.php';
                         </div>
                         
                         <div class="exercise-content">
-                            <?php echo $item['content']; ?>
+                            <?php echo $item['instructions']; // Usando a coluna 'instructions' do DB ?>
                         </div>
                         
                         <?php if (!$preview): ?>
@@ -187,7 +112,7 @@ include 'header.php';
                             <h2 class="h6 mb-0">Editor de Código</h2>
                         </div>
                         <div class="card-body">
-                            <textarea id="codeEditor" class="form-control" rows="15" style="font-family: monospace;"><?php echo sanitize($item['starter_code']); ?></textarea>
+                            <textarea id="codeEditor" class="form-control" rows="15" style="font-family: monospace;"><?php echo sanitize($item['initial_code']); ?></textarea>
                         </div>
                     </div>
                     
@@ -222,11 +147,11 @@ include 'header.php';
                     </div>
                     <div class="card-body">
                         <div class="mb-4">
-                            <span class="badge bg-<?php echo $item['level'] === 'Iniciante' ? 'success' : 'warning'; ?> me-2">
-                                <?php echo sanitize($item['level']); ?>
+                            <span class="badge bg-<?php echo $item['difficulty_level'] === 'beginner' ? 'success' : 'warning'; ?> me-2">
+                                <?php echo sanitize(ucfirst($item['difficulty_level'])); ?>
                             </span>
                             <span class="badge bg-secondary me-2">
-                                <?php echo sanitize($item['category']); ?>
+                                <?php echo sanitize($item['category'] ?? 'Geral'); ?>
                             </span>
                             <span class="badge bg-light text-dark">
                                 <i class="fas fa-clock me-1" aria-hidden="true"></i>
@@ -360,13 +285,13 @@ function runCode() {
 }
 
 function showSolution() {
-    const solution = <?php echo json_encode($item['solution']); ?>;
+    const solution = <?php echo json_encode($item['solution_code']); ?>;
     document.getElementById('codeEditor').value = solution;
     runCode();
 }
 
 function resetCode() {
-    const starterCode = <?php echo json_encode($item['starter_code']); ?>;
+    const starterCode = <?php echo json_encode($item['initial_code']); ?>;
     document.getElementById('codeEditor').value = starterCode;
     const result = document.getElementById('result');
     const doc = result.contentDocument || result.contentWindow.document;
@@ -383,4 +308,3 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php endif; ?>
 
 <?php include 'footer.php'; ?>
-

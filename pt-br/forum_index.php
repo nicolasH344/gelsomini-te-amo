@@ -1,6 +1,4 @@
 <?php
-//conexao com o banco de dados 
-require_once 'config/database.php';
 // Incluir configurações
 require_once 'config.php';
 
@@ -371,4 +369,3 @@ include 'header.php';
 </div>
 
 <?php include 'footer.php'; ?>
-

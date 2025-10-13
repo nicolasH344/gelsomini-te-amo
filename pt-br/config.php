@@ -5,6 +5,12 @@
 define('SITE_NAME', 'WebLearn - Jornada do Desenvolvedor');
 define('SITE_URL', 'localhost');
 
+// --- Configurações do Banco de Dados ---
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'cursinho');
+define('DB_USER', 'root');
+define('DB_PASS', ''); // Senha do seu banco de dados
+
 // Configurações de erro
 error_reporting(E_ALL & ~E_NOTICE);
 ini_set('display_errors', 0);
@@ -23,13 +29,25 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Conexão com banco
 function getDBConnection() {
-    try {
-        $conn = new PDO("mysql:host=localhost;dbname=cursinho", "root", "");
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $conn;
-    } catch(PDOException $e) {
-        die("Erro de conexão: " . $e->getMessage());
+    // Padrão Singleton: mantém a conexão em uma variável estática
+    // para evitar múltiplas conexões na mesma requisição.
+    static $conn = null;
+
+    if ($conn === null) {
+        try {
+            $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+            $options = [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+            ];
+            $conn = new PDO($dsn, DB_USER, DB_PASS, $options);
+        } catch(PDOException $e) {
+            // Em um ambiente de produção, logue o erro em vez de exibi-lo.
+            die("Erro de conexão com o banco de dados: " . $e->getMessage());
+        }
     }
+    return $conn;
 }
 
 // Sanitização
@@ -43,33 +61,61 @@ function sanitize($data) {
 }
 
 // Traduções
-function t($key) {
-    $translations = [
-        'pt-BR' => [
-            'site_title' => 'WebLearn - Jornada do Desenvolvedor',
-            'home' => 'Início', 'exercises' => 'Exercícios', 'tutorials' => 'Tutoriais',
-            'forum' => 'Fórum', 'profile' => 'Perfil', 'progress' => 'Progresso',
-            'login' => 'Entrar', 'register' => 'Registrar', 'logout' => 'Sair',
-            'settings' => 'Configurações', 'theme' => 'Tema', 'language' => 'Idioma'
-        ],
-        'en-US' => [
-            'site_title' => 'WebLearn - Developer Journey',
-            'home' => 'Home', 'exercises' => 'Exercises', 'tutorials' => 'Tutorials',
-            'forum' => 'Forum', 'profile' => 'Profile', 'progress' => 'Progress',
-            'login' => 'Login', 'register' => 'Register', 'logout' => 'Logout',
-            'settings' => 'Settings', 'theme' => 'Theme', 'language' => 'Language'
-        ],
-        'es-ES' => [
-            'site_title' => 'WebLearn - Viaje del Desarrollador',
-            'home' => 'Inicio', 'exercises' => 'Ejercicios', 'tutorials' => 'Tutoriales',
-            'forum' => 'Foro', 'profile' => 'Perfil', 'progress' => 'Progreso',
-            'login' => 'Iniciar Sesión', 'register' => 'Registrarse', 'logout' => 'Cerrar Sesión',
-            'settings' => 'Configuraciones', 'theme' => 'Tema', 'language' => 'Idioma'
-        ]
-    ];
-    
+function t($key, $default = null) {
+    global $translations; // Usar a variável global de traduções
+
     $lang = $_SESSION['language'] ?? 'pt-BR';
-    return $translations[$lang][$key] ?? $key;
+    
+    // Carregar traduções se ainda não foram carregadas
+    if (!isset($translations)) {
+        $translations = [
+            'pt-BR' => [
+                'site_title' => 'WebLearn - Jornada do Desenvolvedor',
+                'home' => 'Início', 'exercises' => 'Exercícios', 'tutorials' => 'Tutoriais',
+                'forum' => 'Fórum', 'profile' => 'Perfil', 'progress' => 'Progresso',
+                'login' => 'Entrar', 'register' => 'Registrar', 'logout' => 'Sair', 'settings' => 'Configurações',
+                'theme' => 'Tema', 'language' => 'Idioma',
+                'learn_web_dev' => 'Aprenda Desenvolvimento Web de Forma Interativa',
+                'interactive_platform' => 'Nossa plataforma oferece exercícios práticos, feedback em tempo real e uma comunidade de apoio para acelerar seu aprendizado.',
+                'continue_learning' => 'Continuar Aprendendo',
+                'view_progress' => 'Ver Progresso',
+                'start_now' => 'Comece Agora, é Grátis!',
+                'make_login' => 'Fazer Login',
+                'students' => 'Estudantes',
+                'forum_posts' => 'Posts no Fórum',
+                'why_choose_us' => 'Por que nos escolher?',
+                'platform_benefits' => 'Descubra os benefícios da nossa plataforma de aprendizado',
+                'practical_exercises' => 'Exercícios Práticos',
+                'practical_exercises_desc' => 'Aprenda fazendo com exercícios interativos que simulam situações reais de desenvolvimento.',
+                'instant_feedback' => 'Feedback Instantâneo',
+                'instant_feedback_desc' => 'Receba feedback imediato sobre seu código e aprenda com seus erros em tempo real.',
+                'active_community' => 'Comunidade Ativa',
+                'active_community_desc' => 'Conecte-se com outros desenvolvedores, tire dúvidas e compartilhe conhecimento.',
+                'progress_tracking' => 'Acompanhamento de Progresso',
+                'progress_tracking_desc' => 'Monitore seu progresso com estatísticas detalhadas e conquiste seus objetivos.',
+                'responsive_design' => 'Design Responsivo',
+                'responsive_design_desc' => 'Acesse a plataforma de qualquer dispositivo, a qualquer hora e em qualquer lugar.',
+                'accessibility' => 'Acessibilidade',
+                'accessibility_desc' => 'Plataforma totalmente acessível, incluindo suporte para pessoas com daltonismo.'
+            ],
+            'en-US' => [
+                'site_title' => 'WebLearn - Developer Journey',
+                'home' => 'Home', 'exercises' => 'Exercises', 'tutorials' => 'Tutorials',
+                'forum' => 'Forum', 'profile' => 'Profile', 'progress' => 'Progress',
+                'login' => 'Login', 'register' => 'Register', 'logout' => 'Logout',
+                'settings' => 'Settings', 'theme' => 'Theme', 'language' => 'Language'
+            ],
+            'es-ES' => [
+                'site_title' => 'WebLearn - Viaje del Desarrollador',
+                'home' => 'Inicio', 'exercises' => 'Ejercicios', 'tutorials' => 'Tutoriales',
+                'forum' => 'Foro', 'profile' => 'Perfil', 'progress' => 'Progreso',
+                'login' => 'Iniciar Sesión', 'register' => 'Registrarse', 'logout' => 'Cerrar Sesión',
+                'settings' => 'Configuraciones', 'theme' => 'Tema', 'language' => 'Idioma'
+            ]
+        ];
+    }
+    
+    return $translations[$lang][$key] ?? $default ?? $key;
 }
 
 // Redirecionamento
@@ -179,6 +225,48 @@ function processRegister($data) {
     } catch(PDOException $e) {
         return ['success' => false, 'message' => 'Erro no sistema.'];
     }
+}
+
+// =================================================================
+// FUNÇÕES DE CONTEÚDO (DATABASE)
+// =================================================================
+
+/**
+ * Busca um item específico (exercício, tutorial, etc.) do banco de dados.
+ * @param string $type O tipo de conteúdo (e.g., 'exercise', 'tutorial').
+ * @param int $id O ID do item.
+ * @return array|null Retorna os dados do item ou null se não encontrado.
+ */
+function fetchItemFromDatabase($type, $id) {
+    $conn = getDBConnection();
+    $item = null;
+
+    try {
+        switch ($type) {
+            case 'exercise':
+                // Renomeado para corresponder à tabela 'exercises'
+                $stmt = $conn->prepare("SELECT * FROM exercises WHERE id = ?");
+                break;
+            case 'tutorial':
+                $stmt = $conn->prepare("SELECT * FROM tutorials WHERE id = ?");
+                break;
+            case 'forum':
+                // Supondo que a tabela seja 'forum_posts'
+                $stmt = $conn->prepare("SELECT * FROM forum_posts WHERE id = ?");
+                break;
+            default:
+                return null; // Tipo inválido
+        }
+
+        $stmt->execute([$id]);
+        $item = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $e) {
+        // Em um ambiente de produção, seria bom logar o erro.
+        return null;
+    }
+
+    return $item;
 }
 
 // Logout

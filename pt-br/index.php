@@ -1,6 +1,4 @@
 <?php
-//conexao com o banco de dados 
-require_once 'config/database.php';
 // Incluir configurações
 require_once 'config.php';
 
@@ -22,11 +20,11 @@ include 'header.php';
                     <h1 class="display-4 fw-bold mb-4 fade-in-up">
                         <?php echo t('learn_web_dev'); ?>
                     </h1>
-                    <p class="lead mb-4 fade-in-up" style="animation-delay: 0.2s;">
+                    <p class="lead mb-4 fade-in-up animation-delay-2">
                         <?php echo t('interactive_platform'); ?>
                     </p>
                     
-                    <div class="d-flex flex-column flex-sm-row gap-3 mb-4 fade-in-up" style="animation-delay: 0.4s;">
+                    <div class="d-flex flex-column flex-sm-row gap-3 mb-4 fade-in-up animation-delay-4">
                         <?php if (isLoggedIn()): ?>
                             <a href="exercises_index.php" class="btn btn-primary btn-lg">
                                 <i class="fas fa-play me-2" aria-hidden="true"></i>
@@ -49,28 +47,28 @@ include 'header.php';
                     </div>
                     
                     <!-- Estatísticas rápidas -->
-                    <div class="row text-center fade-in-up" style="animation-delay: 0.6s;">
+                    <div class="row text-center fade-in-up animation-delay-6">
                         <div class="col-6 col-md-3">
                             <div class="stat-item">
-                                <h3 class="h4 fw-bold text-warning"><?php echo number_format($stats['total_users']); ?></h3>
+                                <h3 class="h4 fw-bold stat-value-1"><?php echo number_format($stats['total_users']); ?></h3>
                                 <small class="text-light"><?php echo t('students', 'Estudantes'); ?></small>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="stat-item">
-                                <h3 class="h4 fw-bold text-info"><?php echo $stats['total_exercises']; ?></h3>
+                                <h3 class="h4 fw-bold stat-value-2"><?php echo $stats['total_exercises']; ?></h3>
                                 <small class="text-light"><?php echo t('exercises'); ?></small>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="stat-item">
-                                <h3 class="h4 fw-bold text-success"><?php echo $stats['total_tutorials']; ?></h3>
+                                <h3 class="h4 fw-bold stat-value-3"><?php echo $stats['total_tutorials']; ?></h3>
                                 <small class="text-light"><?php echo t('tutorials'); ?></small>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="stat-item">
-                                <h3 class="h4 fw-bold text-danger"><?php echo number_format($stats['total_forum_posts']); ?></h3>
+                                <h3 class="h4 fw-bold stat-value-4"><?php echo number_format($stats['total_forum_posts']); ?></h3>
                                 <small class="text-light"><?php echo t('forum_posts', 'Posts no Fórum'); ?></small>
                             </div>
                         </div>
@@ -79,7 +77,7 @@ include 'header.php';
             </div>
             
             <div class="col-lg-6">
-                <div class="hero-image text-center fade-in-up" style="animation-delay: 0.8s;">
+                <div class="hero-image text-center fade-in-up animation-delay-8">
                     <div class="position-relative">
                         <!-- Código animado -->
                         <div class="code-animation bg-dark rounded-3 p-4 shadow-lg">
@@ -89,23 +87,23 @@ include 'header.php';
                                     <div class="bg-warning rounded-circle" style="width: 12px; height: 12px;"></div>
                                     <div class="bg-success rounded-circle" style="width: 12px; height: 12px;"></div>
                                 </div>
-                                <small class="text-muted1 ms-3">index.html</small>
+                                <small class="text-muted ms-3">index.html</small>
                             </div>
-                            <pre class="text-start text-light mb-0" style="font-size: 0.9rem;"><code id="typingCode"></code></pre>
+                            <pre class="text-start text-light mb-0"><code id="typingCode"></code></pre>
                         </div>
                         
                         <!-- Elementos flutuantes -->
                         <div class="floating-elements">
-                            <div class="floating-icon" style="top: 10%; left: 10%; animation-delay: 0s;">
+                            <div class="floating-icon" style="top: 10%; left: 10%;">
                                 <i class="fab fa-html5 text-warning fa-2x"></i>
                             </div>
-                            <div class="floating-icon" style="top: 20%; right: 15%; animation-delay: 1s;">
+                            <div class="floating-icon animation-delay-1" style="top: 20%; right: 15%;">
                                 <i class="fab fa-css3-alt text-info fa-2x"></i>
                             </div>
-                            <div class="floating-icon" style="bottom: 30%; left: 5%; animation-delay: 2s;">
+                            <div class="floating-icon animation-delay-2" style="bottom: 30%; left: 5%;">
                                 <i class="fab fa-js-square text-warning fa-2x"></i>
                             </div>
-                            <div class="floating-icon" style="bottom: 10%; right: 10%; animation-delay: 3s;">
+                            <div class="floating-icon animation-delay-3" style="bottom: 10%; right: 10%;">
                                 <i class="fab fa-php text-primary fa-2x"></i>
                             </div>
                         </div>
@@ -124,7 +122,7 @@ include 'header.php';
                 <h2 class="display-5 fw-bold text-gradient">
                     <?php echo t('why_choose_us', 'Por que nos escolher?'); ?>
                 </h2>
-                <p class="lead text-muted2">
+                <p class="lead">
                     <?php echo t('platform_benefits', 'Descubra os benefícios da nossa plataforma de aprendizado'); ?>
                 </p>
             </div>
@@ -138,7 +136,7 @@ include 'header.php';
                             <i class="fas fa-code fa-3x text-primary"></i>
                         </div>
                         <h4 class="card-title"><?php echo t('practical_exercises', 'Exercícios Práticos'); ?></h4>
-                        <p class="card-text text-muted3">
+                        <p class="card-text">
                             <?php echo t('practical_exercises_desc', 'Aprenda fazendo com exercícios interativos que simulam situações reais de desenvolvimento.'); ?>
                         </p>
                     </div>
@@ -152,7 +150,7 @@ include 'header.php';
                             <i class="fas fa-bolt fa-3x text-warning"></i>
                         </div>
                         <h4 class="card-title"><?php echo t('instant_feedback', 'Feedback Instantâneo'); ?></h4>
-                        <p class="card-text text-muted4">
+                        <p class="card-text">
                             <?php echo t('instant_feedback_desc', 'Receba feedback imediato sobre seu código e aprenda com seus erros em tempo real.'); ?>
                         </p>
                     </div>
@@ -166,7 +164,7 @@ include 'header.php';
                             <i class="fas fa-users fa-3x text-success"></i>
                         </div>
                         <h4 class="card-title"><?php echo t('active_community', 'Comunidade Ativa'); ?></h4>
-                        <p class="card-text text-muted5">
+                        <p class="card-text">
                             <?php echo t('active_community_desc', 'Conecte-se com outros desenvolvedores, tire dúvidas e compartilhe conhecimento.'); ?>
                         </p>
                     </div>
@@ -180,7 +178,7 @@ include 'header.php';
                             <i class="fas fa-chart-line fa-3x text-info"></i>
                         </div>
                         <h4 class="card-title"><?php echo t('progress_tracking', 'Acompanhamento de Progresso'); ?></h4>
-                        <p class="card-text text-muted6">
+                        <p class="card-text">
                             <?php echo t('progress_tracking_desc', 'Monitore seu progresso com estatísticas detalhadas e conquiste seus objetivos.'); ?>
                         </p>
                     </div>
@@ -194,7 +192,7 @@ include 'header.php';
                             <i class="fas fa-mobile-alt fa-3x text-danger"></i>
                         </div>
                         <h4 class="card-title"><?php echo t('responsive_design', 'Design Responsivo'); ?></h4>
-                        <p class="card-text text-muted7">
+                        <p class="card-text">
                             <?php echo t('responsive_design_desc', 'Acesse a plataforma de qualquer dispositivo, a qualquer hora e em qualquer lugar.'); ?>
                         </p>
                     </div>
@@ -208,7 +206,7 @@ include 'header.php';
                             <i class="fas fa-universal-access fa-3x text-secondary"></i>
                         </div>
                         <h4 class="card-title"><?php echo t('accessibility', 'Acessibilidade'); ?></h4>
-                        <p class="card-text text-muted8">
+                        <p class="card-text">
                             <?php echo t('accessibility_desc', 'Plataforma totalmente acessível, incluindo suporte para pessoas com daltonismo.'); ?>
                         </p>
                     </div>
@@ -226,7 +224,7 @@ include 'header.php';
                 <h2 class="display-5 fw-bold text-gradient">
                     <?php echo t('learning_paths', 'Trilhas de Aprendizado'); ?>
                 </h2>
-                <p class="lead text-muted9">
+                <p class="lead">
                     <?php echo t('learning_paths_desc', 'Escolha sua jornada e domine as tecnologias web'); ?>
                 </p>
             </div>
@@ -234,8 +232,8 @@ include 'header.php';
         
         <div class="row g-4">
             <div class="col-lg-6">
-                <div class="card border-gradient h-100">
-                    <div class="card-header bg-primary text-white">
+                <div class="card path-card path-card-beginner h-100">
+                    <div class="card-header">
                         <h4 class="card-title mb-0">
                             <i class="fas fa-seedling me-2" aria-hidden="true"></i>
                             <?php echo t('beginner_path', 'Trilha Iniciante'); ?>
@@ -247,23 +245,23 @@ include 'header.php';
                         </p>
                         <ul class="list-unstyled">
                             <li class="mb-2">
-                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                <i class="fas fa-check me-2" aria-hidden="true"></i>
                                 HTML5 <?php echo t('fundamentals', 'Fundamentos'); ?>
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                <i class="fas fa-check me-2" aria-hidden="true"></i>
                                 CSS3 & <?php echo t('responsive_design', 'Design Responsivo'); ?>
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                <i class="fas fa-check me-2" aria-hidden="true"></i>
                                 JavaScript <?php echo t('basics', 'Básico'); ?>
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                <i class="fas fa-check me-2" aria-hidden="true"></i>
                                 <?php echo t('first_projects', 'Primeiros Projetos'); ?>
                             </li>
                         </ul>
-                        <a href="exercises_index.php?level=beginner" class="btn btn-primary">
+                        <a href="exercises_index.php?level=beginner" class="btn">
                             <?php echo t('start_path', 'Iniciar Trilha'); ?>
                         </a>
                     </div>
@@ -271,8 +269,8 @@ include 'header.php';
             </div>
             
             <div class="col-lg-6">
-                <div class="card border-gradient h-100">
-                    <div class="card-header bg-warning text-dark">
+                <div class="card path-card path-card-advanced h-100">
+                    <div class="card-header">
                         <h4 class="card-title mb-0">
                             <i class="fas fa-rocket me-2" aria-hidden="true"></i>
                             <?php echo t('advanced_path', 'Trilha Avançada'); ?>
@@ -284,23 +282,23 @@ include 'header.php';
                         </p>
                         <ul class="list-unstyled">
                             <li class="mb-2">
-                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                <i class="fas fa-check me-2" aria-hidden="true"></i>
                                 React & Vue.js
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                <i class="fas fa-check me-2" aria-hidden="true"></i>
                                 Node.js & Express
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                <i class="fas fa-check me-2" aria-hidden="true"></i>
                                 <?php echo t('databases', 'Bancos de Dados'); ?>
                             </li>
                             <li class="mb-2">
-                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                <i class="fas fa-check me-2" aria-hidden="true"></i>
                                 <?php echo t('deployment', 'Deploy e DevOps'); ?>
                             </li>
                         </ul>
-                        <a href="exercises_index.php?level=advanced" class="btn btn-warning">
+                        <a href="exercises_index.php?level=advanced" class="btn">
                             <?php echo t('start_path', 'Iniciar Trilha'); ?>
                         </a>
                     </div>
@@ -320,7 +318,7 @@ include 'header.php';
                 <h2 class="display-5 fw-bold text-gradient">
                     <?php echo t('testimonials', 'O que nossos alunos dizem'); ?>
                 </h2>
-                <p class="lead text-muted">
+                <p class="lead">
                     <?php echo t('testimonials_desc', 'Histórias de sucesso de quem já passou por aqui'); ?>
                 </p>
             </div>
@@ -457,132 +455,5 @@ include 'header.php';
         </div>
     </div>
 </section>
-
-<script>
-// Animação de digitação para o código
-document.addEventListener('DOMContentLoaded', function() {
-    const codeElement = document.getElementById('typingCode');
-    const codeText = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Meu Site</title>
-</head>
-<body>
-    <h1>Olá, Mundo!</h1>
-    <p>Bem-vindo ao JOrnada Desenvolvedor</p>
-</body>
-</html>`;
-    
-    let i = 0;
-    function typeWriter() {
-        if (i < codeText.length) {
-            codeElement.textContent += codeText.charAt(i);
-            i++;
-            setTimeout(typeWriter, 50);
-        } else {
-            // Reiniciar após 3 segundos
-            setTimeout(() => {
-                codeElement.textContent = '';
-                i = 0;
-                typeWriter();
-            }, 3000);
-        }
-    }
-    
-    typeWriter();
-});
-</script>
-
-<style>
-/* Estilos específicos da página inicial */
-.hero-section {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-}
-
-.min-vh-75 {
-    min-height: 75vh;
-}
-
-.stat-item {
-    padding: 1rem;
-    border-radius: 0.5rem;
-    background: rgba(228, 226, 226, 0.1);
-    backdrop-filter: blur(10px);
-    margin-bottom: 1rem;
-}
-
-.code-animation {
-    max-width: 400px;
-    margin: 0 auto;
-    font-family: 'Courier New', monospace;
-}
-
-.floating-elements {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-}
-
-.floating-icon {
-    position: absolute;
-    animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(5deg); }
-}
-
-.feature-icon {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    border-radius: 50%;
-    color: white;
-}
-
-.card:hover .feature-icon {
-    transform: scale(1.1);
-    transition: transform 0.3s ease;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .hero-section {
-        min-height: auto;
-        padding: 3rem 0;
-    }
-    
-    .display-4 {
-        font-size: 2.5rem;
-    }
-    
-    .floating-elements {
-        display: none;
-    }
-    
-    .code-animation {
-        font-size: 0.8rem;
-    }
-    
-.text-muted11 {
-    --bs-text-opacity: 1;
-    color: #ffffffff !important;
-   
-}
-
-
-}
-</style>
 
 <?php include 'footer.php'; ?>

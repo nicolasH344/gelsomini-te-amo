@@ -1,25 +1,29 @@
+/* =================================================================== */
+/* ===== DEFINIÇÃO DOS TEMAS DE CORES (VARIÁVEIS CSS) ===== */
+/* =================================================================== */
+
 /* Tema Roxo Moderno (Padrão) */
 :root,
 .theme-purple {
-    /* Cores principais */
+    /* Cores principais: Usadas para botões, links e elementos de destaque. */
     --primary-color: #6f42c1;
     --primary-dark: #5a2d91;
     --primary-light: #8e5dd9;
     --secondary-color: #e83e8c;
     --accent-color: #fd7e14;
     
-    /* Gradientes */
+    /* Gradientes: Combinações de cores para fundos e efeitos visuais. */
     --gradient-primary: linear-gradient(135deg, #6f42c1 0%, #8e5dd9 50%, #e83e8c 100%);
     --gradient-secondary: linear-gradient(45deg, #6f42c1, #e83e8c);
     --gradient-hero: linear-gradient(135deg, #6f42c1 0%, #8e5dd9 25%, #e83e8c 50%, #fd7e14 75%, #6f42c1 100%);
     
-    /* Cores de fundo */
+    /* Cores de fundo: Define as cores para o corpo da página, cards, etc. */
     --bg-primary: #ffffff;
     --bg-secondary: #f8f9fa;
     --bg-dark: #212529;
     --bg-light: #ffffff;
     
-    /* Cores de texto */
+    /* Cores de texto: Define as cores para textos principais, secundários e links. */
     --text-primary: #212529;
     --text-secondary: #6c757d;
     --text-light: #ffffff;
@@ -28,23 +32,24 @@
     --footer-text-muted: #6c757d;
     --footer-bg: #f8f9fa;
     
-    /* Cores de estado */
+    /* Cores de estado: Usadas para alertas e feedback (sucesso, erro, aviso). */
     --success-color: #28a745;
     --warning-color: #ffc107;
     --danger-color: #dc3545;
     --info-color: #17a2b8;
     
-    /* Sombras */
+    /* Sombras: Efeitos de sombra para dar profundidade aos elementos. */
     --shadow-sm: 0 0.125rem 0.25rem rgba(111, 66, 193, 0.075);
     --shadow: 0 0.5rem 1rem rgba(111, 66, 193, 0.15);
     --shadow-lg: 0 1rem 3rem rgba(111, 66, 193, 0.175);
     
-    /* Bordas */
+    
+    /* Bordas: Define o raio e a cor das bordas. */
     --border-radius: 0.375rem;
     --border-radius-lg: 0.5rem;
     --border-color: #dee2e6;
     
-    /* Animações */
+    /* Animações e Transições: Define a duração e o tipo de transição padrão. */
     --transition: all 0.3s ease;
     --animation-duration: 0.3s;
 }
@@ -109,7 +114,10 @@
     --gradient-hero: linear-gradient(135deg, #bb86fc 0%, #d1b3ff 25%, #03dac6 50%, #cf6679 75%, #bb86fc 100%);
 }
 
-/* ===== MODO ACESSIBILIDADE PARA DALTÔNICOS ===== */
+/* =================================================================== */
+/* ===== MODO ACESSIBILIDADE (ALTO CONTRASTE) ===== */
+/* =================================================================== */
+/* Este modo ajusta as cores para terem maior contraste e adiciona padrões visuais para diferenciar elementos. */
 .accessibility-mode {
     /* Cores com alto contraste e diferenciação por padrões */
     --primary-color: #0066cc;
@@ -132,7 +140,7 @@
     --footer-bg: #ffffff;
 }
 
-/* Padrões visuais para acessibilidade */
+/* Adiciona um padrão de listras diagonais ao botão primário para diferenciá-lo visualmente. */
 .accessibility-mode .btn-primary {
     background-image: repeating-linear-gradient(
         45deg,
@@ -143,6 +151,7 @@
     );
 }
 
+/* Adiciona um padrão de listras verticais ao botão de sucesso. */
 .accessibility-mode .btn-success {
     background-image: repeating-linear-gradient(
         90deg,
@@ -153,6 +162,7 @@
     );
 }
 
+/* Adiciona um padrão de listras diagonais invertidas ao botão de aviso. */
 .accessibility-mode .btn-warning {
     background-image: repeating-linear-gradient(
         135deg,
@@ -163,12 +173,16 @@
     );
 }
 
-/* ===== ESTILOS BASE ===== */
+/* =================================================================== */
+/* ===== ESTILOS BASE E RESET ===== */
+/* =================================================================== */
 
+/* Reset universal para garantir que o tamanho dos elementos inclua padding e borda. */
 * {
     box-sizing: border-box;
 }
 
+/* Estilos aplicados a todo o corpo da página. */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
@@ -180,7 +194,11 @@ body {
     scroll-behavior: smooth;
 }
 
-/* ===== ANIMAÇÃO DE FUNDO GRADIENTE ===== */
+/* =================================================================== */
+/* ===== SEÇÃO HERO (PRINCIPAL) ===== */
+/* =================================================================== */
+
+/* Define o fundo gradiente animado para a seção principal. */
 .hero-section {
     background: var(--gradient-hero);
     background-size: 400% 400%;
@@ -189,13 +207,14 @@ body {
     overflow: hidden;
 }
 
+/* Animação que move a posição do gradiente, criando um efeito de fluxo. */
 @keyframes gradientShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
 
-/* Efeito de partículas no fundo */
+/* Adiciona um efeito de partículas sutis que flutuam no fundo da seção hero. */
 .hero-section::before {
     content: '';
     position: absolute;
@@ -212,6 +231,7 @@ body {
     pointer-events: none;
 }
 
+/* Animação que move as partículas para cima e para baixo. */
 @keyframes float {
     0%, 100% { transform: translateY(0px) rotate(0deg); }
     33% { transform: translateY(-10px) rotate(1deg); }
@@ -219,7 +239,10 @@ body {
 }
 
 /* ===== HEADER E NAVEGAÇÃO ===== */
+
+/* Estilo da barra de navegação principal. */
 .navbar {
+    /* Fundo semi-transparente com desfoque para um efeito "fosco". */
     background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border-color);
@@ -227,10 +250,12 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
+/* Ajusta o fundo da navbar para o tema escuro. */
 .theme-dark .navbar {
     background: rgba(18, 18, 18, 0.95) !important;
 }
 
+/* Estilo da marca/logo do site, com texto em gradiente. */
 .navbar-brand {
     font-weight: 700;
     font-size: 1.5rem;
@@ -240,6 +265,7 @@ body {
     background-clip: text;
 }
 
+/* Estilo dos links na barra de navegação. */
 .navbar-nav .nav-link {
     font-weight: 500;
     color: var(--text-primary) !important;
@@ -248,11 +274,13 @@ body {
     margin: 0 0.5rem;
 }
 
+/* Muda a cor do link ao passar o mouse ou quando está ativo. */
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.active {
     color: var(--primary-color) !important;
 }
 
+/* Cria uma linha animada sob o link. */
 .navbar-nav .nav-link::after {
     content: '';
     position: absolute;
@@ -265,12 +293,17 @@ body {
     transform: translateX(-50%);
 }
 
+/* A linha aparece ao passar o mouse ou quando o link está ativo. */
 .navbar-nav .nav-link:hover::after,
 .navbar-nav .nav-link.active::after {
     width: 100%;
 }
 
-/* ===== BOTÕES ===== */
+/* =================================================================== */
+/* ===== ESTILOS GERAIS DE BOTÕES ===== */
+/* =================================================================== */
+
+/* Estilo base para todos os botões. */
 .btn {
     border-radius: var(--border-radius);
     font-weight: 500;
@@ -288,6 +321,7 @@ body {
     line-height: 1.5;
 }
 
+/* Efeito de brilho que passa pelo botão ao interagir. */
 .btn::before {
     content: '';
     position: absolute;
@@ -303,24 +337,28 @@ body {
     left: 100%;
 }
 
+/* Estilo para o botão primário (principal). */
 .btn-primary {
     background: var(--gradient-primary);
     color: var(--text-light);
     box-shadow: var(--shadow);
 }
 
+/* Efeito de elevação ao passar o mouse sobre o botão primário. */
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
     color: var(--text-light);
 }
 
+/* Estilo para botões com contorno. */
 .btn-outline-primary {
     border: 2px solid var(--primary-color);
     color: var(--primary-color);
     background: transparent;
 }
 
+/* Preenche o botão com contorno ao passar o mouse. */
 .btn-outline-primary:hover {
     background: var(--primary-color);
     color: var(--text-light);
@@ -328,8 +366,7 @@ body {
 }
 
 .btn-success {
-    /* A mágica acontece aqui! */
-    background: linear-gradient(to right, #8e2de2, #ff0080); 
+    background: var(--success-color);
     color: var(--text-light); /* Mantém a cor do texto branca */
 }
 
@@ -364,12 +401,17 @@ body {
     font-size: 0.875rem;
 }
 
+/* Estilo para botões grandes. */
 .btn-lg {
     padding: 0.75rem 1.5rem;
     font-size: 1.125rem;
 }
 
-/* ===== CARDS ===== */
+/* =================================================================== */
+/* ===== ESTILOS PARA CARDS ===== */
+/* =================================================================== */
+
+/* Estilo base para os componentes de card. */
 .card {
     background: var(--bg-light);
     border: 1px solid var(--border-color);
@@ -379,11 +421,13 @@ body {
     overflow: hidden;
 }
 
+/* Efeito de elevação ao passar o mouse sobre o card. */
 .card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
 }
 
+/* Estilo do cabeçalho do card. */
 .card-header {
     background: var(--gradient-primary);
     color: var(--text-light);
@@ -391,9 +435,9 @@ body {
     font-weight: 600;
 }
 
+/* Estilo do corpo do card. */
 .card-body {
     padding: 1.5rem;
-    color: var(--text-primary);
 }
 
 .card-footer {
@@ -401,21 +445,23 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
-.card-text {
-    color: var(--text-primary);
+.card-text:last-child {
+    margin-bottom: 0;
 }
 
 .card-text:last-child {
     margin-bottom: 0;
-    color: var(--text-primary);
 }
 
 .card-title {
     margin-bottom: var(--bs-card-title-spacer-y);
-    color: var(--text-primary);
 }
 
-/* ===== FORMULÁRIOS ===== */
+/* =================================================================== */
+/* ===== ESTILOS PARA FORMULÁRIOS ===== */
+/* =================================================================== */
+
+/* Estilo para campos de input, textareas, etc. */
 .form-control {
     border: 2px solid var(--border-color);
     border-radius: var(--border-radius);
@@ -424,6 +470,7 @@ body {
     color: var(--text-primary);
 }
 
+/* Efeito de destaque quando o campo está em foco. */
 .form-control:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25);
@@ -432,10 +479,10 @@ body {
 
 .form-label {
     font-weight: 600;
-    color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
+/* Estilo para checkboxes quando marcados. */
 .form-check-input:checked {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
@@ -444,26 +491,24 @@ body {
 .form-text {
     margin-top: .25rem;
     font-size: .875em;
-    color: var(--text-primary);
 }
 
-/* ===== BADGES ===== */
+/* =================================================================== */
+/* ===== ESTILOS PARA BADGES (ETIQUETAS) E ALERTAS ===== */
+/* =================================================================== */
+
+/* Estilo para badges (pequenas etiquetas coloridas). */
 .badge {
     border-radius: var(--border-radius);
     font-weight: 500;
     padding: 0.375rem 0.75rem;
 }
 
-.bg-primary { background: linear-gradient(to right, #720bcc,#7e26cc ,#ff0080)  !important; }
-.bg-secondary { background: var(--secondary-color) !important; }
-.bg-success { background: linear-gradient(to right, #8e2de2, #ff0080) !important; }
-.bg-warning { background: var(--warning-color) !important; }
-.bg-danger { background: var(--danger-color) !important; }
-.bg-info { background: var(--info-color) !important; }
+.bg-primary { background: var(--gradient-primary) !important; }
 .bg-light { background: var(--bg-light) !important; color: var(--text-primary) !important; }
 .bg-dark { background: var(--bg-dark) !important; }
 
-/* ===== ALERTAS ===== */
+/* Estilo base para caixas de alerta. */
 .alert {
     border-radius: var(--border-radius);
     border: none;
@@ -471,27 +516,32 @@ body {
     margin-bottom: 1rem;
 }
 
+/* Estilos específicos para cada tipo de alerta (sucesso, aviso, etc.). */
 .alert-success {
-    background: linear-gradient(135deg, var(--success-color), #34ce57);
+    background: linear-gradient(135deg, var(--success-color), var(--primary-light));
     color: white;
 }
 
 .alert-warning {
-    background: linear-gradient(135deg, var(--warning-color), #ffcd39);
+    background: linear-gradient(135deg, var(--warning-color), var(--accent-color));
     color: var(--text-primary);
 }
 
 .alert-danger {
-    background: linear-gradient(135deg, var(--danger-color), #e55370);
+    background: linear-gradient(135deg, var(--danger-color), var(--secondary-color));
     color: white;
 }
 
 .alert-info {
-    background: linear-gradient(135deg, var(--info-color), #3fc5d0);
+    background: linear-gradient(135deg, var(--info-color), var(--primary-light));
     color: white;
 }
 
-/* ===== FOOTER ===== */
+/* =================================================================== */
+/* ===== ESTILOS DO RODAPÉ ===== */
+/* =================================================================== */
+
+/* Estilo geral do rodapé da página. */
 .footer {
     background: var(--footer-bg);
     color: var(--footer-text-color);
@@ -499,6 +549,7 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
+/* Estilo dos links no rodapé. */
 .footer a {
     color: var(--primary-color);
     text-decoration: none;
@@ -510,25 +561,22 @@ body {
 }
 
 .footer .text-muted {
-    color: var(--footer-text-primary) !important;
-   
+    color: var(--footer-text-muted) !important;
 }
 
-/* ===== CLASSES DE TEXTO PERSONALIZADAS ===== */
+/* =================================================================== */
+/* ===== CLASSES UTILITÁRIAS E ELEMENTOS DE TEXTO ===== */
+/* =================================================================== */
 
-
-
+/* Classe para texto com cor suave (muted). */
 .text-muted {
     color: var(--text-black) !important; 
 }
 
-
+/* Garante que o texto 'muted' no rodapé use a cor correta do rodapé. */
 .footer .text-muted {
-  
-    color: var(--text-primary) !important;
+    color: var(--footer-text-muted) !important;
 }
-
-
 /* ===== CLASSES DE MARGEM (APENAS ESPAÇAMENTO) ===== */
 
 
@@ -546,19 +594,17 @@ body {
 
 }
 
-/* ===== ELEMENTOS DE TEXTO ===== */
+/* Estilos padrão para parágrafos e labels. */
 p {
     margin-top: 0px;
     margin-bottom: 1rem;
-    color: var(--text-primary);
 }
 
 label {
     display: inline-block;
-    color: var(--text-primary);
 }
 
-/* ===== CLASSES UTILITÁRIAS ===== */
+/* Classes utilitárias para alinhamento e cores de texto. */
 .text-center { text-align: center !important; }
 .text-left { text-align: left !important; }
 .text-right { text-align: right !important; }
@@ -572,7 +618,11 @@ label {
 .text-light { color: var(--text-light) !important; }
 .text-dark { color: var(--text-primary) !important; }
 
-/* ===== RESPONSIVIDADE ===== */
+/* =================================================================== */
+/* ===== ESTILOS RESPONSIVOS E ANIMAÇÕES ===== */
+/* =================================================================== */
+
+/* Ajustes para telas menores (tablets e celulares). */
 @media (max-width: 768px) {
     .hero-section {
         padding: 2rem 0;
@@ -588,11 +638,12 @@ label {
     }
 }
 
-/* ===== ANIMAÇÕES ADICIONAIS ===== */
+/* Animação de "aparecer de baixo para cima". */
 .fade-in-up {
     animation: fadeInUp 0.6s ease-out;
 }
 
+/* Keyframes da animação fadeInUp. */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -604,10 +655,12 @@ label {
     }
 }
 
+/* Animação de flutuação para ícones. */
 .floating-icon {
     animation: floatIcon 3s ease-in-out infinite;
 }
 
+/* Keyframes da animação de flutuação. */
 @keyframes floatIcon {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
@@ -615,8 +668,11 @@ label {
 
 
 /* ===== SELETOR DE TEMA E CONFIGURAÇÕES ===== */
+/* =================================================================== */
+/* ===== SELETOR DE TEMA (PAINEL DE CONFIGURAÇÕES) ===== */
+/* =================================================================== */
 
-/* Ícone flutuante do seletor de tema */
+/* Estilo do contêiner flutuante para o seletor de tema. */
 .theme-selector {
     position: fixed;
     top: 50%;
@@ -634,6 +690,7 @@ label {
     backdrop-filter: blur(10px);
 }
 
+/* Efeito de escala ao passar o mouse. */
 .theme-selector:hover {
     box-shadow: 0 1rem 4rem rgba(111, 66, 193, 0.3);
     transform: translateY(-50%) scale(1.05);
@@ -654,7 +711,7 @@ label {
     cursor: pointer;
 }
 
-.theme-selector.collapsed .p-3 {
+.theme-selector.collapsed .p-3 { /* Esconde o conteúdo quando o painel está colapsado. */
     display: none;
 }
 
@@ -678,11 +735,13 @@ label {
     z-index: 1;
 }
 
+/* Animação de rotação no botão de toggle. */
 .theme-toggle:hover {
     transform: rotate(180deg);
     box-shadow: var(--shadow);
 }
 
+/* Reposiciona o botão de fechar quando o painel está expandido. */
 .theme-selector:not(.collapsed) .theme-toggle {
     position: absolute;
     top: 10px;
@@ -694,13 +753,13 @@ label {
 }
 
 /* Conteúdo do seletor */
-.theme-selector .p-3 {
+.theme-selector .p-3 { /* Adiciona espaçamento no topo para não ficar atrás do botão. */
     padding-top: 60px !important;
     max-height: 400px;
     overflow-y: auto;
 }
 
-/* Opções de tema */
+/* Estilo das bolinhas de opção de tema. */
 .theme-option {
     width: 40px;
     height: 40px;
@@ -717,12 +776,14 @@ label {
     border-color: var(--text-primary);
 }
 
+/* Destaque para a opção de tema ativa. */
 .theme-option.active {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.3);
 }
 
-.theme-option::after {
+/* Círculo interno usado como indicador visual. */
+.theme-option::after { 
     content: '';
     position: absolute;
     top: 50%;
@@ -734,7 +795,7 @@ label {
     transition: var(--transition);
 }
 
-/* Cores específicas dos temas */
+/* Define o fundo de cada bolinha de acordo com o gradiente do tema correspondente. */
 .theme-option.theme-purple {
     background: linear-gradient(135deg, #6f42c1 0%, #8e5dd9 50%, #e83e8c 100%);
 }
@@ -751,13 +812,13 @@ label {
     background: linear-gradient(135deg, #bb86fc 0%, #d1b3ff 50%, #03dac6 100%);
 }
 
-/* Indicador visual para tema ativo */
+/* Mostra o indicador visual (círculo branco) na opção de tema ativa. */
 .theme-option.active::after {
     background: var(--text-light);
     box-shadow: 0 0 0 2px var(--primary-color);
 }
 
-/* Overlay para fechar configurações */
+/* Fundo escurecido que aparece atrás do painel quando ele está aberto. */
 .settings-overlay {
     position: fixed;
     top: 0;
@@ -772,12 +833,12 @@ label {
     transition: var(--transition);
 }
 
-.settings-overlay.show {
+.settings-overlay.show { /* Mostra o overlay. */
     opacity: 1;
     visibility: visible;
 }
 
-/* Animação de entrada */
+/* Animação de entrada do painel (deslizando da direita). */
 @keyframes slideInRight {
     from {
         transform: translateY(-50%) translateX(100%);
@@ -793,7 +854,7 @@ label {
     animation: slideInRight 0.3s ease-out;
 }
 
-/* Responsividade */
+/* Ajustes de responsividade para o seletor de tema em telas menores. */
 @media (max-width: 768px) {
     .theme-selector {
         right: 10px;
@@ -837,7 +898,7 @@ label {
     }
 }
 
-/* Melhorias de acessibilidade */
+/* Adiciona um contorno de foco para melhorar a acessibilidade na navegação por teclado. */
 .theme-selector:focus-within {
     outline: 2px solid var(--primary-color);
     outline-offset: 2px;
@@ -848,7 +909,7 @@ label {
     outline-offset: 2px;
 }
 
-/* Modo de alto contraste */
+/* Estilos adicionais para o modo de alto contraste. */
 .high-contrast-mode .theme-selector {
     border: 3px solid var(--text-primary);
 }
@@ -857,7 +918,7 @@ label {
     border-width: 4px;
 }
 
-/* Animação de pulsação para chamar atenção */
+/* Animação de pulsação para chamar a atenção para o seletor de tema. */
 @keyframes pulse {
     0% {
         box-shadow: 0 0 0 0 rgba(111, 66, 193, 0.7);
@@ -874,7 +935,7 @@ label {
     animation: pulse 2s infinite;
 }
 
-/* Tooltip personalizado */
+/* Tooltip (dica de ferramenta) que aparece ao passar o mouse sobre as opções de tema. */
 .theme-option[title]:hover::before {
     content: attr(title);
     position: absolute;
@@ -896,6 +957,196 @@ label {
         opacity: 1;
         
     }
+}
+
+/* =================================================================== */
+/* ===== ESTILOS DA PÁGINA INICIAL (INDEX.PHP) ===== */
+/* =================================================================== */
+
+/* Define a altura da seção principal para ocupar a tela inteira. */
+.hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+/* Classe utilitária para altura mínima. */
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+/* Estilo dos itens de estatísticas na página inicial. */
+.stat-item {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    margin-bottom: 1rem;
+}
+
+/* Ajusta o fundo do item de estatística para o tema escuro. */
+.theme-dark .stat-item {
+    background: rgba(45, 45, 45, 0.2);
+}
+
+/* Estilo do bloco de código animado. */
+.code-animation {
+    max-width: 400px;
+    margin: 0 auto;
+    font-family: 'Courier New', monospace;
+}
+
+.code-animation pre {
+    font-size: 0.9rem;
+}
+
+/* Contêiner para os ícones flutuantes. */
+.floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+/* Estilo dos ícones flutuantes (HTML, CSS, etc.). */
+.floating-icon {
+    position: absolute;
+    animation: float 6s ease-in-out infinite;
+}
+
+/* Ícone de destaque nas seções de recursos. */
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+/* Efeito de escala no ícone ao passar o mouse sobre o card. */
+.card:hover .feature-icon {
+    transform: scale(1.1);
+}
+
+/* Ajustes de responsividade para a página inicial. */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: auto;
+        padding: 3rem 0;
+    }
+    .floating-elements {
+        display: none;
+    }
+    .code-animation pre {
+        font-size: 0.8rem;
+    }
+}
+
+/* Classes utilitárias para aplicar atrasos em animações CSS. */
+.animation-delay-1 { animation-delay: 0.1s; }
+.animation-delay-2 { animation-delay: 0.2s; }
+.animation-delay-3 { animation-delay: 0.3s; }
+.animation-delay-4 { animation-delay: 0.4s; }
+.animation-delay-5 { animation-delay: 0.5s; }
+.animation-delay-6 { animation-delay: 0.6s; }
+.animation-delay-7 { animation-delay: 0.7s; }
+.animation-delay-8 { animation-delay: 0.8s; }
+
+/* =================================================================== */
+/* ===== ESTILOS DAS TRILHAS DE APRENDIZADO (INDEX.PHP) ===== */
+/* =================================================================== */
+
+/* 
+  Este bloco cria estilos específicos para os cards das trilhas,
+  permitindo que suas cores mudem de acordo com o tema selecionado.
+*/
+
+.path-card {
+    border-width: 2px;
+    border-style: solid;
+}
+
+.path-card .card-header {
+    color: var(--text-light);
+}
+
+.path-card .fa-check {
+    transition: color 0.3s ease;
+}
+
+/* --- Trilha Iniciante --- */
+.path-card-beginner {
+    border-color: var(--primary-color);
+}
+.path-card-beginner .card-header {
+    background: var(--primary-color);
+}
+.path-card-beginner .fa-check {
+    color: var(--primary-color);
+}
+.path-card-beginner .btn {
+    background: var(--primary-color);
+    color: var(--text-light);
+}
+
+/* --- Trilha Avançada --- */
+.path-card-advanced {
+    border-color: var(--accent-color);
+}
+.path-card-advanced .card-header {
+    background: var(--accent-color);
+}
+.path-card-advanced .fa-check {
+    color: var(--accent-color);
+}
+.path-card-advanced .btn {
+    background: var(--accent-color);
+    color: var(--text-light);
+}
+
+/* =================================================================== */
+/* ===== ESTILOS PARA BADGES DE CATEGORIA E DIFICULDADE ===== */
+/* =================================================================== */
+
+/* 
+  Este bloco substitui as classes de cor fixas (bg-danger, bg-primary)
+  por classes semânticas que se adaptam ao tema.
+*/
+
+/* --- Categorias --- */
+.badge-category-html { background-color: var(--danger-color); color: var(--text-light); }
+.badge-category-css { background-color: var(--primary-color); color: var(--text-light); }
+.badge-category-javascript { background-color: var(--warning-color); color: var(--text-primary); }
+.badge-category-php { background-color: var(--info-color); color: var(--text-light); }
+.badge-category-python { background-color: var(--success-color); color: var(--text-light); }
+.badge-category-java { background-color: var(--accent-color); color: var(--text-light); }
+.badge-category-go { background-color: var(--info-color); color: var(--text-light); }
+
+/* Fallback para outras categorias */
+.badge-category { background-color: var(--secondary-color); color: var(--text-light); }
+
+/* --- Dificuldade --- */
+.badge-difficulty-beginner,
+.badge-difficulty-Iniciante {
+    background-color: var(--success-color);
+    color: var(--text-light);
+}
+.badge-difficulty-intermediate,
+.badge-difficulty-Intermediário {
+    background-color: var(--warning-color);
+    color: var(--text-primary);
+}
+.badge-difficulty-advanced,
+.badge-difficulty-Avançado {
+    background-color: var(--danger-color);
+    color: var(--text-light);
 }
 /* =================================================================== */
 /* ===== AUMENTAR E ESTILIZAR A SEÇÃO 'PRONTO PARA COMEÇAR?' ===== */

@@ -1,11 +1,19 @@
 <?php 
-//conexao com o banco de dados 
-require_once 'config/database.php';
 // Incluir configurações
 require_once 'config.php';
 
+// Variável para armazenar a mensagem de erro localmente
+$error = null;
+
 // Processar login se formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Se "Lembrar de mim" for marcado, estende a duração do cookie da sessão
+    if (!empty($_POST['remember'])) {
+        $lifetime = 60 * 60 * 24 * 30; // 30 dias
+        session_set_cookie_params($lifetime);
+        session_regenerate_id(true);
+    }
+
     $result = processLogin($_POST['username'] ?? '', $_POST['password'] ?? '');
     
     if ($result['success']) {
@@ -13,7 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: index.php');
         exit;
     } else {
-        $_SESSION['error'] = $result['message'];
+        // Usar uma variável local para exibir o erro na página de login
+        $error = $result['message'];
     }
 }
 
@@ -32,6 +41,16 @@ include 'header.php';
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
+            
+            <?php // Exibir a mensagem de erro local, se houver ?>
+            <?php if ($error): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>
+                    <?php echo sanitize($error); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                </div>
+            <?php endif; ?>
+
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
                     <h1 class="h4 mb-0">
@@ -146,4 +165,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <?php include 'footer.php'; ?>
-

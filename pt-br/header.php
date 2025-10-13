@@ -95,44 +95,17 @@
                 <ul class="navbar-nav">
                     <?php if (isLoggedIn()): ?>
                         <?php 
-                        // Buscar dados atualizados do usuário no banco de dados
-                        try {
-                            $conn = getDBConnection();
-                            $stmt = $conn->prepare("SELECT first_name, last_name, username, profile_image, is_admin FROM users WHERE id = ?");
-                            $stmt->execute([$_SESSION['user_id']]);
-                            $userData = $stmt->fetch();
-                            
-                            if ($userData) {
-                                $userDisplayName = $userData['first_name'];
-                                $userProfileImage = $userData['profile_image'];
-                                $isAdmin = (bool)$userData['is_admin'];
-                                
-                                // Atualizar sessão com dados do banco
-                                $_SESSION['first_name'] = $userData['first_name'];
-                                $_SESSION['last_name'] = $userData['last_name'];
-                                $_SESSION['is_admin'] = $isAdmin;
-                            } else {
-                                $userDisplayName = $_SESSION['username'] ?? 'Usuário';
-                                $userProfileImage = null;
-                                $isAdmin = $_SESSION['is_admin'] ?? false;
-                            }
-                        } catch (Exception $e) {
-                            // Fallback para dados da sessão se houver erro no banco
-                            $userDisplayName = $_SESSION['first_name'] ?? $_SESSION['username'] ?? 'Usuário';
-                            $userProfileImage = null;
-                            $isAdmin = $_SESSION['is_admin'] ?? false;
-                        }
+                        // Usa os dados da sessão, que são carregados no login.
+                        // Isso evita uma consulta ao banco de dados em cada página.
+                        $userDisplayName = $_SESSION['first_name'] ?? $_SESSION['username'] ?? 'Usuário';
+                        $userProfileImage = $_SESSION['profile_image'] ?? null; // Supondo que a imagem do perfil seja salva na sessão
+                        $isAdmin = $_SESSION['is_admin'] ?? false;
                         ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
                                data-bs-toggle="dropdown" aria-expanded="false" 
                                aria-label="<?php echo t('user_menu', 'Menu do usuário'); ?>">
-                                <?php if ($userProfileImage): ?>
-                                    <img src="<?php echo sanitize($userProfileImage); ?>" alt="<?php echo t('profile_picture', 'Foto de perfil'); ?>" 
-                                         class="rounded-circle me-1" width="25" height="25">
-                                <?php else: ?>
-                                    <i class="fas fa-user me-1" aria-hidden="true"></i>
-                                <?php endif; ?>
+                                <i class="fas fa-user-circle me-1" aria-hidden="true"></i>
                                 <?php echo sanitize($userDisplayName); ?>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">

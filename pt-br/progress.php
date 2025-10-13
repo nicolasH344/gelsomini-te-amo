@@ -1,6 +1,4 @@
 <?php
-//conexao com o banco de dados 
-require_once 'config/database.php';
 // Incluir configurações
 require_once 'config.php';
 
@@ -24,7 +22,7 @@ include 'header.php';
     <div class="row">
         <div class="col-12">
             <div class="card shadow">
-                <div class="card-header bg-info text-white">
+                <div class="card-header">
                     <h1 class="h4 mb-0">
                         <i class="fas fa-chart-line" aria-hidden="true"></i> 
                         Meu Progresso de Aprendizado
@@ -35,7 +33,7 @@ include 'header.php';
                         <div class="col-md-3 text-center mb-4">
                             <div class="card bg-light">
                                 <div class="card-body">
-                                    <i class="fas fa-tasks text-primary" style="font-size: 2rem;" aria-hidden="true"></i>
+                                    <i class="fas fa-tasks text-primary" style="font-size: 2rem; color: var(--stat-color-1) !important;" aria-hidden="true"></i>
                                     <h3 class="h4 mt-2">0</h3>
                                     <p class="text-muted">Exercícios Concluídos</p>
                                 </div>
@@ -45,7 +43,7 @@ include 'header.php';
                         <div class="col-md-3 text-center mb-4">
                             <div class="card bg-light">
                                 <div class="card-body">
-                                    <i class="fas fa-book text-success" style="font-size: 2rem;" aria-hidden="true"></i>
+                                    <i class="fas fa-book text-success" style="font-size: 2rem; color: var(--stat-color-2) !important;" aria-hidden="true"></i>
                                     <h3 class="h4 mt-2">0</h3>
                                     <p class="text-muted">Tutoriais Lidos</p>
                                 </div>
@@ -55,7 +53,7 @@ include 'header.php';
                         <div class="col-md-3 text-center mb-4">
                             <div class="card bg-light">
                                 <div class="card-body">
-                                    <i class="fas fa-comments text-warning" style="font-size: 2rem;" aria-hidden="true"></i>
+                                    <i class="fas fa-comments text-warning" style="font-size: 2rem; color: var(--stat-color-3) !important;" aria-hidden="true"></i>
                                     <h3 class="h4 mt-2">0</h3>
                                     <p class="text-muted">Posts no Fórum</p>
                                 </div>
@@ -65,7 +63,7 @@ include 'header.php';
                         <div class="col-md-3 text-center mb-4">
                             <div class="card bg-light">
                                 <div class="card-body">
-                                    <i class="fas fa-trophy text-danger" style="font-size: 2rem;" aria-hidden="true"></i>
+                                    <i class="fas fa-trophy text-danger" style="font-size: 2rem; color: var(--stat-color-4) !important;" aria-hidden="true"></i>
                                     <h3 class="h4 mt-2">0</h3>
                                     <p class="text-muted">Conquistas</p>
                                 </div>
@@ -81,7 +79,7 @@ include 'header.php';
                         <div class="col-md-6">
                             <h3 class="h6">HTML5</h3>
                             <div class="progress mb-3">
-                                <div class="progress-bar bg-danger" role="progressbar" style="width: 0%" 
+                                <div class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--danger-color);" 
                                      aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso em HTML5: 0%">
                                     0%
                                 </div>
@@ -89,7 +87,7 @@ include 'header.php';
                             
                             <h3 class="h6">CSS3</h3>
                             <div class="progress mb-3">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: 0%" 
+                                <div class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--primary-color);" 
                                      aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso em CSS3: 0%">
                                     0%
                                 </div>
@@ -99,7 +97,7 @@ include 'header.php';
                         <div class="col-md-6">
                             <h3 class="h6">JavaScript</h3>
                             <div class="progress mb-3">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: 0%" 
+                                <div class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--warning-color);" 
                                      aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso em JavaScript: 0%">
                                     0%
                                 </div>
@@ -107,7 +105,7 @@ include 'header.php';
                             
                             <h3 class="h6">PHP</h3>
                             <div class="progress mb-3">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 0%" 
+                                <div class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--info-color);" 
                                      aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso em PHP: 0%">
                                     0%
                                 </div>
@@ -138,4 +136,3 @@ include 'header.php';
 </div>
 
 <?php include 'footer.php'; ?>
-
