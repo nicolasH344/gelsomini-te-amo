@@ -79,7 +79,7 @@ include 'header.php';
                         <div class="col-md-6">
                             <h3 class="h6">HTML5</h3>
                             <div class="progress mb-3">
-                                <div class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--danger-color);" 
+                                <div class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--danger-color);"
                                      aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso em HTML5: 0%">
                                     0%
                                 </div>
@@ -87,7 +87,7 @@ include 'header.php';
                             
                             <h3 class="h6">CSS3</h3>
                             <div class="progress mb-3">
-                                <div class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--primary-color);" 
+                                <div class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--primary-color);"
                                      aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso em CSS3: 0%">
                                     0%
                                 </div>
@@ -97,7 +97,7 @@ include 'header.php';
                         <div class="col-md-6">
                             <h3 class="h6">JavaScript</h3>
                             <div class="progress mb-3">
-                                <div class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--warning-color);" 
+                                <div class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--warning-color);"
                                      aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso em JavaScript: 0%">
                                     0%
                                 </div>
@@ -105,7 +105,7 @@ include 'header.php';
                             
                             <h3 class="h6">PHP</h3>
                             <div class="progress mb-3">
-                                <div class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--info-color);" 
+                                <div class="progress-bar" role="progressbar" style="width: 0%; background-color: var(--info-color);"
                                      aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso em PHP: 0%">
                                     0%
                                 </div>

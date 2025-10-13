@@ -95,16 +95,16 @@ include 'header.php';
                         <!-- Elementos flutuantes -->
                         <div class="floating-elements">
                             <div class="floating-icon" style="top: 10%; left: 10%;">
-                                <i class="fab fa-html5 text-warning fa-2x"></i>
+                                <i class="fab fa-html5 fa-2x" style="color: var(--danger-color);"></i>
                             </div>
                             <div class="floating-icon animation-delay-1" style="top: 20%; right: 15%;">
-                                <i class="fab fa-css3-alt text-info fa-2x"></i>
+                                <i class="fab fa-css3-alt fa-2x" style="color: var(--primary-color);"></i>
                             </div>
                             <div class="floating-icon animation-delay-2" style="bottom: 30%; left: 5%;">
-                                <i class="fab fa-js-square text-warning fa-2x"></i>
+                                <i class="fab fa-js-square fa-2x" style="color: var(--warning-color);"></i>
                             </div>
                             <div class="floating-icon animation-delay-3" style="bottom: 10%; right: 10%;">
-                                <i class="fab fa-php text-primary fa-2x"></i>
+                                <i class="fab fa-php fa-2x" style="color: var(--info-color);"></i>
                             </div>
                         </div>
                     </div>
@@ -133,7 +133,7 @@ include 'header.php';
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon mb-3-2">
-                            <i class="fas fa-code fa-3x text-primary"></i>
+                            <i class="fas fa-code fa-3x"></i>
                         </div>
                         <h4 class="card-title"><?php echo t('practical_exercises', 'Exercícios Práticos'); ?></h4>
                         <p class="card-text">
@@ -147,7 +147,7 @@ include 'header.php';
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon mb-3-3">
-                            <i class="fas fa-bolt fa-3x text-warning"></i>
+                            <i class="fas fa-bolt fa-3x"></i>
                         </div>
                         <h4 class="card-title"><?php echo t('instant_feedback', 'Feedback Instantâneo'); ?></h4>
                         <p class="card-text">
@@ -161,7 +161,7 @@ include 'header.php';
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon mb-3-4">
-                            <i class="fas fa-users fa-3x text-success"></i>
+                            <i class="fas fa-users fa-3x"></i>
                         </div>
                         <h4 class="card-title"><?php echo t('active_community', 'Comunidade Ativa'); ?></h4>
                         <p class="card-text">
@@ -175,7 +175,7 @@ include 'header.php';
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon mb-3-5">
-                            <i class="fas fa-chart-line fa-3x text-info"></i>
+                            <i class="fas fa-chart-line fa-3x"></i>
                         </div>
                         <h4 class="card-title"><?php echo t('progress_tracking', 'Acompanhamento de Progresso'); ?></h4>
                         <p class="card-text">
@@ -189,7 +189,7 @@ include 'header.php';
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon mb-3-6">
-                            <i class="fas fa-mobile-alt fa-3x text-danger"></i>
+                            <i class="fas fa-mobile-alt fa-3x"></i>
                         </div>
                         <h4 class="card-title"><?php echo t('responsive_design', 'Design Responsivo'); ?></h4>
                         <p class="card-text">
@@ -203,7 +203,7 @@ include 'header.php';
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon mb-3-7">
-                            <i class="fas fa-universal-access fa-3x text-secondary"></i>
+                            <i class="fas fa-universal-access fa-3x"></i>
                         </div>
                         <h4 class="card-title"><?php echo t('accessibility', 'Acessibilidade'); ?></h4>
                         <p class="card-text">
@@ -345,7 +345,7 @@ include 'header.php';
                                 <?php echo t('frontend_developer', 'Desenvolvedora Front-end'); ?>
                             </cite>
                         </footer>
-                        <div class="mt-3 text-warning">
+                        <div class="mt-3" style="color: var(--warning-color);">
                             <i class="fas fa-star" aria-hidden="true"></i>
                             <i class="fas fa-star" aria-hidden="true"></i>
                             <i class="fas fa-star" aria-hidden="true"></i>
@@ -376,7 +376,7 @@ include 'header.php';
                                 <?php echo t('fullstack_developer', 'Estudante de Análise de Sistemas'); ?>
                             </cite>
                         </footer>
-                        <div class="mt-3 text-warning">
+                        <div class="mt-3" style="color: var(--warning-color);">
                             <i class="fas fa-star" aria-hidden="true"></i>
                             <i class="fas fa-star" aria-hidden="true"></i>
                             <i class="fas fa-star" aria-hidden="true"></i>
@@ -407,7 +407,7 @@ include 'header.php';
                                 <?php echo t('ui_designer', 'Designer UI/UX'); ?>
                             </cite>
                         </footer>
-                        <div class="mt-3 text-warning">
+                        <div class="mt-3" style="color: var(--warning-color);">
                             <i class="fas fa-star" aria-hidden="true"></i>
                             <i class="fas fa-star" aria-hidden="true"></i>
                             <i class="fas fa-star" aria-hidden="true"></i>
@@ -423,7 +423,7 @@ include 'header.php';
 
 
 <!-- Call to Action -->
-<section class="py-5 bg-primary text-white">
+<section id="cta-section" class="py-5 bg-primary text-white">
     <div class="container text-center">
         <div class="row">
             <div class="col-lg-8 mx-auto">

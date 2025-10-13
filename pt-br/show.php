@@ -40,7 +40,7 @@ if (!$item) {
     exit;
 }
 
-include 'header.php';
+include 'header.php'; // O body tag está dentro deste arquivo
 ?>
 
 <div class="container mt-4">
@@ -68,7 +68,7 @@ include 'header.php';
         <div class="row">
             <div class="col-lg-6">
                 <div class="card">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header">
                         <h1 class="h5 mb-0">
                             <i class="fas fa-tasks" aria-hidden="true"></i> 
                             <?php echo sanitize($item['title']); ?>
@@ -139,7 +139,7 @@ include 'header.php';
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <article class="card">
-                    <div class="card-header bg-info text-white">
+                    <div class="card-header" style="background: var(--info-color);">
                         <h1 class="h4 mb-0">
                             <i class="fas fa-book" aria-hidden="true"></i> 
                             <?php echo sanitize($item['title']); ?>
@@ -190,7 +190,7 @@ include 'header.php';
         <div class="row">
             <div class="col-lg-8">
                 <div class="card">
-                    <div class="card-header bg-warning text-dark">
+                    <div class="card-header" style="background: var(--warning-color); color: var(--text-primary);">
                         <h1 class="h5 mb-0">
                             <i class="fas fa-comments" aria-hidden="true"></i> 
                             <?php echo sanitize($item['title']); ?>
