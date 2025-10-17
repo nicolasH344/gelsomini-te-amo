@@ -94,19 +94,13 @@
                 
                 <ul class="navbar-nav">
                     <?php if (isLoggedIn()): ?>
-                        <?php 
-                        // Usa os dados da sessão, que são carregados no login.
-                        // Isso evita uma consulta ao banco de dados em cada página.
-                        $userDisplayName = $_SESSION['first_name'] ?? $_SESSION['username'] ?? 'Usuário';
-                        $userProfileImage = $_SESSION['profile_image'] ?? null; // Supondo que a imagem do perfil seja salva na sessão
-                        $isAdmin = $_SESSION['is_admin'] ?? false;
-                        ?>
+                        <?php $user = getCurrentUser(); ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
                                data-bs-toggle="dropdown" aria-expanded="false" 
                                aria-label="<?php echo t('user_menu', 'Menu do usuário'); ?>">
-                                <i class="fas fa-user-circle me-1" aria-hidden="true"></i>
-                                <?php echo sanitize($userDisplayName); ?>
+                                <i class="fas fa-user me-1" aria-hidden="true"></i>
+                                <?php echo sanitize($user['first_name']); ?>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li>
@@ -121,14 +115,6 @@
                                         <?php echo t('progress'); ?>
                                     </a>
                                 </li>
-                                <?php if ($isAdmin): ?>
-                                <li>
-                                    <a class="dropdown-item" href="admin.php">
-                                        <i class="fas fa-crown me-2" aria-hidden="true"></i>
-                                        <?php echo t('admin_panel', 'Administração'); ?>
-                                    </a>
-                                </li>
-                                <?php endif; ?>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" href="#" onclick="toggleSettings()">
@@ -463,3 +449,42 @@
             }
         });
     </script>
+
+    <style>
+        /* Estilos específicos para melhorar a experiência do usuário */
+        .theme-selector.first-visit {
+            animation: pulse 2s infinite;
+        }
+        
+        .theme-selector.first-visit::after {
+            content: '<?php echo t("click_to_customize", "Clique para personalizar"); ?>';
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            animation: fadeInTooltip 0.5s ease-in-out 1s forwards;
+            
+        }
+  
+        @keyframes fadeInTooltip {
+            to { opacity: 1; }
+        }
+        
+        /* Melhorias para dispositivos móveis */
+        @media (max-width: 768px) {
+            .theme-selector.first-visit::after {
+                top: -35px;
+                font-size: 0.7rem;
+                padding: 6px 10px;
+            }
+        }
+        
+    </style>
+
