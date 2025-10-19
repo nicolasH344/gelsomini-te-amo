@@ -504,6 +504,7 @@ body {
     padding: 0.375rem 0.75rem;
 }
 
+.bg-primary { background: var(--gradient-primary) !important; }
 /* Aplica o gradiente primário especificamente em badges, evitando conflitos. */
 .badge.bg-primary { background: var(--gradient-primary) !important; }
 .bg-light { background: var(--bg-light) !important; color: var(--text-primary) !important; }
