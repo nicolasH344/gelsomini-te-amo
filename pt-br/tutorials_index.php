@@ -10,63 +10,22 @@ require_once 'config.php';
 // Definir título da página
 $title = 'Tutoriais';
 
-// Dados fictícios de tutoriais para demonstração
-$tutorials = [
-    [
-        'id' => 1,
-        'title' => 'Introdução ao HTML5',
-        'description' => 'Aprenda os fundamentos do HTML5 e suas principais tags',
-        'category' => 'HTML',
-        'duration' => '15 min',
-        'level' => 'Iniciante',
-        'views' => 1250
-    ],
-    [
-        'id' => 2,
-        'title' => 'CSS Grid Layout',
-        'description' => 'Domine o sistema de grid do CSS para layouts modernos',
-        'category' => 'CSS',
-        'duration' => '25 min',
-        'level' => 'Intermediário',
-        'views' => 890
-    ],
-    [
-        'id' => 3,
-        'title' => 'JavaScript ES6+',
-        'description' => 'Conheça as funcionalidades modernas do JavaScript',
-        'category' => 'JavaScript',
-        'duration' => '30 min',
-        'level' => 'Intermediário',
-        'views' => 2100
-    ],
-    [
-        'id' => 4,
-        'title' => 'Formulários Acessíveis',
-        'description' => 'Crie formulários que funcionam para todos os usuários',
-        'category' => 'HTML',
-        'duration' => '20 min',
-        'level' => 'Intermediário',
-        'views' => 650
-    ],
-    [
-        'id' => 5,
-        'title' => 'Flexbox na Prática',
-        'description' => 'Aprenda a usar Flexbox para layouts flexíveis',
-        'category' => 'CSS',
-        'duration' => '18 min',
-        'level' => 'Iniciante',
-        'views' => 1800
-    ],
-    [
-        'id' => 6,
-        'title' => 'PHP Básico',
-        'description' => 'Primeiros passos com PHP para desenvolvimento web',
-        'category' => 'PHP',
-        'duration' => '35 min',
-        'level' => 'Iniciante',
-        'views' => 980
-    ]
-];
+// Incluir dados compartilhados de tutoriais
+require_once 'data/tutorials.php';
+$allTutorials = getTutorials();
+
+// Verificar se deve mostrar apenas publicados
+$showAll = isset($_GET['show_all']) && $_GET['show_all'] === '1';
+$filteredTutorials = $showAll ? $allTutorials : array_filter($allTutorials, fn($t) => $t['status'] === 'Publicado');
+
+// Paginação
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$perPage = 6; // 6 tutoriais por página sempre
+$totalTutorials = count($filteredTutorials);
+$totalPages = ceil($totalTutorials / $perPage);
+$offset = ($page - 1) * $perPage;
+
+$tutorials = array_slice($filteredTutorials, $offset, $perPage);
 
 include 'header.php';
 
@@ -81,8 +40,15 @@ include 'header.php';
         </div>
         <div class="col-md-4 text-end">
             <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']): ?>
+                <div class="btn-group me-2" role="group">
+                    <a href="?show_all=<?php echo $showAll ? '0' : '1'; ?>" 
+                       class="btn btn-<?php echo $showAll ? 'warning' : 'outline-warning'; ?>">
+                        <i class="fas fa-<?php echo $showAll ? 'eye-slash' : 'eye'; ?>"></i>
+                        <?php echo $showAll ? 'Ocultar Rascunhos' : 'Mostrar Todos'; ?>
+                    </a>
+                </div>
                 <a href="admin.php" class="btn btn-success" role="button">
-                    <i class="fas fa-plus" aria-hidden="true"></i> Gerenciar Tutoriais
+                    <i class="fas fa-cogs" aria-hidden="true"></i> Gerenciar Tutoriais
                 </a>
             <?php endif; ?>
         </div>
@@ -135,13 +101,18 @@ include 'header.php';
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card h-100 shadow-sm">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <span class="badge bg-<?php 
-                            echo $tutorial['category'] === 'HTML' ? 'danger' : 
-                                ($tutorial['category'] === 'CSS' ? 'primary' : 
-                                ($tutorial['category'] === 'JavaScript' ? 'warning' : 'info')); 
-                        ?>">
-                            <?php echo htmlspecialchars($tutorial['category']); ?>
-                        </span>
+                        <div>
+                            <span class="badge bg-<?php 
+                                echo $tutorial['category'] === 'HTML' ? 'danger' : 
+                                    ($tutorial['category'] === 'CSS' ? 'primary' : 
+                                    ($tutorial['category'] === 'JavaScript' ? 'warning' : 'info')); 
+                            ?>">
+                                <?php echo htmlspecialchars($tutorial['category']); ?>
+                            </span>
+                            <?php if ($showAll && $tutorial['status'] === 'Rascunho'): ?>
+                                <span class="badge bg-secondary ms-1">Rascunho</span>
+                            <?php endif; ?>
+                        </div>
                         <span class="badge bg-<?php 
                             echo $tutorial['level'] === 'Iniciante' ? 'success' : 
                                 ($tutorial['level'] === 'Intermediário' ? 'warning' : 'danger'); 
@@ -184,30 +155,55 @@ include 'header.php';
         <?php endforeach; ?>
     </div>
 
-    <!-- Paginação (simulada) -->
+    <!-- Paginação -->
+    <?php if ($totalPages > 1): ?>
     <nav aria-label="Navegação de páginas dos tutoriais" class="mt-4">
         <ul class="pagination justify-content-center">
-            <li class="page-item disabled">
-                <span class="page-link" aria-label="Página anterior">
-                    <i class="fas fa-chevron-left" aria-hidden="true"></i>
-                </span>
-            </li>
-            <li class="page-item active" aria-current="page">
-                <span class="page-link">1</span>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Ir para página 2">2</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Ir para página 3">3</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#" aria-label="Próxima página">
-                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
-                </a>
-            </li>
+            <?php if ($page > 1): ?>
+                <li class="page-item">
+                    <a class="page-link" href="?show_all=<?php echo $showAll ? '1' : '0'; ?>&page=<?php echo $page - 1; ?>" aria-label="Página anterior">
+                        <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                    </a>
+                </li>
+            <?php else: ?>
+                <li class="page-item disabled">
+                    <span class="page-link" aria-label="Página anterior">
+                        <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                    </span>
+                </li>
+            <?php endif; ?>
+            
+            <?php 
+            $startPage = max(1, $page - 2);
+            $endPage = min($totalPages, $page + 2);
+            
+            for ($i = $startPage; $i <= $endPage; $i++): 
+            ?>
+                <li class="page-item <?php echo $i === $page ? 'active' : ''; ?>">
+                    <?php if ($i === $page): ?>
+                        <span class="page-link" aria-current="page"><?php echo $i; ?></span>
+                    <?php else: ?>
+                        <a class="page-link" href="?show_all=<?php echo $showAll ? '1' : '0'; ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                    <?php endif; ?>
+                </li>
+            <?php endfor; ?>
+            
+            <?php if ($page < $totalPages): ?>
+                <li class="page-item">
+                    <a class="page-link" href="?show_all=<?php echo $showAll ? '1' : '0'; ?>&page=<?php echo $page + 1; ?>" aria-label="Próxima página">
+                        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                    </a>
+                </li>
+            <?php else: ?>
+                <li class="page-item disabled">
+                    <span class="page-link" aria-label="Próxima página">
+                        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </li>
+            <?php endif; ?>
         </ul>
     </nav>
+    <?php endif; ?>
 
     <!-- Categorias populares -->
     <div class="row mt-5">
@@ -251,6 +247,13 @@ include 'header.php';
                     <i class="fab fa-php" style="font-size: 2rem;" aria-hidden="true"></i>
                     <h3 class="h5 mt-2">PHP</h3>
                     <p class="mb-0">1 tutorial</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php include 'footer.php'; ?>             <p class="mb-0">1 tutorial</p>
                 </div>
             </div>
         </div>
