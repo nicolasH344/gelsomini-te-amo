@@ -1,11 +1,11 @@
 <?php
-// Incluir configurações
+// Incluir configuraciones
 require_once 'config.php';
 
-// Definir título da página
+// Definir título de la página
 $title = t('home');
 
-// Obter estatísticas
+// Obtener estadísticas
 $stats = getStats();
 
 include 'header.php';
@@ -18,17 +18,17 @@ include 'header.php';
             <div class="col-lg-6">
                 <div class="hero-content">
                     <h1 class="display-4 fw-bold mb-4 fade-in-up">
-                        <?php echo t('Jornada_desarrollador'); ?>
+                        <?php echo t('Viaje del desarrollador'); ?>
                     </h1>
                     <p class="lead mb-4 fade-in-up" style="animation-delay: 0.2s;">
-                        <?php echo t('plataforma_interactiva'); ?>
+                        <?php echo t('plataforma interactiva'); ?>
                     </p>
                     
                     <div class="d-flex flex-column flex-sm-row gap-3 mb-4 fade-in-up" style="animation-delay: 0.4s;">
                         <?php if (isLoggedIn()): ?>
                             <a href="exercises_index.php" class="btn btn-primary btn-lg">
                                 <i class="fas fa-play me-2" aria-hidden="true"></i>
-                                <?php echo t('continue_learning', 'Seguir Aprendiendo'); ?>
+                                <?php echo t('continue_learning', 'Continuar Aprendiendo'); ?>
                             </a>
                             <a href="progress.php" class="btn btn-outline-light btn-lg">
                                 <i class="fas fa-chart-line me-2" aria-hidden="true"></i>
@@ -46,7 +46,7 @@ include 'header.php';
                         <?php endif; ?>
                     </div>
                     
-                    <!-- Estatísticas rápidas -->
+                    <!-- Estadísticas rápidas -->
                     <div class="row text-center fade-in-up" style="animation-delay: 0.6s;">
                         <div class="col-6 col-md-3">
                             <div class="stat-item">
@@ -92,7 +92,7 @@ include 'header.php';
                             <pre class="text-start text-light mb-0" style="font-size: 0.9rem;"><code id="typingCode"></code></pre>
                         </div>
                         
-                        <!-- Elementos flutuantes -->
+                        <!-- Elementos flotantes -->
                         <div class="floating-elements">
                             <div class="floating-icon" style="top: 10%; left: 10%; animation-delay: 0s;">
                                 <i class="fab fa-html5 text-warning fa-2x"></i>
@@ -114,7 +114,7 @@ include 'header.php';
     </div>
 </section>
 
-<!-- Seção de Recursos -->
+<!-- Sección de Recursos -->
 <section class="py-5 bg-light">
     <div class="container">
         <div class="row">
@@ -149,7 +149,7 @@ include 'header.php';
                         <div class="feature-icon mb-3">
                             <i class="fas fa-bolt fa-3x text-warning"></i>
                         </div>
-                        <h4 class="card-title"><?php echo t('instant_feedback', 'Feedback Instantâneo'); ?></h4>
+                        <h4 class="card-title"><?php echo t('instant_feedback', 'Retroalimentación Instantánea'); ?></h4>
                         <p class="card-text text-muted">
                             <?php echo t('instant_feedback_desc', 'Recibe retroalimentación inmediata sobre tu código y aprende de tus errores en tiempo real.'); ?>
                         </p>
@@ -179,7 +179,7 @@ include 'header.php';
                         </div>
                         <h4 class="card-title"><?php echo t('progress_tracking', 'Seguimiento de Progreso'); ?></h4>
                         <p class="card-text text-muted">
-                            <?php echo t('progress_tracking_desc', 'Monitorea tu progreso con estadísticas detalladas y conquista tus objetivos.'); ?>
+                            <?php echo t('progress_tracking_desc', 'Monitorea tu progreso con estadísticas detalladas y alcanza tus objetivos.'); ?>
                         </p>
                     </div>
                 </div>
@@ -193,7 +193,7 @@ include 'header.php';
                         </div>
                         <h4 class="card-title"><?php echo t('responsive_design', 'Diseño Responsivo'); ?></h4>
                         <p class="card-text text-muted">
-                            <?php echo t('responsive_design_desc', 'Accede a la plataforma desde cualquier dispositivo, a cualquier hora y en cualquier lugar.'); ?>
+                            <?php echo t('responsive_design_desc', 'Accede a la plataforma desde cualquier dispositivo, en cualquier momento y lugar.'); ?>
                         </p>
                     </div>
                 </div>
@@ -216,13 +216,13 @@ include 'header.php';
     </div>
 </section>
 
-<!-- Seção de Trilhas de Aprendizado -->
+<!-- Sección de Rutas de Aprendizaje -->
 <section class="py-5">
     <div class="container">
         <div class="row">
             <div class="col-12 text-center mb-5">
                 <h2 class="display-5 fw-bold text-gradient">
-                    <?php echo t('learning_paths', 'Caminos de Aprendizaje'); ?>
+                    <?php echo t('learning_paths', 'Rutas de Aprendizaje'); ?>
                 </h2>
                 <p class="lead text-muted">
                     <?php echo t('learning_paths_desc', 'Elige tu camino y domina las tecnologías web'); ?>
@@ -236,12 +236,12 @@ include 'header.php';
                     <div class="card-header bg-primary text-white">
                         <h4 class="card-title mb-0">
                             <i class="fas fa-seedling me-2" aria-hidden="true"></i>
-                            <?php echo t('beginner_path', 'Sendero Principiante'); ?>
+                            <?php echo t('beginner_path', 'Ruta Principiante'); ?>
                         </h4>
                     </div>
                     <div class="card-body">
                         <p class="card-text">
-                            <?php echo t('beginner_path_desc', 'Perfecta para quienes están empezando. Aprende HTML, CSS y JavaScript desde cero.'); ?>
+                            <?php echo t('beginner_path_desc', 'Perfecta para principiantes. Aprende HTML, CSS y JavaScript desde cero.'); ?>
                         </p>
                         <ul class="list-unstyled">
                             <li class="mb-2">
@@ -273,7 +273,7 @@ include 'header.php';
                     <div class="card-header bg-warning text-dark">
                         <h4 class="card-title mb-0">
                             <i class="fas fa-rocket me-2" aria-hidden="true"></i>
-                            <?php echo t('advanced_path', 'Sendero Avanzado'); ?>
+                            <?php echo t('advanced_path', 'Ruta Avanzada'); ?>
                         </h4>
                     </div>
                     <div class="card-body">
@@ -295,7 +295,7 @@ include 'header.php';
                             </li>
                             <li class="mb-2">
                                 <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
-                                <?php echo t('deployment', 'Deploy e DevOps'); ?>
+                                <?php echo t('deployment', 'Deploy y DevOps'); ?>
                             </li>
                         </ul>
                         <a href="exercises_index.php?level=advanced" class="btn btn-warning">
@@ -308,16 +308,28 @@ include 'header.php';
     </div>
 </section>
 
-
+<!-- Sección de Testimonios -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-5 fw-bold text-gradient">
+                    <?php echo t('what_students_say', 'Lo que dicen nuestros estudiantes'); ?>
+                </h2>
+                <p class="lead text-muted">
+                    <?php echo t('testimonials_desc', 'Conoce la experiencia de quienes ya están en el camino'); ?>
+                </p>
+            </div>
+        </div>
 
         <div class="row g-4">
-            <!-- Depoimento 1 -->
+            <!-- Testimonio 1 -->
             <div class="col-lg-4 d-flex align-items-stretch">
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4 d-flex flex-column">
                         <div class="mb-3">
                             <img src="https://i.pravatar.cc/100?u=1" 
-                                 alt="<?php echo t('student_photo', 'Foto do estudante' ); ?>" 
+                                 alt="<?php echo t('student_photo', 'Foto del estudiante'); ?>" 
                                  class="rounded-circle border border-2 border-primary p-1">
                         </div>
                         <blockquote class="blockquote flex-grow-1">
@@ -342,18 +354,18 @@ include 'header.php';
                 </div>
             </div>
             
-            <!-- Depoimento 2 -->
+            <!-- Testimonio 2 -->
             <div class="col-lg-4 d-flex align-items-stretch">
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4 d-flex flex-column">
                         <div class="mb-3">
                             <img src="https://i.pravatar.cc/100?u=2" 
-                                 alt="<?php echo t('student_photo', 'Foto do estudante' ); ?>" 
+                                 alt="<?php echo t('student_photo', 'Foto del estudiante'); ?>" 
                                  class="rounded-circle border border-2 border-primary p-1">
                         </div>
                         <blockquote class="blockquote flex-grow-1">
                             <p class="mb-3">
-                                "<?php echo t('testimonial_2', 'La retroalimentación instantánea es un punto de inflexión. He podido corregir mis errores y evolucionar mucho más rápido. ¡Se lo recomiendo a todos!'); ?>"
+                                "<?php echo t('testimonial_2', 'La retroalimentación instantánea es un punto de inflexión. Pude corregir mis errores y evolucionar mucho más rápido. ¡Se lo recomiendo a todos!'); ?>"
                             </p>
                         </blockquote>
                         <footer class="blockquote-footer mt-auto">
@@ -373,13 +385,13 @@ include 'header.php';
                 </div>
             </div>
             
-            <!-- Depoimento 3 -->
+            <!-- Testimonio 3 -->
             <div class="col-lg-4 d-flex align-items-stretch">
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4 d-flex flex-column">
                         <div class="mb-3">
                             <img src="https://i.pravatar.cc/100?u=3" 
-                                 alt="<?php echo t('student_photo', 'Foto do estudante' ); ?>" 
+                                 alt="<?php echo t('student_photo', 'Foto del estudiante'); ?>" 
                                  class="rounded-circle border border-2 border-primary p-1">
                         </div>
                         <blockquote class="blockquote flex-grow-1">
@@ -390,7 +402,7 @@ include 'header.php';
                         <footer class="blockquote-footer mt-auto">
                             <strong class="d-block">Mariana Lima</strong>
                             <cite title="<?php echo t('job_title', 'Cargo'); ?>">
-                                <?php echo t('ui_designer', 'Diseñador UI/UX'); ?>
+                                <?php echo t('ui_designer', 'Diseñadora UI/UX'); ?>
                             </cite>
                         </footer>
                         <div class="mt-3 text-warning">
@@ -405,28 +417,29 @@ include 'header.php';
             </div>
         </div>
     </div>
+</section>
 
 <!-- Call to Action -->
 <section class="py-5 bg-primary text-white">
-    <div class="container">
+    <div class="container text-center">
         <div class="row">
-            <div class="col-12 text-center">
+            <div class="col-lg-8 mx-auto">
                 <h2 class="display-5 fw-bold mb-4">
                     <?php echo t('ready_to_start', '¿Listo para comenzar tu viaje?'); ?>
                 </h2>
                 <p class="lead mb-4">
-                    <?php echo t('join_thousands', 'Únete a miles de desarrolladores que ya están transformando sus carreras'); ?>
+                    <?php echo t('join_thousands', 'Únete a miles de desarrolladores que ya han transformado sus carreras con nosotros.'); ?>
                 </p>
                 
                 <?php if (!isLoggedIn()): ?>
                     <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
                         <a href="register.php" class="btn btn-light btn-lg">
-                            <i class="fas fa-rocket me-2" aria-hidden="true"></i>
-                            <?php echo t('start_free', 'Comenzar Gratis'); ?>
+                            <i class="fas fa-user-plus me-2" aria-hidden="true"></i>
+                            <?php echo t('create_free_account', 'Crear Cuenta Gratuita'); ?>
                         </a>
                         <a href="exercises_index.php" class="btn btn-outline-light btn-lg">
                             <i class="fas fa-eye me-2" aria-hidden="true"></i>
-                            <?php echo t('view_exercises', 'Ver Ejercicios'); ?>
+                            <?php echo t('explore_content', 'Explorar Contenido'); ?>
                         </a>
                     </div>
                 <?php else: ?>
@@ -440,74 +453,54 @@ include 'header.php';
     </div>
 </section>
 
+<script>
+// Animación de escritura para el código
+document.addEventListener('DOMContentLoaded', function() {
+    const codeElement = document.getElementById('typingCode');
+    const codeText = `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Sitio</title>
+</head>
+<body>
+    <h1>¡Hola, Mundo!</h1>
+    <p>Bienvenido a tu Viaje de Desarrollador</p>
+</body>
+</html>`;
+    
+    let i = 0;
+    function typeWriter() {
+        if (i < codeText.length) {
+            codeElement.textContent += codeText.charAt(i);
+            i++;
+            setTimeout(typeWriter, 50);
+        } else {
+            // Reiniciar después de 3 segundos
+            setTimeout(() => {
+                codeElement.textContent = '';
+                i = 0;
+                typeWriter();
+            }, 3000);
+        }
+    }
+    
+    typeWriter();
+});
+</script>
+
 <style>
-/* Variáveis CSS */
-:root {
-    --primary-color: #007bff;
-    --secondary-color: #6c757d;
-    --success-color: #28a745;
-    --info-color: #17a2b8;
-    --warning-color: #ffc107;
-    --danger-color: #dc3545;
-    --light-color: #f8f9fa;
-    --dark-color: #343a40;
-}
-
-/* Hero Section */
+/* Estilos específicos de la página de inicio */
 .hero-section {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--info-color) 100%);
     min-height: 100vh;
-    position: relative;
-    overflow: hidden;
-}
-
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-    opacity: 0.3;
+    display: flex;
+    align-items: center;
 }
 
 .min-vh-75 {
     min-height: 75vh;
 }
 
-/* Animações */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.fade-in-up {
-    animation: fadeInUp 0.8s ease-out forwards;
-    opacity: 0;
-}
-
-/* Gradiente de texto */
-.text-gradient {
-    background: linear-gradient(135deg, var(--primary-color), var(--info-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-/* Bordas com gradiente */
-.border-gradient {
-    border: 2px solid;
-    border-image: linear-gradient(135deg, var(--primary-color), var(--info-color)) 1;
-}
-
-/* Estatísticas */
 .stat-item {
     padding: 1rem;
     border-radius: 0.5rem;
@@ -558,7 +551,7 @@ include 'header.php';
     transition: transform 0.3s ease;
 }
 
-/* Responsividade */
+/* Responsividad */
 @media (max-width: 768px) {
     .hero-section {
         min-height: auto;
@@ -578,64 +571,5 @@ include 'header.php';
     }
 }
 </style>
-
-<script>
-// Animação de digitação para o código
-document.addEventListener('DOMContentLoaded', function() {
-    const codeElement = document.getElementById('typingCode');
-    if (codeElement) {
-        const codeText = `<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Mi Primera Página</title>
-</head>
-<body>
-    <h1>¡Hola, Mundo!</h1>
-    <p>¡Bienvenido al desarrollo web!</p>
-</body>
-</html>`;
-        
-        let i = 0;
-        const speed = 50; // velocidade de digitação em ms
-        
-        function typeWriter() {
-            if (i < codeText.length) {
-                codeElement.innerHTML += codeText.charAt(i);
-                i++;
-                setTimeout(typeWriter, speed);
-            } else {
-                // Reiniciar a animação após 3 segundos
-                setTimeout(() => {
-                    codeElement.innerHTML = '';
-                    i = 0;
-                    typeWriter();
-                }, 3000);
-            }
-        }
-        
-        typeWriter();
-    }
-});
-
-// Animação suave para elementos que entram na viewport
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver(function(entries) {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('fade-in-up');
-        }
-    });
-}, observerOptions);
-
-// Observar todos os elementos com a classe 'animate-on-scroll'
-document.querySelectorAll('.card, .feature-icon').forEach(el => {
-    observer.observe(el);
-});
-</script>
 
 <?php include 'footer.php'; ?>

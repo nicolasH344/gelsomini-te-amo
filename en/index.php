@@ -18,7 +18,7 @@ include 'header.php';
             <div class="col-lg-6">
                 <div class="hero-content">
                     <h1 class="display-4 fw-bold mb-4 fade-in-up">
-                        <?php echo t('learn_web_dev'); ?>
+                        <?php echo t('Developer Journey'); ?>
                     </h1>
                     <p class="lead mb-4 fade-in-up" style="animation-delay: 0.2s;">
                         <?php echo t('interactive_platform'); ?>
