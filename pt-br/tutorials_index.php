@@ -253,7 +253,7 @@ include 'header.php';
     </div>
 </div>
 
-<?php include 'footer.php'; ?>             <p class="mb-0">1 tutorial</p>
+            <p class="mb-0">1 tutorial</p>
                 </div>
             </div>
         </div>
