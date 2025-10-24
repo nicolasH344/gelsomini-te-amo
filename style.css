@@ -24,12 +24,12 @@
     --bg-light: #ffffff;
     
     /* Cores de texto: Define as cores para textos principais, secundários e links. */
-    --text-primary: #212529;
-    --text-secondary: #6c757d;
+    --text-primary: #000000;
+    --text-secondary: #000000;
     --text-light: #ffffff;
-    --text-muted: #6c757d;
+    --text-muted: #ffffff;   
     --footer-text-color: #212529;
-    --footer-text-muted: #6c757d;
+    --footer-text-muted: #ffffff;
     --footer-bg: #f8f9fa;
     
     /* Cores de estado: Usadas para alertas e feedback (sucesso, erro, aviso). */
@@ -101,8 +101,10 @@
     
     --text-primary: #ffffff;
     --text-secondary: #b3b3b3;
+    --text-secondary: #e0e0e0; /* Aumentado contraste */
     --text-light: #ffffff;
     --text-muted: #b3b3b3;
+    --text-muted: #cccccc; /* Aumentado contraste */
     --footer-text-color: #ffffff;
     --footer-text-muted: #b3b3b3;
     --footer-bg: #1e1e1e;
@@ -466,8 +468,8 @@ body {
     border: 2px solid #6f42c1;
     border-radius: var(--border-radius);
     transition: var(--transition);
-    background: #ffffff;
-    color: #03dac6;
+    background: var(--bg-light);
+    color: var(--text-primary);
 }
 
 /* Efeito de destaque quando o campo está em foco. */
@@ -492,6 +494,7 @@ body {
     margin-top: .25rem;
     font-size: .875em;
     color: rgba(255, 255, 255, 0.658);
+    color: var(---text-muted); /* Usa a variável do tema */
 }
 
 /* =================================================================== */
@@ -527,7 +530,7 @@ body {
 
 .alert-warning {
     background: linear-gradient(135deg, var(--warning-color), var(--accent-color));
-    color: var(--text-primary);
+    color: var(--text-primary); /* Usa a cor de texto do tema para garantir contraste */
 }
 
 .alert-danger {
@@ -574,6 +577,7 @@ body {
 /* Classe para texto com cor suave (muted). */
 .text-muted {
     color: var(--text-black) !important; 
+    color: var(--text-muted) !important; /* Corrigido para usar a variável correta */
 }
 
 /* Garante que o texto 'muted' no rodapé use a cor correta do rodapé. */
@@ -593,8 +597,7 @@ body {
 
 .mb-3 {
     margin-bottom: 1rem !important;
-        
-
+    
 }
 
 /* Estilos padrão para parágrafos e labels. */
@@ -1066,8 +1069,7 @@ label {
 /* ===== ESTILOS DAS TRILHAS DE APRENDIZADO (INDEX.PHP) ===== */
 /* =================================================================== */
 
-/* 
-  Este bloco cria estilos específicos para os cards das trilhas,
+/* Este bloco cria estilos específicos para os cards das trilhas,
   permitindo que suas cores mudem de acordo com o tema selecionado.
 */
 
@@ -1118,8 +1120,7 @@ label {
 /* ===== ESTILOS PARA BADGES DE CATEGORIA E DIFICULDADE ===== */
 /* =================================================================== */
 
-/* 
-  Este bloco substitui as classes de cor fixas (bg-danger, bg-primary)
+/* Este bloco substitui as classes de cor fixas (bg-danger, bg-primary)
   por classes semânticas que se adaptam ao tema.
 */
 
@@ -1127,6 +1128,7 @@ label {
 .badge-category-html { background-color: var(--danger-color); color: var(--text-light); }
 .badge-category-css { background-color: var(--primary-color); color: var(--text-light); }
 .badge-category-javascript { background-color: var(--warning-color); color: var(--text-primary); }
+.badge-category-javascript { background-color: var(--warning-color); color: #000000; } /* Corrigido para preto fixo */
 .badge-category-php { background-color: var(--info-color); color: var(--text-light); }
 .badge-category-python { background-color: var(--success-color); color: var(--text-light); }
 .badge-category-java { background-color: var(--accent-color); color: var(--text-light); }
@@ -1155,54 +1157,7 @@ label {
 /* ===== AUMENTAR E ESTILIZAR A SEÇÃO 'PRONTO PARA COMEÇAR?' ===== */
 /* =================================================================== */
 
-/* 
-  Este bloco aumenta a altura da seção, centraliza o conteúdo
+/* Este bloco aumenta a altura da seção, centraliza o conteúdo
   e adiciona um preenchimento maior para dar mais destaque,
-  conforme solicitado.
+  conforme solic
 */
-
-#cta-section {
-    padding-top: 6rem;      /* Aumenta o espaçamento superior */
-    padding-bottom: 6rem;   /* Aumenta o espaçamento inferior */
-    min-height: 60vh;       /* Define uma altura mínima de 60% da tela */
-    display: flex;          /* Ativa o Flexbox para alinhamento */
-    align-items: center;    /* Centraliza o conteúdo verticalmente */
-    justify-content: center;/* Centraliza o conteúdo horizontalmente */
-}
-
-/* Ajusta o tamanho da fonte do título principal da seção */
-#cta-section .display-5 {
-    font-size: 2.8rem; /* Um pouco maior que o padrão */
-}
-
-/* Ajusta o tamanho da fonte do parágrafo da seção */
-#cta-section .lead {
-    font-size: 1.2rem; /* Um pouco maior para melhor legibilidade */
-    max-width: 700px;  /* Limita a largura para não ficar muito extenso */
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* Adiciona um efeito de sombra e transição aos botões nesta seção */
-#cta-section .btn {
-    box-shadow: var(--shadow-lg);
-    transform: scale(1.05); /* Deixa os botões um pouco maiores */
-}
-
-#cta-section .btn:hover {
-    transform: scale(1.1) translateY(-3px); /* Efeito de crescimento ao passar o mouse */
-    box-shadow: 0 1.2rem 3.5rem rgba(111, 66, 193, 0.25);
-}
-
-/* Ajuste para telas menores (celulares) */
-@media (max-width: 768px) {
-    #cta-section {
-        padding-top: 4rem;
-        padding-bottom: 4rem;
-        min-height: auto; /* Remove a altura mínima em telas pequenas */
-    }
-
-    #cta-section .display-5 {
-        font-size: 2.2rem; /* Ajusta o título para telas menores */
-    }
-}

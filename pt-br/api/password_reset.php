@@ -94,7 +94,7 @@ class PasswordResetAPI {
             
         } catch (PDOException $e) {
             error_log("API Error - requestResetCode: " . $e->getMessage());
-            return ['success' => false, 'message' => 'Erro no servidor: ' . $e->getMessage()];
+            return ['success' => false, 'message' => 'Ocorreu um erro no servidor. Tente novamente mais tarde.'];
         }
     }
     
@@ -132,7 +132,7 @@ class PasswordResetAPI {
             
         } catch (PDOException $e) {
             error_log("API Error - verifyCode: " . $e->getMessage());
-            return ['success' => false, 'message' => 'Erro no servidor.'];
+            return ['success' => false, 'message' => 'Ocorreu um erro no servidor. Tente novamente mais tarde.'];
         }
     }
     
@@ -169,7 +169,7 @@ class PasswordResetAPI {
             
         } catch (PDOException $e) {
             error_log("API Error - resetPassword: " . $e->getMessage());
-            return ['success' => false, 'message' => 'Erro no servidor.'];
+            return ['success' => false, 'message' => 'Ocorreu um erro no servidor. Tente novamente mais tarde.'];
         }
     }
 }
