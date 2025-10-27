@@ -39,7 +39,74 @@ $title = 'Entrar';
 include 'header.php'; 
 ?>
 
-<div class="container mt-5">
+<style>
+.bubbles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.bubble {
+    position: absolute;
+    bottom: -100px;
+    background: rgba(74, 144, 226, 0.3);
+    border-radius: 50%;
+    animation: rise 14.25s infinite linear;
+}
+
+.bubble:nth-child(1) { left: 10%; width: 120px; height: 120px; animation-delay: 0s; }
+.bubble:nth-child(2) { left: 20%; width: 25px; height: 25px; animation-delay: 2s; }
+.bubble:nth-child(3) { left: 35%; width: 80px; height: 80px; animation-delay: 4s; }
+.bubble:nth-child(4) { left: 50%; width: 150px; height: 150px; animation-delay: 0s; }
+.bubble:nth-child(5) { left: 70%; width: 60px; height: 60px; animation-delay: 3s; }
+.bubble:nth-child(6) { left: 80%; width: 30px; height: 30px; animation-delay: 5s; }
+.bubble:nth-child(7) { left: 15%; width: 100px; height: 100px; animation-delay: 1s; }
+.bubble:nth-child(8) { left: 65%; width: 40px; height: 40px; animation-delay: 6s; }
+.bubble:nth-child(9) { left: 5%; width: 90px; height: 90px; animation-delay: 7s; }
+.bubble:nth-child(10) { left: 25%; width: 35px; height: 35px; animation-delay: 1.5s; }
+.bubble:nth-child(11) { left: 45%; width: 110px; height: 110px; animation-delay: 8s; }
+.bubble:nth-child(12) { left: 75%; width: 50px; height: 50px; animation-delay: 2.5s; }
+.bubble:nth-child(13) { left: 85%; width: 20px; height: 20px; animation-delay: 9s; }
+.bubble:nth-child(14) { left: 55%; width: 70px; height: 70px; animation-delay: 4.5s; }
+
+
+
+@keyframes rise {
+    to {
+        bottom: 100vh;
+        transform: translateX(100px);
+    }
+}
+
+.theme-purple .bubble { background: rgba(138, 43, 226, 0.3); }
+.theme-blue .bubble { background: rgba(74, 144, 226, 0.3); }
+.theme-green .bubble { background: rgba(40, 167, 69, 0.3); }
+.theme-dark .bubble { background: rgba(255, 255, 255, 0.15); }
+</style>
+
+<div class="bubbles-container">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+</div>
+
+<div class="container mt-5" style="position: relative; z-index: 10;">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
             
