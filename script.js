@@ -174,31 +174,31 @@ const advancedExercises = [
 ];
 
 // Função para obter cor do badge baseada na categoria
-function getCategoryBadgeClass(category) {
+function getCategoryBadgeClass(category) { // Alterado para retornar classes semânticas
     const colorMap = {
-        'HTML': 'bg-danger',
-        'CSS': 'bg-primary',
-        'JavaScript': 'bg-warning',
-        'PHP': 'bg-info',
-        'Python': 'bg-success',
-        'Java': 'bg-danger',
-        'C++': 'bg-primary',
-        'Go': 'bg-info',
-        'Scala': 'bg-secondary',
-        'Solidity': 'bg-dark',
-        'DevOps': 'bg-light text-dark'
+        'HTML': 'badge-category-html',
+        'CSS': 'badge-category-css',
+        'JavaScript': 'badge-category-javascript',
+        'PHP': 'badge-category-php',
+        'Python': 'badge-category-python',
+        'Java': 'badge-category-java',
+        'C++': 'badge-category-cpp',
+        'Go': 'badge-category-go',
+        'Scala': 'badge-category-scala',
+        'Solidity': 'badge-category-solidity',
+        'DevOps': 'badge-category-devops'
     };
-    return colorMap[category] || 'bg-secondary';
+    return colorMap[category] || 'badge-category-default';
 }
 
 // Função para obter cor do badge baseada na dificuldade
-function getDifficultyBadgeClass(difficulty) {
+function getDifficultyBadgeClass(difficulty) { // Alterado para retornar classes semânticas
     const colorMap = {
-        'Iniciante': 'bg-success',
-        'Intermediário': 'bg-warning',
-        'Avançado': 'bg-danger'
+        'Iniciante': 'badge-difficulty-beginner',
+        'Intermediário': 'badge-difficulty-intermediate',
+        'Avançado': 'badge-difficulty-advanced'
     };
-    return colorMap[difficulty] || 'bg-secondary';
+    return colorMap[difficulty] || 'badge-difficulty-default';
 }
 
 // Função para renderizar exercícios básicos

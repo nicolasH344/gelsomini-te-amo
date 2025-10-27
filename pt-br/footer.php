@@ -13,19 +13,19 @@
                         <?php echo t('footer_description', 'Plataforma interativa para aprender desenvolvimento web com exercícios práticos, tutoriais detalhados e uma comunidade ativa de desenvolvedores.'); ?>
                     </p>
                     <div class="d-flex gap-3">
-                        <a href="#" class="text-light" aria-label="Facebook" title="Facebook">
+                        <a href="#" class="footer-link" aria-label="Facebook" title="Facebook">
                             <i class="fab fa-facebook-f" aria-hidden="true"></i>
                         </a>
-                        <a href="#" class="text-light" aria-label="Twitter" title="Twitter">
+                        <a href="#" class="footer-link" aria-label="Twitter" title="Twitter">
                             <i class="fab fa-twitter" aria-hidden="true"></i>
                         </a>
-                        <a href="#" class="text-light" aria-label="LinkedIn" title="LinkedIn">
+                        <a href="#" class="footer-link" aria-label="LinkedIn" title="LinkedIn">
                             <i class="fab fa-linkedin-in" aria-hidden="true"></i>
                         </a>
-                        <a href="#" class="text-light" aria-label="GitHub" title="GitHub">
+                        <a href="#" class="footer-link" aria-label="GitHub" title="GitHub">
                             <i class="fab fa-github" aria-hidden="true"></i>
                         </a>
-                        <a href="#" class="text-light" aria-label="YouTube" title="YouTube">
+                        <a href="#" class="footer-link" aria-label="YouTube" title="YouTube">
                             <i class="fab fa-youtube" aria-hidden="true"></i>
                         </a>
                     </div>
@@ -39,16 +39,16 @@
                                 <?php echo t('exercises'); ?>
                             </a>
                         </li>
-                        <li class="mb-2">
-                            <a href="tutorials_index.php" class="text-muted text-decoration-none">
+                        <li class="mb-2"> 
+                            <a href="tutorials_index.php" class="footer-link text-decoration-none">
                                 <?php echo t('tutorials'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="forum_index.php" class="text-muted text-decoration-none">
                                 <?php echo t('forum'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('challenges', 'Desafios'); ?>
@@ -65,16 +65,16 @@
                                 <?php echo t('documentation', 'Documentação'); ?>
                             </a>
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-2"> 
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('api', 'API'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('blog', 'Blog'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('newsletter', 'Newsletter'); ?>
@@ -91,16 +91,16 @@
                                 <?php echo t('help_center', 'Central de Ajuda'); ?>
                             </a>
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-2"> 
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('contact', 'Contato'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('faq', 'FAQ'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('feedback', 'Feedback'); ?>
@@ -117,16 +117,16 @@
                                 <?php echo t('privacy_policy', 'Política de Privacidade'); ?>
                             </a>
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-2"> 
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('terms_of_service', 'Termos de Serviço'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('cookies', 'Cookies'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('accessibility_statement', 'Declaração de Acessibilidade'); ?>
@@ -416,4 +416,3 @@
 
 </body>
 </html>
-

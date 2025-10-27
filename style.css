@@ -1,11 +1,11 @@
 /* =================================================================== */
-/* ===== DEFINIÇÃO DOS TEMAS DE CORES (VARIÁVEIS CSS) ===== */
+/* 1. DEFINIÇÃO DOS TEMAS DE CORES (VARIÁVEIS CSS)
 /* =================================================================== */
 
 /* Tema Roxo Moderno (Padrão) */
 :root,
 .theme-purple {
-    /* Cores principais: Usadas para botões, links e elementos de destaque. */
+    /* -- Cores principais: Usadas para botões, links e elementos de destaque. */
     --primary-color: #6f42c1;
     --primary-dark: #5a2d91;
     --primary-light: #8e5dd9;
@@ -13,32 +13,41 @@
     --accent-color: #fd7e14;
     
     /* Gradientes: Combinações de cores para fundos e efeitos visuais. */
-    --gradient-primary: linear-gradient(135deg, #6f42c1 0%, #8e5dd9 50%, #e83e8c 100%);
-    --gradient-secondary: linear-gradient(45deg, #6f42c1, #e83e8c);
-    --gradient-hero: linear-gradient(135deg, #6f42c1 0%, #8e5dd9 25%, #e83e8c 50%, #fd7e14 75%, #6f42c1 100%);
+    --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 50%, var(--secondary-color) 100%);
+    --gradient-secondary: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    --gradient-hero: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 25%, var(--secondary-color) 50%, var(--accent-color) 75%, var(--primary-color) 100%);
     
-    /* Cores de fundo: Define as cores para o corpo da página, cards, etc. */
+    /* -- Cores de fundo: Define as cores para o corpo da página, cards, etc. */
     --bg-primary: #ffffff;
-    --bg-secondary: #f8f9fa;
+    --bg-secondary: #ffffff;
     --bg-dark: #212529;
     --bg-light: #ffffff;
     
-    /* Cores de texto: Define as cores para textos principais, secundários e links. */
-    --text-primary: #000000;
-    --text-secondary: #000000;
-    --text-light: #ffffff;
-    --text-muted: #ffffff;   
-    --footer-text-color: #212529;
-    --footer-text-muted: #ffffff;
-    --footer-bg: #f8f9fa;
+    /* -- Cores de Texto Semânticas (Padrão: Roxo Moderno - Claro) -- */
+    --text-primary: #212529;      /* Cor principal para a maioria dos textos (preto quase total). */
+    --text-secondary: #495057;    /* Cor secundária para textos menos importantes (cinza escuro). */
+    --text-muted: #6c757d;        /* Cor para textos suaves, como metadados (cinza médio). */
+    --text-light: #f8f9fa;
     
-    /* Cores de estado: Usadas para alertas e feedback (sucesso, erro, aviso). */
+    /* Cores para elementos específicos (baseadas nas cores acima). */
+    --text-heading: #343a40;      /* Cor para títulos (h1, h2, etc.). */
+    --text-body: var(--text-primary); /* Cor para parágrafos e texto principal. */
+    --text-link: var(--primary-color); /* Cor para links. */
+    
+    /* -- Cores do Rodapé -- */
+    --footer-bg: #f8f9fa;
+    --footer-text-body: #ffffff;      /* Cor para texto geral no rodapé. */
+    --footer-text-muted: #6c757d; /* Cor para texto suave no rodapé. */
+    --footer-link-color: var(--primary-color); /* Cor para links no rodapé. */
+    --footer-link-hover-color: var(--primary-dark); /* Cor para links no rodapé (hover). */
+    
+    /* -- Cores de estado: Usadas para alertas e feedback (sucesso, erro, aviso). */
     --success-color: #28a745;
     --warning-color: #ffc107;
     --danger-color: #dc3545;
     --info-color: #17a2b8;
     
-    /* Sombras: Efeitos de sombra para dar profundidade aos elementos. */
+    /* -- Sombras: Efeitos de sombra para dar profundidade aos elementos. */
     --shadow-sm: 0 0.125rem 0.25rem rgba(111, 66, 193, 0.075);
     --shadow: 0 0.5rem 1rem rgba(111, 66, 193, 0.15);
     --shadow-lg: 0 1rem 3rem rgba(111, 66, 193, 0.175);
@@ -49,7 +58,7 @@
     --border-radius-lg: 0.5rem;
     --border-color: #dee2e6;
     
-    /* Animações e Transições: Define a duração e o tipo de transição padrão. */
+    /* -- Animações e Transições: Define a duração e o tipo de transição padrão. */
     --transition: all 0.3s ease;
     --animation-duration: 0.3s;
 }
@@ -62,12 +71,25 @@
     --secondary-color: #6c757d;
     --accent-color: #17a2b8;
     
-    --gradient-primary: linear-gradient(135deg, #007bff 0%, #66b3ff 50%, #17a2b8 100%);
-    --gradient-secondary: linear-gradient(45deg, #007bff, #17a2b8);
-    --gradient-hero: linear-gradient(135deg, #007bff 0%, #66b3ff 25%, #17a2b8 50%, #6c757d 75%, #007bff 100%);
-    --footer-text-color: #212529;
-    --footer-text-muted: #6c757d;
+    --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 50%, var(--accent-color) 100%);
+    --gradient-secondary: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+    --gradient-hero: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 25%, var(--accent-color) 50%, var(--secondary-color) 75%, var(--primary-color) 100%);
+    
+    /* -- Cores de Texto (Tema Azul - Claro) -- */
+    --text-primary: #212529;
+    --text-secondary: #343a40;
+    --text-light: #f8f9fa;
+    --text-muted: #6c757d; /* Ajustado para ser visível em fundo claro */
+    --text-heading: #212529;
+    --text-body: var(--text-primary);
+    --text-link: var(--primary-color);
+
+    /* -- Cores do Rodapé -- */
     --footer-bg: #f8f9fa;
+    --footer-text-body: #212529;
+    --footer-text-muted: #6c757d; /* Ajustado para ser visível em fundo claro */
+    --footer-link-color: var(--primary-color);
+    --footer-link-hover-color: var(--primary-dark);
 }
 
 /* Tema Verde Natural */
@@ -78,12 +100,25 @@
     --secondary-color: #6f42c1;
     --accent-color: #fd7e14;
     
-    --gradient-primary: linear-gradient(135deg, #28a745 0%, #71dd8a 50%, #6f42c1 100%);
-    --gradient-secondary: linear-gradient(45deg, #28a745, #6f42c1);
-    --gradient-hero: linear-gradient(135deg, #28a745 0%, #71dd8a 25%, #6f42c1 50%, #fd7e14 75%, #28a745 100%);
-    --footer-text-color: #212529;
-    --footer-text-muted: #6c757d;
+    --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 50%, var(--secondary-color) 100%);
+    --gradient-secondary: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    --gradient-hero: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 25%, var(--secondary-color) 50%, var(--accent-color) 75%, var(--primary-color) 100%);
+
+    /* -- Cores de Texto (Tema Verde - Claro) -- */
+    --text-primary: #212529; /* Ajustado para ser visível em fundo claro */
+    --text-secondary: #343a40; /* Ajustado para ser visível em fundo claro */
+    --text-light: #f8f9fa;
+    --text-muted: #6c757d; /* Ajustado para ser visível em fundo claro */ 
+    --text-heading: #212529;
+    --text-body: var(--text-primary);
+    --text-link: var(--primary-color);
+
+    /* -- Cores do Rodapé -- */
     --footer-bg: #f8f9fa;
+    --footer-text-body: #212529;
+    --footer-text-muted: #6c757d; /* Ajustado para ser visível em fundo claro */
+    --footer-link-color: var(--primary-color);
+    --footer-link-hover-color: var(--primary-dark);
 }
 
 /* Tema Escuro */
@@ -99,29 +134,35 @@
     --bg-dark: #000000;
     --bg-light: #2d2d2d;
     
+    /* -- Cores de Texto (Tema Escuro) -- */
     --text-primary: #ffffff;
-    --text-secondary: #b3b3b3;
-    --text-secondary: #e0e0e0; /* Aumentado contraste */
+    --text-secondary: #e9ecef;
     --text-light: #ffffff;
-    --text-muted: #b3b3b3;
-    --text-muted: #cccccc; /* Aumentado contraste */
-    --footer-text-color: #ffffff;
-    --footer-text-muted: #b3b3b3;
+    --text-muted: #adb5bd; /* Ajustado para um cinza mais suave em fundo escuro */
+    --text-heading: #f8f9fa; /* Cor para títulos (h1, h2, etc.). */
+    --text-body: var(--text-primary);
+    --text-link: var(--primary-color);
+    
+    /* -- Cores do Rodapé -- */
     --footer-bg: #1e1e1e;
+    --footer-text-body: #ffffff;
+    --footer-text-muted: #adb5bd; /* Ajustado para um cinza mais suave em fundo escuro */
+    --footer-link-color: var(--primary-color);
+    --footer-link-hover-color: var(--primary-light);
     
     --border-color: #333333;
     
-    --gradient-primary: linear-gradient(135deg, #bb86fc 0%, #d1b3ff 50%, #03dac6 100%);
-    --gradient-secondary: linear-gradient(45deg, #bb86fc, #03dac6);
-    --gradient-hero: linear-gradient(135deg, #bb86fc 0%, #d1b3ff 25%, #03dac6 50%, #cf6679 75%, #bb86fc 100%);
+    --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 50%, var(--secondary-color) 100%);
+    --gradient-secondary: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    --gradient-hero: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 25%, var(--secondary-color) 50%, var(--accent-color) 75%, var(--primary-color) 100%);
 }
 
 /* =================================================================== */
-/* ===== MODO ACESSIBILIDADE (ALTO CONTRASTE) ===== */
+/* 2. MODO ACESSIBILIDADE (ALTO CONTRASTE)
 /* =================================================================== */
 /* Este modo ajusta as cores para terem maior contraste e adiciona padrões visuais para diferenciar elementos. */
 .accessibility-mode {
-    /* Cores com alto contraste e diferenciação por padrões */
+    /* -- Cores com alto contraste e diferenciação por padrões */
     --primary-color: #0066cc;
     --primary-dark: #004499;
     --primary-light: #3388dd;
@@ -133,13 +174,25 @@
     --danger-color: #cc0000;
     --info-color: #0066cc;
     
-    /* Gradientes simplificados para melhor contraste */
-    --gradient-primary: linear-gradient(135deg, #0066cc 0%, #3388dd 100%);
-    --gradient-secondary: linear-gradient(45deg, #0066cc, #ff6600);
-    --gradient-hero: linear-gradient(135deg, #0066cc 0%, #3388dd 50%, #ff6600 100%);
-    --footer-text-color: #000000;
-    --footer-text-muted: #333333;
+    /* -- Gradientes simplificados para melhor contraste */
+    --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    --gradient-secondary: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    --gradient-hero: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 50%, var(--secondary-color) 100%);
+    
+    /* -- Cores de Texto -- */
+    --text-primary: #000000;
+    --text-secondary: #1a1a1a;
+    --text-muted: #333333;
+    --text-heading: #000000;
+    --text-body: var(--text-primary);
+    --text-link: var(--primary-color);
+
+    /* -- Cores do Rodapé -- */
     --footer-bg: #ffffff;
+    --footer-text-body: #000000; 
+    --footer-text-muted: #333333;
+    --footer-link-color: var(--primary-color);
+    --footer-link-hover-color: var(--primary-dark);
 }
 
 /* Adiciona um padrão de listras diagonais ao botão primário para diferenciá-lo visualmente. */
@@ -176,7 +229,7 @@
 }
 
 /* =================================================================== */
-/* ===== ESTILOS BASE E RESET ===== */
+/* 3. ESTILOS BASE E RESET
 /* =================================================================== */
 
 /* Reset universal para garantir que o tamanho dos elementos inclua padding e borda. */
@@ -190,14 +243,14 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background: var(--bg-primary);
+    background-color: var(--bg-primary);
     color: var(--text-primary);
     transition: var(--transition);
     scroll-behavior: smooth;
 }
 
 /* =================================================================== */
-/* ===== SEÇÃO HERO (PRINCIPAL) ===== */
+/* 4. COMPONENTES PRINCIPAIS (HEADER, HERO, FOOTER)
 /* =================================================================== */
 
 /* Define o fundo gradiente animado para a seção principal. */
@@ -239,8 +292,6 @@ body {
     33% { transform: translateY(-10px) rotate(1deg); }
     66% { transform: translateY(5px) rotate(-1deg); }
 }
-
-/* ===== HEADER E NAVEGAÇÃO ===== */
 
 /* Estilo da barra de navegação principal. */
 .navbar {
@@ -301,8 +352,22 @@ body {
     width: 100%;
 }
 
+/* Estilo geral do rodapé da página. */
+.footer {
+    background: var(--footer-bg);
+    color: var(--footer-text-body);
+    padding: 2rem 0;
+    border-top: 1px solid var(--border-color);
+}
+ 
+/* Estilo dos links no rodapé. */
+.footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
 /* =================================================================== */
-/* ===== ESTILOS GERAIS DE BOTÕES ===== */
+/* 5. COMPONENTES REUTILIZÁVEIS (BOTÕES, CARDS, FORMS)
 /* =================================================================== */
 
 /* Estilo base para todos os botões. */
@@ -449,14 +514,13 @@ body {
 
 .card-text:last-child {
     margin-bottom: 0;
-}
-
-.card-text:last-child {
-    margin-bottom: 0;
+    color: var(--text-body) !important
+    
 }
 
 .card-title {
     margin-bottom: var(--bs-card-title-spacer-y);
+    color: var(--text-body);
 }
 
 /* =================================================================== */
@@ -482,6 +546,7 @@ body {
 .form-label {
     font-weight: 600;
     margin-bottom: 0.5rem;
+    
 }
 
 /* Estilo para checkboxes quando marcados. */
@@ -493,13 +558,8 @@ body {
 .form-text {
     margin-top: .25rem;
     font-size: .875em;
-    color: rgba(255, 255, 255, 0.658);
-    color: var(---text-muted); /* Usa a variável do tema */
+    color: var(--text-muted);
 }
-
-/* =================================================================== */
-/* ===== ESTILOS PARA BADGES (ETIQUETAS) E ALERTAS ===== */
-/* =================================================================== */
 
 /* Estilo para badges (pequenas etiquetas coloridas). */
 .badge {
@@ -507,12 +567,6 @@ body {
     font-weight: 500;
     padding: 0.375rem 0.75rem;
 }
-
-.bg-primary { background: var(--gradient-primary) !important; }
-/* Aplica o gradiente primário especificamente em badges, evitando conflitos. */
-.badge.bg-primary { background: var(--gradient-primary) !important; }
-.bg-light { background: var(--bg-light) !important; color: var(--text-primary) !important; }
-.bg-dark { background: var(--bg-dark) !important; }
 
 /* Estilo base para caixas de alerta. */
 .alert {
@@ -544,48 +598,19 @@ body {
 }
 
 /* =================================================================== */
-/* ===== ESTILOS DO RODAPÉ ===== */
+/* 6. CLASSES UTILITÁRIAS E TEXTO
 /* =================================================================== */
-
-/* Estilo geral do rodapé da página. */
-.footer {
-    background: var(--footer-bg);
-    color: var(--footer-text-color);
-    padding: 2rem 0;
-    border-top: 1px solid var(--border-color);
-}
-
-/* Estilo dos links no rodapé. */
-.footer a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-.footer a:hover {
-    color: var(--primary-dark);
-    text-decoration: underline;
-}
-
-.footer .text-muted {
-    color: var(--footer-text-muted) !important;
-}
-
-/* =================================================================== */
-/* ===== CLASSES UTILITÁRIAS E ELEMENTOS DE TEXTO ===== */
-/* =================================================================== */
-
-/* Classe para texto com cor suave (muted). */
-.text-muted {
-    color: var(--text-black) !important; 
-    color: var(--text-muted) !important; /* Corrigido para usar a variável correta */
-}
-
+/* -- Classes de Texto Semânticas -- */
+.text-heading { color: var(--text-heading) !important; }
+.text-body { color: var(--text-body) !important; }
+.text-link { color: var(--text-link) !important; text-decoration: none; }
+.text-link:hover { color: var(--primary-dark) !important; text-decoration: underline; }
+.text-muted { color: var(--text-muted) !important; }
 /* Garante que o texto 'muted' no rodapé use a cor correta do rodapé. */
 .footer .text-muted {
     color: var(--footer-text-muted) !important;
 }
-/* ===== CLASSES DE MARGEM (APENAS ESPAÇAMENTO) ===== */
-
+/* -- Classes de margem (apenas espaçamento) -- */
 
 .mb-0 {
     margin-bottom: 0 !important;
@@ -593,24 +618,27 @@ body {
 
 .mb-2 {
     margin-bottom: .5rem !important;
+    color: var(--text-body) !important;
 }
 
-.mb-3 {
+.mb-3{ /*titulo do rodapé*/
     margin-bottom: 1rem !important;
-    
+    color: var(--text-heading);
 }
 
 /* Estilos padrão para parágrafos e labels. */
-p {
+p, .text-body {
     margin-top: 0px;
     margin-bottom: 1rem;
+    color: var(--text-body);
 }
 
 label {
     display: inline-block;
+    color: var(--text-secondary);
 }
 
-/* Classes utilitárias para alinhamento e cores de texto. */
+/* -- Classes utilitárias para alinhamento e cores de texto. -- */
 .text-center { text-align: center !important; }
 .text-left { text-align: left !important; }
 .text-right { text-align: right !important; }
@@ -625,7 +653,7 @@ label {
 .text-dark { color: var(--text-primary) !important; }
 
 /* =================================================================== */
-/* ===== ESTILOS RESPONSIVOS E ANIMAÇÕES ===== */
+/* 7. ANIMAÇÕES E ESTILOS RESPONSIVOS
 /* =================================================================== */
 
 /* Ajustes para telas menores (tablets e celulares). */
@@ -673,10 +701,8 @@ label {
 }
 
 
-/* ===== SELETOR DE TEMA E CONFIGURAÇÕES ===== */
 /* =================================================================== */
-/* ===== SELETOR DE TEMA (PAINEL DE CONFIGURAÇÕES) ===== */
-/* =================================================================== */
+/* 8. SELETOR DE TEMA (PAINEL DE CONFIGURAÇÕES)
 
 /* Estilo do contêiner flutuante para o seletor de tema. */
 .theme-selector {
@@ -966,7 +992,7 @@ label {
 }
 
 /* =================================================================== */
-/* ===== ESTILOS DA PÁGINA INICIAL (INDEX.PHP) ===== */
+/* 9. ESTILOS ESPECÍFICOS DE PÁGINAS
 /* =================================================================== */
 
 /* Define a altura da seção principal para ocupar a tela inteira. */
@@ -1065,14 +1091,6 @@ label {
 .animation-delay-7 { animation-delay: 0.7s; }
 .animation-delay-8 { animation-delay: 0.8s; }
 
-/* =================================================================== */
-/* ===== ESTILOS DAS TRILHAS DE APRENDIZADO (INDEX.PHP) ===== */
-/* =================================================================== */
-
-/* Este bloco cria estilos específicos para os cards das trilhas,
-  permitindo que suas cores mudem de acordo com o tema selecionado.
-*/
-
 .path-card {
     border-width: 2px;
     border-style: solid;
@@ -1117,47 +1135,39 @@ label {
 }
 
 /* =================================================================== */
-/* ===== ESTILOS PARA BADGES DE CATEGORIA E DIFICULDADE ===== */
+/* 10. CLASSES SEMÂNTICAS PARA BADGES
 /* =================================================================== */
+/* Estas classes usam variáveis CSS para que as cores dos badges
+   se adaptem automaticamente ao tema selecionado. */
 
-/* Este bloco substitui as classes de cor fixas (bg-danger, bg-primary)
-  por classes semânticas que se adaptam ao tema.
-*/
-
-/* --- Categorias --- */
-.badge-category-html { background-color: var(--danger-color); color: var(--text-light); }
-.badge-category-css { background-color: var(--primary-color); color: var(--text-light); }
-.badge-category-javascript { background-color: var(--warning-color); color: var(--text-primary); }
-.badge-category-javascript { background-color: var(--warning-color); color: #000000; } /* Corrigido para preto fixo */
-.badge-category-php { background-color: var(--info-color); color: var(--text-light); }
-.badge-category-python { background-color: var(--success-color); color: var(--text-light); }
-.badge-category-java { background-color: var(--accent-color); color: var(--text-light); }
-.badge-category-go { background-color: var(--info-color); color: var(--text-light); }
-
-/* Fallback para outras categorias */
-.badge-category { background-color: var(--secondary-color); color: var(--text-light); }
-
-/* --- Dificuldade --- */
-.badge-difficulty-beginner,
-.badge-difficulty-Iniciante {
+/* -- Badges de Dificuldade -- */
+.badge-difficulty-beginner {
     background-color: var(--success-color);
     color: var(--text-light);
 }
-.badge-difficulty-intermediate,
-.badge-difficulty-Intermediário {
+.badge-difficulty-intermediate {
     background-color: var(--warning-color);
     color: var(--text-primary);
 }
-.badge-difficulty-advanced,
-.badge-difficulty-Avançado {
+.badge-difficulty-advanced {
     background-color: var(--danger-color);
     color: var(--text-light);
 }
-/* =================================================================== */
-/* ===== AUMENTAR E ESTILIZAR A SEÇÃO 'PRONTO PARA COMEÇAR?' ===== */
-/* =================================================================== */
+.badge-difficulty-default {
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+}
 
-/* Este bloco aumenta a altura da seção, centraliza o conteúdo
-  e adiciona um preenchimento maior para dar mais destaque,
-  conforme solic
-*/
+/* -- Badges de Categoria -- */
+.badge-category-html { background-color: var(--danger-color); color: var(--text-light); }
+.badge-category-css { background-color: var(--primary-color); color: var(--text-light); }
+.badge-category-javascript { background-color: var(--warning-color); color: var(--text-primary); }
+.badge-category-php { background-color: var(--info-color); color: var(--text-light); }
+.badge-category-python { background-color: var(--success-color); color: var(--text-light); }
+.badge-category-java { background-color: var(--accent-color); color: var(--text-light); }
+.badge-category-cpp { background-color: var(--primary-dark); color: var(--text-light); }
+.badge-category-go { background-color: #00ADD8; color: var(--text-light); }
+.badge-category-scala { background-color: #DC322F; color: var(--text-light); }
+.badge-category-solidity { background-color: #363636; color: var(--text-light); }
+.badge-category-devops { background-color: #f3f3f3; color: var(--text-primary); border: 1px solid var(--border-color); }
+.badge-category-default { background-color: var(--secondary-color); color: var(--text-light); }
