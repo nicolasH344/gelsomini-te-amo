@@ -42,7 +42,18 @@ if (strpos($primary_lang, 'pt') !== false) {
 }
 
 
-// --- 3. REDIRECIONAMENTO FINAL (ALTERADO) ---
+// --- 3. EXCLUSÃO DE COOKIES E REDIRECIONAMENTO FINAL (ALTERADO) ---
+
+// Excluir todos os cookies
+if (isset($_SERVER['HTTP_COOKIE'])) {
+    $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
+    foreach($cookies as $cookie) {
+        $parts = explode('=', $cookie);
+        $name = trim($parts[0]);
+        setcookie($name, '', time()-100);
+        setcookie($name, '', time()-100, '/');
+    }
+}
 
 // Monta a URL de destino completa
 // Exemplo: /projetos/2025_dev/aims-sub2/pt-br/
