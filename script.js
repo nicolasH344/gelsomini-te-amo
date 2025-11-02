@@ -173,8 +173,15 @@ const advancedExercises = [
     }
 ];
 
+// Função para escapar HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 // Função para obter cor do badge baseada na categoria
-function getCategoryBadgeClass(category) { // Alterado para retornar classes semânticas
+function getCategoryBadgeClass(category) {
     const colorMap = {
         'HTML': 'badge-category-html',
         'CSS': 'badge-category-css',
@@ -206,23 +213,29 @@ function renderBasicExercises(exercises = basicExercises) {
     const container = document.getElementById('basicExercisesList');
     if (!container) return;
 
-    container.innerHTML = exercises.map(exercise => `
+    const sanitizedHTML = exercises.map(exercise => {
+        const safeCategory = escapeHtml(exercise.category);
+        const safeDifficulty = escapeHtml(exercise.difficulty);
+        const safeTitle = escapeHtml(exercise.title);
+        const safeDescription = escapeHtml(exercise.description);
+        
+        return `
         <div class="col-md-6 col-lg-4 mb-4 exercise-card" 
-             data-category="${exercise.category}" 
-             data-difficulty="${exercise.difficulty}">
+             data-category="${safeCategory}" 
+             data-difficulty="${safeDifficulty}">
             <div class="card h-100 shadow-sm">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span class="badge ${getCategoryBadgeClass(exercise.category)}">
-                        ${exercise.category}
+                    <span class="badge ${getCategoryBadgeClass(safeCategory)}">
+                        ${safeCategory}
                     </span>
-                    <span class="badge ${getDifficultyBadgeClass(exercise.difficulty)}">
-                        ${exercise.difficulty}
+                    <span class="badge ${getDifficultyBadgeClass(safeDifficulty)}">
+                        ${safeDifficulty}
                     </span>
                 </div>
                 
                 <div class="card-body">
-                    <h3 class="card-title h5">${exercise.title}</h3>
-                    <p class="card-text">${exercise.description}</p>
+                    <h3 class="card-title h5">${safeTitle}</h3>
+                    <p class="card-text">${safeDescription}</p>
                     
                     ${exercise.completed ? `
                         <div class="alert alert-success py-2" role="alert">
@@ -234,18 +247,21 @@ function renderBasicExercises(exercises = basicExercises) {
                 
                 <div class="card-footer bg-transparent">
                     <div class="d-flex gap-2">
-                        <button class="btn btn-primary btn-sm flex-fill" onclick="startExercise('basic', ${exercise.id})">
+                        <button class="btn btn-primary btn-sm flex-fill" onclick="startExercise('basic', ${parseInt(exercise.id)})">
                             <i class="fas fa-play"></i> 
                             ${exercise.completed ? 'Revisar' : 'Começar'}
                         </button>
-                        <button class="btn btn-outline-secondary btn-sm" onclick="previewExercise('basic', ${exercise.id})">
+                        <button class="btn btn-outline-secondary btn-sm" onclick="previewExercise('basic', ${parseInt(exercise.id)})">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
+    
+    container.innerHTML = sanitizedHTML;
 }
 
 // Função para renderizar exercícios avançados
@@ -253,34 +269,41 @@ function renderAdvancedExercises(exercises = advancedExercises) {
     const container = document.getElementById('advancedExercisesList');
     if (!container) return;
 
-    container.innerHTML = exercises.map(exercise => `
+    const sanitizedHTML = exercises.map(exercise => {
+        const safeCategory = escapeHtml(exercise.category);
+        const safeDifficulty = escapeHtml(exercise.difficulty);
+        const safeTitle = escapeHtml(exercise.title);
+        const safeDescription = escapeHtml(exercise.description);
+        const safeEstimatedTime = escapeHtml(exercise.estimated_time);
+        
+        return `
         <div class="col-md-6 col-lg-4 mb-4 exercise-card" 
-             data-category="${exercise.category}" 
-             data-difficulty="${exercise.difficulty}">
+             data-category="${safeCategory}" 
+             data-difficulty="${safeDifficulty}">
             <div class="card h-100 shadow-sm">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span class="badge ${getCategoryBadgeClass(exercise.category)}">
-                        ${exercise.category}
+                    <span class="badge ${getCategoryBadgeClass(safeCategory)}">
+                        ${safeCategory}
                     </span>
-                    <span class="badge ${getDifficultyBadgeClass(exercise.difficulty)}">
-                        ${exercise.difficulty}
+                    <span class="badge ${getDifficultyBadgeClass(safeDifficulty)}">
+                        ${safeDifficulty}
                     </span>
                 </div>
                 
                 <div class="card-body">
-                    <h3 class="card-title h5">${exercise.title}</h3>
-                    <p class="card-text">${exercise.description}</p>
+                    <h3 class="card-title h5">${safeTitle}</h3>
+                    <p class="card-text">${safeDescription}</p>
                     
                     <div class="mb-3">
                         <small class="text-muted">
                             <i class="fas fa-clock me-1"></i>
-                            Tempo estimado: ${exercise.estimated_time}
+                            Tempo estimado: ${safeEstimatedTime}
                         </small>
                     </div>
                     
                     <div class="mb-3">
                         ${exercise.topics.map(topic => `
-                            <span class="badge bg-light text-dark me-1 mb-1">${topic}</span>
+                            <span class="badge bg-light text-dark me-1 mb-1">${escapeHtml(topic)}</span>
                         `).join('')}
                     </div>
                     
@@ -294,21 +317,24 @@ function renderAdvancedExercises(exercises = advancedExercises) {
                 
                 <div class="card-footer bg-transparent">
                     <div class="d-flex gap-2">
-                        <button class="btn btn-primary btn-sm flex-fill" onclick="startExercise('advanced', ${exercise.id})">
+                        <button class="btn btn-primary btn-sm flex-fill" onclick="startExercise('advanced', ${parseInt(exercise.id)})">
                             <i class="fas fa-play"></i> 
                             ${exercise.completed ? 'Revisar' : 'Começar'}
                         </button>
-                        <button class="btn btn-outline-secondary btn-sm" onclick="previewExercise('advanced', ${exercise.id})">
+                        <button class="btn btn-outline-secondary btn-sm" onclick="previewExercise('advanced', ${parseInt(exercise.id)})">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="btn btn-outline-info btn-sm" onclick="showExerciseDetails('advanced', ${exercise.id})">
+                        <button class="btn btn-outline-info btn-sm" onclick="showExerciseDetails('advanced', ${parseInt(exercise.id)})">
                             <i class="fas fa-info-circle"></i>
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
+    
+    container.innerHTML = sanitizedHTML;
 }
 
 // Função para filtrar exercícios básicos

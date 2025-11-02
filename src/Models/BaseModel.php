@@ -15,12 +15,20 @@ abstract class BaseModel {
     public function findAll($limit = null, $offset = null) {
         $sql = "SELECT * FROM {$this->table}";
         if ($limit) {
-            $sql .= " LIMIT {$limit}";
+            $sql .= " LIMIT ?";
             if ($offset) {
-                $sql .= " OFFSET {$offset}";
+                $sql .= " OFFSET ?";
             }
         }
-        $stmt = $this->db->query($sql);
+        $stmt = $this->db->prepare($sql);
+        $params = [];
+        if ($limit) {
+            $params[] = (int)$limit;
+            if ($offset) {
+                $params[] = (int)$offset;
+            }
+        }
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
     
@@ -31,20 +39,26 @@ abstract class BaseModel {
     }
     
     public function create($data) {
-        $fields = implode(',', array_keys($data));
-        $placeholders = ':' . implode(', :', array_keys($data));
+        $fields = array_keys($data);
+        $fieldList = implode(',', array_map(function($field) {
+            return preg_replace('/[^a-zA-Z0-9_]/', '', $field);
+        }, $fields));
+        $placeholders = ':' . implode(', :', $fields);
         
-        $sql = "INSERT INTO {$this->table} ({$fields}) VALUES ({$placeholders})";
+        $sql = "INSERT INTO {$this->table} ({$fieldList}) VALUES ({$placeholders})";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($data);
     }
     
     public function update($id, $data) {
-        $fields = implode(' = ?, ', array_keys($data)) . ' = ?';
-        $sql = "UPDATE {$this->table} SET {$fields} WHERE id = ?";
+        $fields = array_keys($data);
+        $setClause = implode(' = ?, ', array_map(function($field) {
+            return preg_replace('/[^a-zA-Z0-9_]/', '', $field);
+        }, $fields)) . ' = ?';
+        $sql = "UPDATE {$this->table} SET {$setClause} WHERE id = ?";
         
         $values = array_values($data);
-        $values[] = $id;
+        $values[] = (int)$id;
         
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($values);

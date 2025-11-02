@@ -18,11 +18,15 @@ if (!defined('BASE_PATH')) {
     define('BASE_PATH', '');
 }
 
+// Carregar configurações do ambiente
+require_once __DIR__ . '/../src/Config/Environment.php';
+Environment::load();
+
 // Configurações do Banco de Dados
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'cursinho');
-define('DB_USER', 'root');
-define('DB_PASS', 'Home@spSENAI2025!');
+define('DB_HOST', Environment::get('DB_HOST', 'localhost'));
+define('DB_NAME', Environment::get('DB_NAME', 'cursinho'));
+define('DB_USER', Environment::get('DB_USER', 'root'));
+define('DB_PASS', Environment::get('DB_PASS', ''));
 define('DB_CHARSET', 'utf8mb4');
 
 // Configurações de erro (desabilitar em produção)
@@ -96,15 +100,23 @@ if (!function_exists('getDBConnection')) {
 /**
  * Função para sanitizar dados
  */
+require_once __DIR__ . '/../src/SecurityHelper.php';
+
 if (!function_exists('sanitize')) {
     function sanitize($data) {
-        if (is_array($data)) {
-            return array_map('sanitize', $data);
-        }
-        if (is_string($data)) {
-            return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
-        }
-        return $data;
+        return SecurityHelper::sanitizeOutput($data);
+    }
+}
+
+if (!function_exists('generateCSRFToken')) {
+    function generateCSRFToken() {
+        return SecurityHelper::generateCSRFToken();
+    }
+}
+
+if (!function_exists('validateCSRFToken')) {
+    function validateCSRFToken($token) {
+        return SecurityHelper::validateCSRFToken($token);
     }
 }
 

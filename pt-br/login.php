@@ -8,22 +8,26 @@ $error = null;
 
 // Processar login se formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Se "Lembrar de mim" for marcado, estende a duração do cookie da sessão
-    if (!empty($_POST['remember'])) {
-        $lifetime = 60 * 60 * 24 * 30; // 30 dias
-        session_set_cookie_params($lifetime);
-        session_regenerate_id(true);
-    }
-
-    $result = processLogin($_POST['username'] ?? '', $_POST['password'] ?? '');
-    
-    if ($result['success']) {
-        $_SESSION['success'] = $result['message'];
-        header('Location: index.php');
-        exit;
+    // Validar CSRF token
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $error = 'Token de segurança inválido';
     } else {
-        // Usar uma variável local para exibir o erro na página de login
-        $error = $result['message'];
+        // Se "Lembrar de mim" for marcado, estende a duração do cookie da sessão
+        if (!empty($_POST['remember'])) {
+            $lifetime = 60 * 60 * 24 * 30; // 30 dias
+            SecurityHelper::setSecureCookie(session_name(), session_id(), time() + $lifetime);
+        }
+
+        $result = processLogin($_POST['username'] ?? '', $_POST['password'] ?? '');
+        
+        if ($result['success']) {
+            $_SESSION['success'] = $result['message'];
+            header('Location: index.php');
+            exit;
+        } else {
+            // Usar uma variável local para exibir o erro na página de login
+            $error = $result['message'];
+        }
     }
 }
 
@@ -129,6 +133,7 @@ include 'header.php';
                 </div>
                 <div class="card-body">
                     <form method="POST" action="login.php" novalidate>
+                        <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                         <div class="mb-3">
                             <label for="username" class="form-label required">Usuário ou Email</label>
                             <input type="text" 

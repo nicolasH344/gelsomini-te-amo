@@ -8,22 +8,26 @@ $error = null;
 
 // Processar login se formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Se "Lembrar de mim" for marcado, estende a duração do cookie da sessão
-    if (!empty($_POST['remember'])) {
-        $lifetime = 60 * 60 * 24 * 30; // 30 dias
-        session_set_cookie_params($lifetime);
-        session_regenerate_id(true);
-    }
-
-    $result = processLogin($_POST['username'] ?? '', $_POST['password'] ?? '');
-    
-    if ($result['success']) {
-        $_SESSION['success'] = $result['message'];
-        header('Location: index.php');
-        exit;
+    // Validar CSRF token
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $error = 'Token de segurança inválido';
     } else {
-        // Usar uma variável local para exibir o erro na página de login
-        $error = $result['message'];
+        // Se "Lembrar de mim" for marcado, estende a duração do cookie da sessão
+        if (!empty($_POST['remember'])) {
+            $lifetime = 60 * 60 * 24 * 30; // 30 dias
+            SecurityHelper::setSecureCookie(session_name(), session_id(), time() + $lifetime);
+        }
+
+        $result = processLogin($_POST['username'] ?? '', $_POST['password'] ?? '');
+        
+        if ($result['success']) {
+            $_SESSION['success'] = $result['message'];
+            header('Location: index.php');
+            exit;
+        } else {
+            // Usar uma variável local para exibir o erro na página de login
+            $error = $result['message'];
+        }
     }
 }
 
@@ -34,7 +38,7 @@ if (isLoggedIn()) {
 }
 
 // Definir título da página
-$title = 'Login';
+$title = 'Entrar';
 
 include 'header.php'; 
 ?>
@@ -124,13 +128,14 @@ include 'header.php';
                 <div class="card-header">
                     <h1 class="h4 mb-0">
                         <i class="fas fa-sign-in-alt" aria-hidden="true"></i> 
-                        Login to your account
+                        Entrar na sua conta
                     </h1>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="login.php" novalidate>
+                        <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                         <div class="mb-3">
-                            <label for="username" class="form-label required">Username or Email</label>
+                            <label for="username" class="form-label required">Usuário ou Email</label>
                             <input type="text" 
                                    class="form-control" 
                                    id="username" 
@@ -140,12 +145,12 @@ include 'header.php';
                                    aria-describedby="username-help"
                                    value="<?php echo isset($_POST['username']) ? sanitize($_POST['username']) : ''; ?>">
                             <div id="username-help" class="form-text">
-                                Enter your username or email address
+                                Digite seu nome de usuário ou endereço de email
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="password" class="form-label required">Password</label>
+                            <label for="password" class="form-label required">Senha</label>
                             <div class="input-group">
                                 <input type="password" 
                                        class="form-control" 
@@ -157,12 +162,12 @@ include 'header.php';
                                 <button class="btn btn-outline-secondary" 
                                         type="button" 
                                         id="togglePassword"
-                                        aria-label="Show/hide password">
+                                        aria-label="Mostrar/ocultar senha">
                                     <i class="fas fa-eye" aria-hidden="true"></i>
                                 </button>
                             </div>
                             <div id="password-help" class="form-text">
-                                Enter your password
+                                Digite sua senha
                             </div>
                         </div>
                         
@@ -173,13 +178,13 @@ include 'header.php';
                                    name="remember"
                                    <?php echo isset($_POST['remember']) ? 'checked' : ''; ?>>
                             <label class="form-check-label" for="remember">
-                                Remember me on this device
+                                Lembrar de mim neste dispositivo
                             </label>
                         </div>
                         
                         <button type="submit" class="btn btn-primary w-100 mb-3">
                             <i class="fas fa-sign-in-alt" aria-hidden="true"></i> 
-                            Login
+                            Entrar
                         </button>
                     </form>
                     
@@ -187,18 +192,18 @@ include 'header.php';
                     
                     <div class="text-center">
                         <p class="mb-2">
-                            Don't have an account? 
-                            <a href="register.php" class="text-decoration-none">Register here</a>
+                            Não tem uma conta? 
+                            <a href="register.php" class="text-decoration-none">Registre-se aqui</a>
                         </p>
                         <p class="mb-0">
-                            <a href="forgot_password.php" class="text-decoration-none">Forgot your password?</a>
+                            <a href="forgot_password.php" class="text-decoration-none">Esqueceu sua senha?</a>
                         </p>
                     </div>
                     
                     <div class="alert alert-info mt-3" role="alert">
-                        <strong>Test accounts:</strong><br>
+                        <strong>Contas de teste:</strong><br>
                         Admin: <code>admin</code> / <code>admin123</code><br>
-                        User: <code>usuario</code> / <code>123456</code>
+                        Usuário: <code>usuario</code> / <code>123456</code>
                     </div>
                 </div>
             </div>
@@ -222,11 +227,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (type === 'password') {
                 toggleIcon.classList.remove('fa-eye-slash');
                 toggleIcon.classList.add('fa-eye');
-                togglePassword.setAttribute('aria-label', 'Show password');
+                togglePassword.setAttribute('aria-label', 'Mostrar senha');
             } else {
                 toggleIcon.classList.remove('fa-eye');
                 toggleIcon.classList.add('fa-eye-slash');
-                togglePassword.setAttribute('aria-label', 'Hide password');
+                togglePassword.setAttribute('aria-label', 'Ocultar senha');
             }
         });
     }

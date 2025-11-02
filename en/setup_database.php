@@ -62,6 +62,35 @@ try {
         ('admin', 'admin@test.com', '" . password_hash('admin123', PASSWORD_DEFAULT) . "', 'Admin', 'Sistema', TRUE),
         ('usuario', 'user@test.com', '" . password_hash('123456', PASSWORD_DEFAULT) . "', 'Usuário', 'Teste', FALSE)");
     
+    // Criar tabelas para novas funcionalidades
+    $conn->exec("CREATE TABLE IF NOT EXISTS badges (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        description TEXT,
+        icon VARCHAR(50),
+        condition_type VARCHAR(50),
+        condition_value INT DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+    
+    $conn->exec("CREATE TABLE IF NOT EXISTS user_badges (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        badge_id INT NOT NULL,
+        earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (badge_id) REFERENCES badges(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_user_badge (user_id, badge_id)
+    )");
+    
+    // Inserir badges padrão
+    $conn->exec("INSERT IGNORE INTO badges (id, name, description, icon, condition_type, condition_value) VALUES 
+        (1, 'Primeiro Passo', 'Complete seu primeiro exercício', 'fas fa-baby', 'first_exercise', 1),
+        (2, 'Mestre dos Exercícios', 'Complete 10 exercícios', 'fas fa-graduation-cap', 'exercise_count', 10),
+        (3, 'Contribuidor do Fórum', 'Crie 5 posts no fórum', 'fas fa-comments', 'forum_posts', 5),
+        (4, 'Sequência de 7 Dias', 'Complete exercícios por 7 dias seguidos', 'fas fa-fire', 'streak_days', 7),
+        (5, 'Perfeccionista', 'Obtenha nota 100 em 5 exercícios', 'fas fa-star', 'perfect_scores', 5)");
+    
     $conn->exec("INSERT IGNORE INTO forum_categories (id, name, description) VALUES 
         (1, 'HTML', 'Discussões sobre HTML'),
         (2, 'CSS', 'Discussões sobre CSS'),

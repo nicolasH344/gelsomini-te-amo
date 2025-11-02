@@ -90,6 +90,30 @@
                             <?php echo t('forum'); ?>
                         </a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="communityDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-users me-1" aria-hidden="true"></i>
+                            Comunidade
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="communityDropdown">
+                            <li><a class="dropdown-item" href="chat.php">
+                                <i class="fas fa-comments me-2"></i>Chat
+                            </a></li>
+                            <li><a class="dropdown-item" href="collaborative_exercise.php?id=1">
+                                <i class="fas fa-users-cog me-2"></i>Exercícios Colaborativos
+                            </a></li>
+                            <li><a class="dropdown-item" href="mentorship.php">
+                                <i class="fas fa-user-graduate me-2"></i>Mentoria
+                            </a></li>
+                            <li><a class="dropdown-item" href="github_integration.php">
+                                <i class="fab fa-github me-2"></i>GitHub
+                            </a></li>
+                            <li><a class="dropdown-item" href="badges.php">
+                                <i class="fas fa-trophy me-2"></i>Conquistas
+                            </a></li>
+                        </ul>
+                    </li>
                 </ul>
                 
                 <ul class="navbar-nav">

@@ -4,23 +4,27 @@ namespace App\Config;
 use PDO;
 use PDOException;
 
+require_once __DIR__ . '/Environment.php';
+
 class Database {
     private static $instance = null;
     private $connection;
     
-    private $host = 'localhost';
-    private $dbname = 'cursinho';
-    private $username = 'root';
-    private $password = 'Home@spSENAI2025!';
-    
     private function __construct() {
+        \Environment::load();
         try {
-            $dsn = "mysql:host={$this->host};dbname={$this->dbname};charset=utf8mb4";
-            $this->connection = new PDO($dsn, $this->username, $this->password);
+            $host = \Environment::get('DB_HOST', 'localhost');
+            $dbname = \Environment::get('DB_NAME', 'weblearn');
+            $username = \Environment::get('DB_USER', 'root');
+            $password = \Environment::get('DB_PASS', '');
+            
+            $dsn = "mysql:host={$host};dbname={$dbname};charset=utf8mb4";
+            $this->connection = new PDO($dsn, $username, $password);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            throw new \Exception("Database connection failed: " . $e->getMessage());
+            error_log("Database connection failed: " . $e->getMessage());
+            throw new \Exception("Database connection failed");
         }
     }
     

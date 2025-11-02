@@ -6,6 +6,11 @@ $title = 'Fórum';
 
 // Processar criação de post
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_post']) && isLoggedIn()) {
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $_SESSION['error'] = 'Token de segurança inválido';
+        redirect('forum_index.php');
+    }
+    
     $title_post = sanitize($_POST['title']);
     $content = sanitize($_POST['content']);
     $category_id = (int)$_POST['category_id'];
@@ -335,6 +340,7 @@ include 'header.php';
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST">
+                <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="title" class="form-label">Título</label>
