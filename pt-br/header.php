@@ -198,13 +198,13 @@
                 <div class="mb-3">
                     <label for="languageSelect" class="form-label fw-semibold"><?php echo t('language'); ?></label>
                     <select class="form-select form-select-sm" id="languageSelect" name="language" onchange="changeLanguage(this.value)">
-                        <option value="pt-BR" <?php echo $_SESSION['language'] === 'pt-BR' ? 'selected' : ''; ?>>
+                        <option value="pt-br" <?php echo $_SESSION['language'] === 'pt-br' ? 'selected' : ''; ?>>
                             🇧🇷 <?php echo t('portuguese'); ?>
                         </option>
-                        <option value="en-US" <?php echo $_SESSION['language'] === 'en-US' ? 'selected' : ''; ?>>
+                        <option value="en" <?php echo $_SESSION['language'] === 'en' ? 'selected' : ''; ?>>
                             🇺🇸 <?php echo t('english'); ?>
                         </option>
-                        <option value="es-ES" <?php echo $_SESSION['language'] === 'es-ES' ? 'selected' : ''; ?>>
+                        <option value="es" <?php echo $_SESSION['language'] === 'es' ? 'selected' : ''; ?>>
                             🇪🇸 <?php echo t('spanish'); ?>
                         </option>
                     </select>
@@ -388,23 +388,18 @@
         }
 
         function changeLanguage(language) {
-            // Criar formulário temporário para envio
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.style.display = 'none';
-            
-            const langInput = document.createElement('input');
-            langInput.name = 'language';
-            langInput.value = language;
-            
-            const changeLangInput = document.createElement('input');
-            changeLangInput.name = 'change_language';
-            changeLangInput.value = '1';
-            
-            form.appendChild(langInput);
-            form.appendChild(changeLangInput);
-            document.body.appendChild(form);
-            form.submit();
+            // Redirecionar para a pasta do idioma correspondente
+            const currentPath = window.location.pathname;
+            const currentLang = getCurrentLanguage();
+            const newPath = currentPath.replace('/' + currentLang + '/', '/' + language + '/');
+            window.location.href = newPath;
+        }
+        
+        function getCurrentLanguage() {
+            const path = window.location.pathname;
+            if (path.includes('/en/')) return 'en';
+            if (path.includes('/es/')) return 'es';
+            return 'pt-br';
         }
 
         function toggleAccessibility() {

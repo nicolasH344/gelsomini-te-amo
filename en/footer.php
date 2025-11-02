@@ -10,45 +10,45 @@
                         <?php echo t('site_title'); ?>
                     </h5>
                     <p class="text-muted">
-                        <?php echo t('footer_description', 'Interactive platform to learn web development with practical exercises, detailed tutorials and an active community of developers.'); ?>
+                        <?php echo t('footer_description', 'Plataforma interativa para aprender desenvolvimento web com exercícios práticos, tutoriais detalhados e uma comunidade ativa de desenvolvedores.'); ?>
                     </p>
                     <div class="d-flex gap-3">
-                        <a href="#" class="text-light" aria-label="Facebook" title="Facebook">
+                        <a href="#" class="footer-link" aria-label="Facebook" title="Facebook">
                             <i class="fab fa-facebook-f" aria-hidden="true"></i>
                         </a>
-                        <a href="#" class="text-light" aria-label="Twitter" title="Twitter">
+                        <a href="#" class="footer-link" aria-label="Twitter" title="Twitter">
                             <i class="fab fa-twitter" aria-hidden="true"></i>
                         </a>
-                        <a href="#" class="text-light" aria-label="LinkedIn" title="LinkedIn">
+                        <a href="#" class="footer-link" aria-label="LinkedIn" title="LinkedIn">
                             <i class="fab fa-linkedin-in" aria-hidden="true"></i>
                         </a>
-                        <a href="#" class="text-light" aria-label="GitHub" title="GitHub">
+                        <a href="#" class="footer-link" aria-label="GitHub" title="GitHub">
                             <i class="fab fa-github" aria-hidden="true"></i>
                         </a>
-                        <a href="#" class="text-light" aria-label="YouTube" title="YouTube">
+                        <a href="#" class="footer-link" aria-label="YouTube" title="YouTube">
                             <i class="fab fa-youtube" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="fw-semibold mb-3"><?php echo t('learning', 'Learning'); ?></h6>
+                    <h6 class="fw-semibold mb-3"><?php echo t('learning', 'Aprendizado'); ?></h6>
                     <ul class="list-unstyled">
                         <li class="mb-2">
                             <a href="exercises_index.php" class="text-muted text-decoration-none">
                                 <?php echo t('exercises'); ?>
                             </a>
                         </li>
-                        <li class="mb-2">
-                            <a href="tutorials_index.php" class="text-muted text-decoration-none">
+                        <li class="mb-2"> 
+                            <a href="tutorials_index.php" class="footer-link text-decoration-none">
                                 <?php echo t('tutorials'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="forum_index.php" class="text-muted text-decoration-none">
                                 <?php echo t('forum'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('challenges', 'Desafios'); ?>
@@ -58,23 +58,23 @@
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="fw-semibold mb-3"><?php echo t('resources', 'Resources'); ?></h6>
+                    <h6 class="fw-semibold mb-3"><?php echo t('resources', 'Recursos'); ?></h6>
                     <ul class="list-unstyled">
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
-                                <?php echo t('documentation', 'Documentation'); ?>
+                                <?php echo t('documentation', 'Documentação'); ?>
                             </a>
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-2"> 
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('api', 'API'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('blog', 'Blog'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('newsletter', 'Newsletter'); ?>
@@ -84,23 +84,23 @@
                 </div>
                 
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="fw-semibold mb-3"><?php echo t('support', 'Support'); ?></h6>
+                    <h6 class="fw-semibold mb-3"><?php echo t('support', 'Suporte'); ?></h6>
                     <ul class="list-unstyled">
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
-                                <?php echo t('help_center', 'Help Center'); ?>
+                                <?php echo t('help_center', 'Central de Ajuda'); ?>
                             </a>
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-2"> 
                             <a href="#" class="text-muted text-decoration-none">
-                                <?php echo t('contact', 'Contact'); ?>
+                                <?php echo t('contact', 'Contato'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('faq', 'FAQ'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('feedback', 'Feedback'); ?>
@@ -114,22 +114,22 @@
                     <ul class="list-unstyled">
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
-                                <?php echo t('privacy_policy', 'Privacy Policy'); ?>
+                                <?php echo t('privacy_policy', 'Política de Privacidade'); ?>
                             </a>
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-2"> 
                             <a href="#" class="text-muted text-decoration-none">
-                                <?php echo t('terms_of_service', 'Terms of Service'); ?>
+                                <?php echo t('terms_of_service', 'Termos de Serviço'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
                                 <?php echo t('cookies', 'Cookies'); ?>
                             </a>
-                        </li>
+                        </li> 
                         <li class="mb-2">
                             <a href="#" class="text-muted text-decoration-none">
-                                <?php echo t('accessibility_statement', 'Accessibility Statement'); ?>
+                                <?php echo t('accessibility_statement', 'Declaração de Acessibilidade'); ?>
                             </a>
                         </li>
                     </ul>
@@ -142,18 +142,18 @@
                 <div class="col-md-6">
                     <p class="text-muted mb-0">
                         &copy; <?php echo date('Y'); ?> <?php echo t('site_title'); ?>. 
-                        <?php echo t('all_rights_reserved', 'All rights reserved.'); ?>
+                        <?php echo t('all_rights_reserved', 'Todos os direitos reservados.'); ?>
                     </p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <div class="d-flex justify-content-md-end gap-3 mt-3 mt-md-0">
                         <span class="text-muted small">
                             <i class="fas fa-heart text-danger me-1" aria-hidden="true"></i>
-                            <?php echo t('made_with_love', 'Made with love'); ?>
+                            <?php echo t('made_with_love', 'Feito com amor'); ?>
                         </span>
                         <span class="text-muted small">
                             <i class="fas fa-universal-access me-1" aria-hidden="true"></i>
-                            <?php echo t('accessible_design', 'Accessible Design'); ?>
+                            <?php echo t('accessible_design', 'Design Acessível'); ?>
                         </span>
                     </div>
                 </div>
@@ -165,8 +165,8 @@
     <button id="backToTop" class="btn btn-primary position-fixed bottom-0 end-0 m-4 rounded-circle" 
             style="width: 50px; height: 50px; display: none; z-index: 1000;" 
             onclick="scrollToTop()" 
-            aria-label="<?php echo t('back_to_top', 'Back to top'); ?>"
-            title="<?php echo t('back_to_top', 'Back to top'); ?>">
+            aria-label="<?php echo t('back_to_top', 'Voltar ao topo'); ?>"
+            title="<?php echo t('back_to_top', 'Voltar ao topo'); ?>">
         <i class="fas fa-arrow-up" aria-hidden="true"></i>
     </button>
 
@@ -325,10 +325,10 @@
                         
                         // Personalizar mensagens em português
                         if (this.validity.valueMissing) {
-                            errorMessage = '<?php echo t("field_required", "This field is required"); ?>';
+                            errorMessage = '<?php echo t("field_required", "Este campo é obrigatório"); ?>';
                         } else if (this.validity.typeMismatch) {
                             if (this.type === 'email') {
-                                errorMessage = '<?php echo t("invalid_email", "Please enter a valid email"); ?>';
+                                errorMessage = '<?php echo t("invalid_email", "Por favor, insira um email válido"); ?>';
                             }
                         } else if (this.validity.tooShort) {
                             errorMessage = `<?php echo t("min_length", "Mínimo de"); ?> ${this.minLength} <?php echo t("characters", "caracteres"); ?>`;
@@ -416,4 +416,3 @@
 
 </body>
 </html>
-

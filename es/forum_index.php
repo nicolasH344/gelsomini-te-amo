@@ -1,76 +1,30 @@
 <?php
-// Incluir configurações
 require_once 'config.php';
+require_once 'forum_functions.php';
 
-// Definir título da página
 $title = 'Foro';
 
-// Dados fictícios de posts do fórum para demonstração
-$forum_posts = [
-    [
-        'id' => 1,
-        'title' => '¿Cómo empezar con HTML?',
-        'content' => 'Estoy empezando y me gustaría recibir algunos consejos sobre dónde empezar con HTML...',
-        'author' => 'João Silva',
-        'category' => 'HTML',
-        'replies' => 5,
-        'views' => 120,
-        'created_at' => '2024-01-15 14:30:00',
-        'is_solved' => true
-    ],
-    [
-        'id' => 2,
-        'title' => 'Pregunta sobre CSS Grid',
-        'content' => 'Estoy intentando crear un diseño con CSS Grid pero no puedo alinear los elementos...',
-        'author' => 'Maria Santos',
-        'category' => 'CSS',
-        'replies' => 3,
-        'views' => 85,
-        'created_at' => '2024-01-14 09:15:00',
-        'is_solved' => false
-    ],
-    [
-        'id' => 3,
-        'title' => 'JavaScript assíncrono - async/await',
-        'content' => '¿Alguien puede explicar mejor cómo funciona async/await en JavaScript?',
-        'author' => 'Pedro Costa',
-        'category' => 'JavaScript',
-        'replies' => 8,
-        'views' => 200,
-        'created_at' => '2024-01-13 16:45:00',
-        'is_solved' => true
-    ],
-    [
-        'id' => 4,
-        'title' => 'PHP y MySQL - Conexión',
-        'content' => 'Tengo problemas para conectar PHP con MySQL. ¿Alguien puede ayudarme?',
-        'author' => 'Ana Oliveira',
-        'category' => 'PHP',
-        'replies' => 12,
-        'views' => 350,
-        'created_at' => '2024-01-12 11:20:00',
-        'is_solved' => true
-    ],
-    [
-        'id' => 5,
-        'title' => 'Responsividad en dispositivos móviles',
-        'content' => 'Mi sitio web no se ve bien en el celular. ¿Consejos para mejorar la capacidad de respuesta?',
-        'author' => 'Carlos Ferreira',
-        'category' => 'CSS',
-        'replies' => 6,
-        'views' => 180,
-        'created_at' => '2024-01-11 13:10:00',
-        'is_solved' => false
-    ]
-];
+// Processar criação de post
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_post']) && isLoggedIn()) {
+    $title_post = sanitize($_POST['title']);
+    $content = sanitize($_POST['content']);
+    $category_id = (int)$_POST['category_id'];
+    $user_id = getCurrentUser()['id'];
+    
+    if (createForumPost($title_post, $content, $category_id, $user_id)) {
+        $_SESSION['success'] = 'Post criado com sucesso!';
+        redirect('forum_index.php');
+    }
+}
 
-// Categorias do fórum
-$categories = [
-    ['id' => 'html', 'name' => 'HTML', 'color' => 'danger'],
-    ['id' => 'css', 'name' => 'CSS', 'color' => 'primary'],
-    ['id' => 'javascript', 'name' => 'JavaScript', 'color' => 'warning'],
-    ['id' => 'php', 'name' => 'PHP', 'color' => 'info']
-];
+// Parâmetros de filtro
+$category = sanitize($_GET['category'] ?? '');
+$search = sanitize($_GET['search'] ?? '');
+$page = max(1, (int)($_GET['page'] ?? 1));
+
+// Buscar dados
+$forum_posts = getForumPosts($category, $search, $page);
+$categories = getForumCategories();
 
 include 'header.php';
 ?>
@@ -79,17 +33,17 @@ include 'header.php';
     <!-- Header do fórum -->
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1><i class="fas fa-comments" aria-hidden="true"></i> Foro de la comunidad</h1>
-            <p class="lead">Resuelva sus dudas, comparta conocimientos y conéctese con otros desarrolladores.</p>
+            <h1><i class="fas fa-comments" aria-hidden="true"></i> Foro de la Comunidad</h1>
+            <p class="lead">Resuelve dudas, comparte conocimiento y conéctate con otros desarrolladores</p>
         </div>
         <div class="col-md-4 text-end">
             <?php if (isLoggedIn()): ?>
-                <a href="#" class="btn btn-primary" role="button">
-                    <i class="fas fa-plus" aria-hidden="true"></i> Nueva publicación
-                </a>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newPostModal">
+                    <i class="fas fa-plus" aria-hidden="true"></i> Novo Post
+                </button>
             <?php else: ?>
                 <a href="login.php" class="btn btn-primary" role="button">
-                    <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Inicie sesión para participar
+                    <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Faça Login para Participar
                 </a>
             <?php endif; ?>
         </div>
@@ -101,7 +55,7 @@ include 'header.php';
             <!-- Filtros e busca -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <h2 class="h5 card-title">Filtrar publicaciones</h2>
+                    <h2 class="h5 card-title">Filtrar Publicaciones</h2>
                     <form method="GET" action="forum_index.php" class="row g-3">
                         <div class="col-md-4">
                             <label for="category" class="form-label">Categoria</label>
@@ -118,7 +72,7 @@ include 'header.php';
                         <div class="col-md-6">
                             <label for="search" class="form-label">Buscar</label>
                             <input type="text" class="form-control" id="search" name="search" 
-                                   placeholder="Buscar posts...">
+                                   placeholder="Buscar publicaciones...">
                         </div>
                         
                         <div class="col-md-2 d-flex align-items-end">
@@ -133,7 +87,7 @@ include 'header.php';
             <!-- Lista de posts -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="h5 mb-0">Publicaciones recientes</h2>
+                    <h2 class="h5 mb-0 ">Publicaciones Recientes</h2>
                 </div>
                 <div class="card-body p-0">
                     <?php foreach ($forum_posts as $index => $post): ?>
@@ -142,7 +96,10 @@ include 'header.php';
                                 <div class="col-md-8">
                                     <div class="d-flex align-items-center mb-2">
                                         <span class="badge bg-<?php 
-                                            $categoryColor = 'secondary';
+                              
+                              
+                              
+                              $categoryColor = 'secondary';
                                             foreach ($categories as $cat) {
                                                 if (strtolower($cat['name']) === strtolower($post['category'])) {
                                                     $categoryColor = $cat['color'];
@@ -156,7 +113,7 @@ include 'header.php';
                                         
                                         <?php if ($post['is_solved']): ?>
                                             <span class="badge bg-success me-2">
-                                                <i class="fas fa-check" aria-hidden="true"></i> Resuelto
+                                                <i class="fas fa-check" aria-hidden="true"></i> Resolvido
                                             </span>
                                         <?php endif; ?>
                                     </div>
@@ -248,11 +205,11 @@ include 'header.php';
                     <div class="row text-center">
                         <div class="col-6">
                             <div class="fw-bold text-primary"><?php echo count($forum_posts); ?></div>
-                            <small class="text-muted">Publicaciones</small>
+                            <small class="text-muted">Posts</small>
                         </div>
                         <div class="col-6">
                             <div class="fw-bold text-success">15</div>
-                            <small class="text-muted">Miembros activos</small>
+                            <small class="text-muted">Miembros Activos</small>
                         </div>
                     </div>
                 </div>
@@ -262,7 +219,7 @@ include 'header.php';
             <div class="card mb-4">
                 <div class="card-header">
                     <h2 class="h6 mb-0">
-                        <i class="fas fa-tags" aria-hidden="true"></i> Categorias
+                        <i class="fas fa-tags" aria-hidden="true"></i> Categorías
                     </h2>
                 </div>
                 <div class="card-body">
@@ -291,7 +248,7 @@ include 'header.php';
             <div class="card">
                 <div class="card-header">
                     <h2 class="h6 mb-0">
-                        <i class="fas fa-fire" aria-hidden="true"></i> Publicaciones populares
+                        <i class="fas fa-fire" aria-hidden="true"></i> Publicaciones Populares
                     </h2>
                 </div>
                 <div class="card-body">
@@ -307,7 +264,7 @@ include 'header.php';
                                 </a>
                             </h3>
                             <small class="text-muted">
-                                <?php echo $post['views']; ?>visualizaciones
+                                <?php echo $post['views']; ?> visualizaciones
                             </small>
                         </div>
                     <?php endforeach; ?>
@@ -323,22 +280,22 @@ include 'header.php';
                 <div class="card-body">
                     <h2 class="h5 card-title">
                         <i class="fas fa-info-circle text-info" aria-hidden="true"></i> 
-                        Reglas del foro
+                        Regras do Fórum
                     </h2>
                     <div class="row">
                         <div class="col-md-6">
                             <ul class="list-unstyled mb-0">
                                 <li class="mb-2">
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
-                                   Sé respetuoso con los demás miembros.
+                                    Seja respeitoso com outros membros
                                 </li>
                                 <li class="mb-2">
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
-                                  Utilice títulos descriptivos para sus publicaciones.
+                                    Use títulos descritivos para seus posts
                                 </li>
                                 <li class="mb-0">
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
-                                        Investiga antes de publicar una pregunta.
+                                    Pesquise antes de postar uma dúvida
                                 </li>
                             </ul>
                         </div>
@@ -346,15 +303,15 @@ include 'header.php';
                             <ul class="list-unstyled mb-0">
                                 <li class="mb-2">
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
-                                     No envíes spam ni publicaciones repetitivas.
+                                    Não faça spam ou posts repetitivos
                                 </li>
                                 <li class="mb-2">
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
-                                    Evite el lenguaje ofensivo.
+                                    Evite linguagem ofensiva
                                 </li>
                                 <li class="mb-0">
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
-                                     No compartas información personal
+                                    Não compartilhe informações pessoais
                                 </li>
                             </ul>
                         </div>
@@ -365,5 +322,53 @@ include 'header.php';
     </div>
 </div>
 
-<?php include 'footer.php'; ?>
+<!-- Modal para novo post -->
+<?php if (isLoggedIn()): ?>
+<div class="modal fade" id="newPostModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus me-2"></i>
+                    Crear Nueva Publicación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="category_id" class="form-label">Categoría</label>
+                        <select class="form-select" id="category_id" name="category_id" required>
+                            <option value="">Selecciona una categoría</option>
+                            <?php foreach ($categories as $cat): ?>
+                                <option value="<?php echo $cat['id']; ?>">
+                                    <?php echo sanitize($cat['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Contenido</label>
+                        <textarea class="form-control" id="content" name="content" rows="6" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" name="create_post" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>
+                        Publicar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
+<?php include 'footer.php'; ?>

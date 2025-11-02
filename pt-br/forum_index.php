@@ -1,76 +1,30 @@
 <?php
-// Incluir configurações
 require_once 'config.php';
+require_once 'forum_functions.php';
 
-// Definir título da página
 $title = 'Fórum';
 
-// Dados fictícios de posts do fórum para demonstração
-$forum_posts = [
-    [
-        'id' => 1,
-        'title' => 'Como começar com HTML?',
-        'content' => 'Estou começando agora e gostaria de dicas sobre por onde começar com HTML...',
-        'author' => 'João Silva',
-        'category' => 'HTML',
-        'replies' => 5,
-        'views' => 120,
-        'created_at' => '2024-01-15 14:30:00',
-        'is_solved' => true
-    ],
-    [
-        'id' => 2,
-        'title' => 'Dúvida sobre CSS Grid',
-        'content' => 'Estou tentando criar um layout com CSS Grid mas não consigo alinhar os itens...',
-        'author' => 'Maria Santos',
-        'category' => 'CSS',
-        'replies' => 3,
-        'views' => 85,
-        'created_at' => '2024-01-14 09:15:00',
-        'is_solved' => false
-    ],
-    [
-        'id' => 3,
-        'title' => 'JavaScript assíncrono - async/await',
-        'content' => 'Alguém pode explicar melhor como funciona async/await em JavaScript?',
-        'author' => 'Pedro Costa',
-        'category' => 'JavaScript',
-        'replies' => 8,
-        'views' => 200,
-        'created_at' => '2024-01-13 16:45:00',
-        'is_solved' => true
-    ],
-    [
-        'id' => 4,
-        'title' => 'PHP e MySQL - Conexão',
-        'content' => 'Estou com problemas para conectar PHP com MySQL. Alguém pode ajudar?',
-        'author' => 'Ana Oliveira',
-        'category' => 'PHP',
-        'replies' => 12,
-        'views' => 350,
-        'created_at' => '2024-01-12 11:20:00',
-        'is_solved' => true
-    ],
-    [
-        'id' => 5,
-        'title' => 'Responsividade em dispositivos móveis',
-        'content' => 'Meu site não fica bom no celular. Dicas para melhorar a responsividade?',
-        'author' => 'Carlos Ferreira',
-        'category' => 'CSS',
-        'replies' => 6,
-        'views' => 180,
-        'created_at' => '2024-01-11 13:10:00',
-        'is_solved' => false
-    ]
-];
+// Processar criação de post
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_post']) && isLoggedIn()) {
+    $title_post = sanitize($_POST['title']);
+    $content = sanitize($_POST['content']);
+    $category_id = (int)$_POST['category_id'];
+    $user_id = getCurrentUser()['id'];
+    
+    if (createForumPost($title_post, $content, $category_id, $user_id)) {
+        $_SESSION['success'] = 'Post criado com sucesso!';
+        redirect('forum_index.php');
+    }
+}
 
-// Categorias do fórum
-$categories = [
-    ['id' => 'html', 'name' => 'HTML', 'color' => 'danger'],
-    ['id' => 'css', 'name' => 'CSS', 'color' => 'primary'],
-    ['id' => 'javascript', 'name' => 'JavaScript', 'color' => 'warning'],
-    ['id' => 'php', 'name' => 'PHP', 'color' => 'info']
-];
+// Parâmetros de filtro
+$category = sanitize($_GET['category'] ?? '');
+$search = sanitize($_GET['search'] ?? '');
+$page = max(1, (int)($_GET['page'] ?? 1));
+
+// Buscar dados
+$forum_posts = getForumPosts($category, $search, $page);
+$categories = getForumCategories();
 
 include 'header.php';
 ?>
@@ -84,9 +38,9 @@ include 'header.php';
         </div>
         <div class="col-md-4 text-end">
             <?php if (isLoggedIn()): ?>
-                <a href="#" class="btn btn-primary" role="button">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newPostModal">
                     <i class="fas fa-plus" aria-hidden="true"></i> Novo Post
-                </a>
+                </button>
             <?php else: ?>
                 <a href="login.php" class="btn btn-primary" role="button">
                     <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Faça Login para Participar
@@ -367,5 +321,54 @@ include 'header.php';
         </div>
     </div>
 </div>
+
+<!-- Modal para novo post -->
+<?php if (isLoggedIn()): ?>
+<div class="modal fade" id="newPostModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus me-2"></i>
+                    Criar Novo Post
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="category_id" class="form-label">Categoria</label>
+                        <select class="form-select" id="category_id" name="category_id" required>
+                            <option value="">Selecione uma categoria</option>
+                            <?php foreach ($categories as $cat): ?>
+                                <option value="<?php echo $cat['id']; ?>">
+                                    <?php echo sanitize($cat['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Conteúdo</label>
+                        <textarea class="form-control" id="content" name="content" rows="6" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" name="create_post" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>
+                        Publicar Post
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 <?php include 'footer.php'; ?>

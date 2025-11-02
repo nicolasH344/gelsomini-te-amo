@@ -1,187 +1,20 @@
 <?php
-// Incluir configurações
 require_once 'config.php';
+require_once 'exercise_functions.php';
 
-// Verificar se as funções necessárias existem
-if (!function_exists('getDBConnection') || !function_exists('sanitize')) {
-    die("Erro: Funções essenciais não foram carregadas. Verifique o arquivo config.php");
-}
-
-// Definir título da página
 $title = 'Exercícios';
 
-// Ativar display de erros para debug
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Variáveis para os dados
-$exercises = [];
-$totalResults = 0;
-$totalPages = 1;
-$page = 1;
-
-// Parâmetros de filtragem com valores padrão
-$category = isset($_GET['category']) ? sanitize($_GET['category']) : '';
-$difficulty = isset($_GET['difficulty']) ? sanitize($_GET['difficulty']) : '';
-$search = isset($_GET['search']) ? sanitize($_GET['search']) : '';
-
-// Paginação com validação
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-if ($page < 1) $page = 1;
-
+// Parâmetros de filtro
+$category = sanitize($_GET['category'] ?? '');
+$difficulty = sanitize($_GET['difficulty'] ?? '');
+$search = sanitize($_GET['search'] ?? '');
+$page = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 9;
-$offset = ($page - 1) * $perPage;
 
-try {
-    // --- Lógica de busca e filtragem ---
-    $conn = getDBConnection();
-
-    // Verificar se a conexão foi estabelecida
-    if (!$conn) {
-        throw new Exception("Não foi possível conectar ao banco de dados. Verifique as credenciais em config.php");
-    }
-
-    // Construção da query SQL base
-    $sql = "SELECT e.*, ec.name as category_name 
-            FROM exercises e 
-            LEFT JOIN exercise_categories ec ON e.category_id = ec.id 
-            WHERE 1=1";
-    $params = [];
-
-    // Filtro de categoria
-    if (!empty($category)) {
-        $sql .= " AND ec.name = ?";
-        $params[] = $category;
-    }
-
-    // Filtro de dificuldade
-    if (!empty($difficulty)) {
-        $difficulty_map = [
-            'Iniciante' => 'beginner', 
-            'Intermediário' => 'intermediate', 
-            'Avançado' => 'advanced'
-        ];
-        
-        if (array_key_exists($difficulty, $difficulty_map)) {
-            $sql .= " AND e.difficulty_level = ?";
-            $params[] = $difficulty_map[$difficulty];
-        }
-    }
-
-    // Filtro de busca
-    if (!empty($search)) {
-        $sql .= " AND (e.title LIKE ? OR e.description LIKE ?)";
-        $searchTerm = "%{$search}%";
-        $params[] = $searchTerm;
-        $params[] = $searchTerm;
-    }
-
-    // Query para contar total
-    $countSql = "SELECT COUNT(*) as total FROM exercises e 
-                 LEFT JOIN exercise_categories ec ON e.category_id = ec.id 
-                 WHERE 1=1";
-    
-    $countParams = [];
-    
-    if (!empty($category)) {
-        $countSql .= " AND ec.name = ?";
-        $countParams[] = $category;
-    }
-    
-    if (!empty($difficulty)) {
-        $difficulty_map = [
-            'Iniciante' => 'beginner', 
-            'Intermediário' => 'intermediate', 
-            'Avançado' => 'advanced'
-        ];
-        if (array_key_exists($difficulty, $difficulty_map)) {
-            $countSql .= " AND e.difficulty_level = ?";
-            $countParams[] = $difficulty_map[$difficulty];
-        }
-    }
-    
-    if (!empty($search)) {
-        $countSql .= " AND (e.title LIKE ? OR e.description LIKE ?)";
-        $searchTerm = "%{$search}%";
-        $countParams[] = $searchTerm;
-        $countParams[] = $searchTerm;
-    }
-
-    // Executar contagem
-    $stmtCount = $conn->prepare($countSql);
-    $stmtCount->execute($countParams);
-    $result = $stmtCount->fetch(PDO::FETCH_ASSOC);
-    $totalResults = $result['total'] ?? 0;
-    $totalPages = $totalResults > 0 ? ceil($totalResults / $perPage) : 1;
-
-    // Query principal com ordenação e limites
-    $sql .= " ORDER BY e.created_at DESC LIMIT ? OFFSET ?";
-    
-    // Adicionar parâmetros de paginação
-    $params[] = $perPage;
-    $params[] = $offset;
-
-    // Executar query principal
-    $stmt = $conn->prepare($sql);
-    $stmt->execute($params);
-    $exercises = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-} catch (PDOException $e) {
-    // Erro específico do PDO
-    $error_message = "Erro no banco de dados: " . $e->getMessage();
-    error_log("PDO Error: " . $e->getMessage());
-    
-    // Carregar exercícios de exemplo em caso de erro
-    $exercises = [
-        [
-            'id' => 1,
-            'title' => 'Estrutura Básica HTML',
-            'description' => 'Aprenda a criar a estrutura básica de uma página HTML',
-            'difficulty_level' => 'beginner',
-            'category_name' => 'HTML'
-        ],
-        [
-            'id' => 2,
-            'title' => 'Estilização com CSS',
-            'description' => 'Pratique estilização básica com CSS',
-            'difficulty_level' => 'beginner',
-            'category_name' => 'CSS'
-        ],
-        [
-            'id' => 3,
-            'title' => 'Interatividade com JavaScript',
-            'description' => 'Adicione interatividade às suas páginas',
-            'difficulty_level' => 'intermediate',
-            'category_name' => 'JavaScript'
-        ],
-        [
-            'id' => 4,
-            'title' => 'Formulários HTML',
-            'description' => 'Crie formulários funcionais e acessíveis',
-            'difficulty_level' => 'beginner',
-            'category_name' => 'HTML'
-        ],
-        [
-            'id' => 5,
-            'title' => 'Layout Responsivo',
-            'description' => 'Desenvolva layouts que se adaptam a diferentes telas',
-            'difficulty_level' => 'intermediate',
-            'category_name' => 'CSS'
-        ],
-        [
-            'id' => 6,
-            'title' => 'Manipulação do DOM',
-            'description' => 'Aprenda a manipular elementos da página dinamicamente',
-            'difficulty_level' => 'intermediate',
-            'category_name' => 'JavaScript'
-        ]
-    ];
-    
-} catch (Exception $e) {
-    // Erro geral
-    $error_message = $e->getMessage();
-    error_log("General Error: " . $e->getMessage());
-}
+// Buscar dados
+$exercises = getExercises($category, $difficulty, $search, $page, $perPage);
+$totalResults = countExercises($category, $difficulty, $search);
+$totalPages = $totalResults > 0 ? ceil($totalResults / $perPage) : 1;
 
 include 'header.php';
 ?>
@@ -310,16 +143,10 @@ include 'header.php';
                         
                         <div class="card-footer bg-transparent">
                             <div class="d-flex gap-2">
-                                <a href="show.php?type=exercise&id=<?php echo $exercise['id']; ?>" 
+                                <a href="exercise_detail.php?id=<?php echo $exercise['id']; ?>" 
                                    class="btn btn-primary btn-sm flex-fill">
                                     <i class="fas fa-play" aria-hidden="true"></i> 
                                     <?php echo $completed ? 'Revisar' : 'Começar'; ?>
-                                </a>
-                                <a href="show.php?type=exercise&id=<?php echo $exercise['id']; ?>&preview=1" 
-                                   class="btn btn-outline-secondary btn-sm"
-                                   aria-label="Visualizar exercício <?php echo htmlspecialchars($exercise['title']); ?>"
-                                   title="Visualizar exercício">
-                                    <i class="fas fa-eye" aria-hidden="true"></i>
                                 </a>
                             </div>
                         </div>

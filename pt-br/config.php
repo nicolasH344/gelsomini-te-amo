@@ -14,6 +14,10 @@ if (!defined('SITE_URL')) {
     define('SITE_URL', 'http://localhost');
 }
 
+if (!defined('BASE_PATH')) {
+    define('BASE_PATH', '');
+}
+
 // Configurações do Banco de Dados
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'cursinho');
@@ -49,8 +53,18 @@ if (session_status() == PHP_SESSION_NONE) {
 
 // Configurações padrão de sessão
 if (!isset($_SESSION['theme'])) { $_SESSION['theme'] = 'purple'; }
-if (!isset($_SESSION['language'])) { $_SESSION['language'] = 'pt-BR'; }
+if (!isset($_SESSION['language'])) { $_SESSION['language'] = 'pt-br'; }
 if (!isset($_SESSION['accessibility_mode'])) { $_SESSION['accessibility_mode'] = false; }
+
+// Detectar idioma pela URL
+$current_path = $_SERVER['REQUEST_URI'];
+if (strpos($current_path, '/en/') !== false) {
+    $_SESSION['language'] = 'en';
+} elseif (strpos($current_path, '/es/') !== false) {
+    $_SESSION['language'] = 'es';
+} elseif (strpos($current_path, '/pt-br/') !== false) {
+    $_SESSION['language'] = 'pt-br';
+}
 
 // =================================================================
 // >> INÍCIO: DEFINIÇÃO DE FUNÇÕES <<
@@ -100,7 +114,7 @@ if (!function_exists('sanitize')) {
 if (!function_exists('getTranslations')) {
     function getTranslations() {
         return [
-            'pt-BR' => [
+            'pt-br' => [
                 'site_title' => 'WebLearn - Jornada do Desenvolvedor',
                 'home' => 'Início', 'exercises' => 'Exercícios', 'tutorials' => 'Tutoriais',
                 'forum' => 'Fórum', 'profile' => 'Perfil', 'progress' => 'Progresso',
@@ -158,9 +172,25 @@ if (!function_exists('getTranslations')) {
                 'start_free' => 'Começar Gratuitamente',
                 'view_exercises' => 'Ver Exercícios',
                 'create_free_account' => 'Criar Conta Gratuita',
-                'explore_content' => 'Explorar Conteúdo'
+                'explore_content' => 'Explorar Conteúdo',
+                'forum' => 'Fórum',
+                'exercises' => 'Exercícios',
+                'new_post' => 'Novo Post',
+                'create_post' => 'Criar Post',
+                'comments' => 'Comentários',
+                'reply' => 'Responder',
+                'category' => 'Categoria',
+                'difficulty' => 'Dificuldade',
+                'beginner' => 'Iniciante',
+                'intermediate' => 'Intermediário',
+                'advanced' => 'Avançado',
+                'start_exercise' => 'Iniciar Exercício',
+                'submit_code' => 'Enviar Código',
+                'show_solution' => 'Ver Solução',
+                'back_to_forum' => 'Voltar ao Fórum',
+                'back_to_exercises' => 'Voltar aos Exercícios'
             ],
-            'en-US' => [
+            'en' => [
                 'site_title' => 'WebLearn - Developer Journey',
                 'home' => 'Home', 'exercises' => 'Exercises', 'tutorials' => 'Tutorials',
                 'forum' => 'Forum', 'profile' => 'Profile', 'progress' => 'Progress',
@@ -218,9 +248,25 @@ if (!function_exists('getTranslations')) {
                 'start_free' => 'Start for Free',
                 'view_exercises' => 'View Exercises',
                 'create_free_account' => 'Create Free Account',
-                'explore_content' => 'Explore Content'
+                'explore_content' => 'Explore Content',
+                'forum' => 'Forum',
+                'exercises' => 'Exercises',
+                'new_post' => 'New Post',
+                'create_post' => 'Create Post',
+                'comments' => 'Comments',
+                'reply' => 'Reply',
+                'category' => 'Category',
+                'difficulty' => 'Difficulty',
+                'beginner' => 'Beginner',
+                'intermediate' => 'Intermediate',
+                'advanced' => 'Advanced',
+                'start_exercise' => 'Start Exercise',
+                'submit_code' => 'Submit Code',
+                'show_solution' => 'Show Solution',
+                'back_to_forum' => 'Back to Forum',
+                'back_to_exercises' => 'Back to Exercises'
             ],
-            'es-ES' => [
+            'es' => [
                 'site_title' => 'WebLearn - Viaje del Desarrollador',
                 'home' => 'Inicio', 'exercises' => 'Ejercicios', 'tutorials' => 'Tutoriales',
                 'forum' => 'Foro', 'profile' => 'Perfil', 'progress' => 'Progreso',
@@ -278,7 +324,23 @@ if (!function_exists('getTranslations')) {
                 'start_free' => 'Comenzar Gratis',
                 'view_exercises' => 'Ver Ejercicios',
                 'create_free_account' => 'Crear Cuenta Gratuita',
-                'explore_content' => 'Explorar Contenido'
+                'explore_content' => 'Explorar Contenido',
+                'forum' => 'Foro',
+                'exercises' => 'Ejercicios',
+                'new_post' => 'Nueva Publicación',
+                'create_post' => 'Crear Publicación',
+                'comments' => 'Comentarios',
+                'reply' => 'Responder',
+                'category' => 'Categoría',
+                'difficulty' => 'Dificultad',
+                'beginner' => 'Principiante',
+                'intermediate' => 'Intermedio',
+                'advanced' => 'Avanzado',
+                'start_exercise' => 'Iniciar Ejercicio',
+                'submit_code' => 'Enviar Código',
+                'show_solution' => 'Ver Solución',
+                'back_to_forum' => 'Volver al Foro',
+                'back_to_exercises' => 'Volver a Ejercicios'
             ]
         ];
     }
@@ -290,8 +352,19 @@ if (!function_exists('getTranslations')) {
 if (!function_exists('t')) {
     function t($key, $default = '') {
         $translations = getTranslations();
-        $lang = $_SESSION['language'] ?? 'pt-BR';
+        $lang = $_SESSION['language'] ?? 'pt-br';
         return $translations[$lang][$key] ?? $default ?: $key;
+    }
+
+    function getCurrentLanguageFolder() {
+        $lang = $_SESSION['language'] ?? 'pt-br';
+        return $lang;
+    }
+
+    function getLanguageUrl($target_lang) {
+        $current_lang = getCurrentLanguageFolder();
+        $current_url = $_SERVER['REQUEST_URI'];
+        return str_replace("/$current_lang/", "/$target_lang/", $current_url);
     }
 }
 
