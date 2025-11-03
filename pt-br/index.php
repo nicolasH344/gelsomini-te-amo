@@ -18,10 +18,10 @@ include 'header.php';
             <div class="col-lg-6">
                 <div class="hero-content">
                     <h1 class="display-4 fw-bold mb-4 fade-in-up">
-                        <?php echo t('Jornada Desenvolvedor'); ?>
+                        <?php echo t('learn_web_dev', 'Aprenda Desenvolvimento Web'); ?>
                     </h1>
                     <p class="lead mb-4 fade-in-up" style="animation-delay: 0.2s;">
-                        <?php echo t('plataforma interativa'); ?>
+                        <?php echo t('interactive_platform', 'Plataforma interativa para aprender programação'); ?>
                     </p>
                     
                     <div class="d-flex flex-column flex-sm-row gap-3 mb-4 fade-in-up" style="animation-delay: 0.4s;">

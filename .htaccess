@@ -1,5 +1,9 @@
 RewriteEngine On
 
+# Permitir acesso direto a arquivos de teste e configuração
+RewriteCond %{REQUEST_URI} ^/(test|start|localhost_setup)\.php$
+RewriteRule ^(.*)$ - [L]
+
 # Redirecionar para pasta de idioma se não especificado
 RewriteCond %{REQUEST_URI} ^/?$
 RewriteRule ^(.*)$ index.php [L]
@@ -11,6 +15,7 @@ RewriteRule ^(.*)$ - [L]
 # Redirecionar URLs sem idioma para português por padrão
 RewriteCond %{REQUEST_URI} !^/(pt-br|en|es)/
 RewriteCond %{REQUEST_URI} !^/index\.php$
+RewriteCond %{REQUEST_URI} !^/(test|start|localhost_setup)\.php$
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ pt-br/$1 [R=302,L]

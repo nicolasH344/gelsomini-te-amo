@@ -26,7 +26,7 @@ Environment::load();
 define('DB_HOST', Environment::get('DB_HOST', 'localhost'));
 define('DB_NAME', Environment::get('DB_NAME', 'cursinho'));
 define('DB_USER', Environment::get('DB_USER', 'root'));
-define('DB_PASS', Environment::get('DB_PASS', ''));
+define('DB_PASS', Environment::get('DB_PASS', 'Home@spSENAI2025!'));
 define('DB_CHARSET', 'utf8mb4');
 
 // Configurações de erro (desabilitar em produção)
@@ -91,8 +91,23 @@ if (!function_exists('getDBConnection')) {
             return $pdo;
             
         } catch (PDOException $e) {
-            error_log("Erro de conexão com o banco: " . $e->getMessage());
-            return null;
+            // Tentar conexão sem senha como fallback
+            try {
+                $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
+                $pdo = new PDO($dsn, DB_USER, '');
+                
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+                $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+                
+                return $pdo;
+                
+            } catch (PDOException $e2) {
+                if (DEBUG_MODE) {
+                    error_log("Erro de conexão com o banco: " . $e->getMessage());
+                }
+                return null;
+            }
         }
     }
 }
