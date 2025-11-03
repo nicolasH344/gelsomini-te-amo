@@ -113,7 +113,7 @@
                     <h6 class="fw-semibold mb-3"><?php echo t('legal', 'Legal'); ?></h6>
                     <ul class="list-unstyled">
                         <li class="mb-2">
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="lgpd.php" class="text-muted text-decoration-none">
                                 <?php echo t('privacy_policy', 'Política de Privacidade'); ?>
                             </a>
                         </li>

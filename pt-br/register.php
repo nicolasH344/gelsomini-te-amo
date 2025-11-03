@@ -187,10 +187,26 @@ include 'header.php';
                                    aria-describedby="terms-help"
                                    <?php echo isset($_POST['terms']) ? 'checked' : ''; ?>>
                             <label class="form-check-label required" for="terms">
-                                Aceito os <a href="terms.php" class="text-decoration-none">termos de uso</a> e <a href="privacy.php" class="text-decoration-none">política de privacidade</a>
+                                Aceito os termos de uso
                             </label>
                             <div id="terms-help" class="form-text">
                                 É necessário aceitar os termos para criar uma conta
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" 
+                                   class="form-check-input" 
+                                   id="lgpd_consent" 
+                                   name="lgpd_consent"
+                                   required
+                                   aria-describedby="lgpd-help"
+                                   <?php echo isset($_POST['lgpd_consent']) ? 'checked' : ''; ?>>
+                            <label class="form-check-label required" for="lgpd_consent">
+                                Aceito a <a href="lgpd.php" class="text-decoration-none" target="_blank">Política de Privacidade (LGPD)</a>
+                            </label>
+                            <div id="lgpd-help" class="form-text">
+                                Consentimento para tratamento de dados pessoais conforme LGPD
                             </div>
                         </div>
                         

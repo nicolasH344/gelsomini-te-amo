@@ -134,6 +134,12 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a class="dropdown-item" href="data-management.php">
+                                        <i class="fas fa-shield-alt me-2" aria-hidden="true"></i>
+                                        Meus Dados (LGPD)
+                                    </a>
+                                </li>
+                                <li>
                                     <a class="dropdown-item" href="progress.php">
                                         <i class="fas fa-chart-line me-2" aria-hidden="true"></i>
                                         <?php echo t('progress'); ?>
@@ -263,6 +269,8 @@
 
     <!-- Main Content -->
     <main id="main-content" role="main" style="padding-top: 80px;">
+        
+        <?php include 'cookie-banner.php'; ?>
         
         <!-- Mensagens de Feedback -->
         <?php if (isset($_SESSION['success'])): ?>

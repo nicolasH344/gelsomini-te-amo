@@ -484,6 +484,11 @@ if (!function_exists('processRegister')) {
             return ['success' => false, 'message' => 'Preencha todos os campos obrigatórios'];
         }
         
+        // Verificar consentimento LGPD
+        if (!isset($data['lgpd_consent']) || $data['lgpd_consent'] !== 'on') {
+            return ['success' => false, 'message' => 'Você deve aceitar a Política de Privacidade (LGPD)'];
+        }
+        
         if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             return ['success' => false, 'message' => 'Email inválido'];
         }
