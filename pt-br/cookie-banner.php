@@ -78,11 +78,26 @@ if ($show_banner): ?>
     bottom: 0;
     left: 0;
     right: 0;
-    background: var(--bg-dark);
-    color: var(--text-light);
+    background: rgba(0, 0, 0, 0.95);
+    color: #ffffff;
     padding: 1rem 0;
     z-index: 1000;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+    font-weight: 500;
+}
+
+.cookie-banner h6 {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.cookie-banner p {
+    color: #f8f9fa;
+}
+
+.cookie-banner a {
+    color: #ffc107;
+    font-weight: 600;
 }
 
 .cookie-settings {

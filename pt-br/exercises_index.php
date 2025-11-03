@@ -1,8 +1,12 @@
 <?php
 require_once 'config.php';
 require_once 'exercise_functions.php';
+require_once 'setup_progress_tables.php';
 
 $title = 'Exercícios';
+
+// Configurar tabelas se necessário
+setupProgressTables();
 
 // Parâmetros de filtro
 $category = sanitize($_GET['category'] ?? '');
@@ -108,8 +112,18 @@ include 'header.php';
                 ];
                 $display_difficulty = $difficulty_map_display[$exercise['difficulty_level']] ?? $exercise['difficulty_level'];
                 
-                // Verificar progresso do usuário (simulado)
+                // Verificar progresso do usuário
                 $completed = false;
+                if (isLoggedIn()) {
+                    $user_id = getCurrentUser()['id'];
+                    $conn = getDBConnection();
+                    if ($conn) {
+                        $stmt = $conn->prepare("SELECT completed FROM user_progress WHERE user_id = ? AND exercise_id = ?");
+                        $stmt->execute([$user_id, $exercise['id']]);
+                        $result = $stmt->fetch();
+                        $completed = $result && $result['completed'];
+                    }
+                }
             ?>
                 <div class="col-md-6 col-lg-4 mb-4">
                     <div class="card h-100 shadow-sm">
@@ -148,6 +162,13 @@ include 'header.php';
                                     <i class="fas fa-play" aria-hidden="true"></i> 
                                     <?php echo $completed ? 'Revisar' : 'Começar'; ?>
                                 </a>
+                                <?php if (isLoggedIn() && !$completed): ?>
+                                <button onclick="completeExercise(<?php echo $exercise['id']; ?>)" 
+                                        class="btn btn-success btn-sm" 
+                                        title="Marcar como concluído">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -245,13 +266,29 @@ include 'header.php';
                         <i class="fas fa-chart-line text-info" aria-hidden="true"></i> 
                         Seu Progresso
                     </h2>
-                    <p class="mb-2">Exercícios disponíveis: <strong><?php echo $totalResults > 0 ? $totalResults : count($exercises); ?></strong></p>
-                    <p class="mb-2">Exercícios concluídos: <strong>0</strong></p>
+                    <?php 
+                    $user_completed = 0;
+                    $total_available = $totalResults > 0 ? $totalResults : count($exercises);
+                    
+                    if (isLoggedIn()) {
+                        $user_id = getCurrentUser()['id'];
+                        $conn = getDBConnection();
+                        if ($conn) {
+                            $stmt = $conn->prepare("SELECT COUNT(*) FROM user_progress WHERE user_id = ? AND completed = 1");
+                            $stmt->execute([$user_id]);
+                            $user_completed = $stmt->fetchColumn();
+                        }
+                    }
+                    
+                    $progress_percent = $total_available > 0 ? round(($user_completed / $total_available) * 100) : 0;
+                    ?>
+                    <p class="mb-2">Exercícios disponíveis: <strong><?php echo $total_available; ?></strong></p>
+                    <p class="mb-2">Exercícios concluídos: <strong><?php echo $user_completed; ?></strong></p>
                     <div class="progress mb-3">
-                        <div class="progress-bar" role="progressbar" style="width: 0%" 
-                             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" 
-                             aria-label="Progresso geral: 0%">
-                            0%
+                        <div class="progress-bar" role="progressbar" style="width: <?php echo $progress_percent; ?>%" 
+                             aria-valuenow="<?php echo $progress_percent; ?>" aria-valuemin="0" aria-valuemax="100" 
+                             aria-label="Progresso geral: <?php echo $progress_percent; ?>%">
+                            <?php echo $progress_percent; ?>%
                         </div>
                     </div>
                     <a href="progress.php" class="btn btn-info btn-sm">
@@ -262,5 +299,31 @@ include 'header.php';
         </div>
     </div>
 </div>
+
+<script>
+function completeExercise(exerciseId) {
+    if (!confirm('Marcar este exercício como concluído?')) return;
+    
+    fetch('complete_exercise.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'exercise_id=' + exerciseId + '&score=10'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Exercício marcado como concluído!');
+            location.reload();
+        } else {
+            alert('Erro: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Erro de conexão: ' + error);
+    });
+}
+</script>
 
 <?php include 'footer.php'; ?>

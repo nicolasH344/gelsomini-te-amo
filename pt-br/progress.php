@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'setup_progress_tables.php';
 
 // Verificar se está logado
 if (!isLoggedIn()) {
@@ -7,18 +8,90 @@ if (!isLoggedIn()) {
 }
 
 $title = 'Meu Progresso';
+$user = getCurrentUser();
+$user_id = $user['id'];
 
-// Dados fictícios de progresso
-$stats = [
-    'exercises_completed' => 12,
-    'exercises_total' => 25,
-    'tutorials_read' => 8,
-    'tutorials_total' => 15,
-    'hours_studied' => 45,
-    'streak_days' => 7
-];
+// Configurar tabelas se necessário
+setupProgressTables();
 
-$progress_percentage = round(($stats['exercises_completed'] / $stats['exercises_total']) * 100);
+// Obter dados reais do banco
+function getRealProgressData($user_id) {
+    $conn = getDBConnection();
+    if (!$conn) return null;
+    
+    try {
+        // Total de exercícios
+        $total_exercises = $conn->query("SELECT COUNT(*) FROM exercises")->fetchColumn();
+        
+        // Exercícios completados pelo usuário
+        $completed_exercises = $conn->prepare("SELECT COUNT(*) FROM user_progress WHERE user_id = ? AND completed = 1");
+        $completed_exercises->execute([$user_id]);
+        $completed_count = $completed_exercises->fetchColumn();
+        
+        // Progresso por categoria
+        $category_progress = $conn->prepare("
+            SELECT e.category, 
+                   COUNT(e.id) as total,
+                   COUNT(CASE WHEN up.completed = 1 THEN 1 END) as completed
+            FROM exercises e 
+            LEFT JOIN user_progress up ON e.id = up.exercise_id AND up.user_id = ?
+            GROUP BY e.category
+        ");
+        $category_progress->execute([$user_id]);
+        $categories = $category_progress->fetchAll();
+        
+        // Atividades recentes
+        $recent_activity = $conn->prepare("
+            SELECT e.title, up.completed_at, up.score
+            FROM user_progress up
+            JOIN exercises e ON up.exercise_id = e.id
+            WHERE up.user_id = ? AND up.completed = 1
+            ORDER BY up.completed_at DESC
+            LIMIT 5
+        ");
+        $recent_activity->execute([$user_id]);
+        $activities = $recent_activity->fetchAll();
+        
+        return [
+            'exercises_completed' => $completed_count,
+            'exercises_total' => $total_exercises,
+            'categories' => $categories,
+            'activities' => $activities
+        ];
+        
+    } catch (PDOException $e) {
+        return null;
+    }
+}
+
+$progress_data = getRealProgressData($user_id);
+
+// Fallback para dados fictícios se não conseguir do banco
+if (!$progress_data) {
+    $stats = [
+        'exercises_completed' => 0,
+        'exercises_total' => 8,
+        'tutorials_read' => 0,
+        'tutorials_total' => 5,
+        'hours_studied' => 0,
+        'streak_days' => 0
+    ];
+    $categories = [];
+    $activities = [];
+} else {
+    $stats = [
+        'exercises_completed' => $progress_data['exercises_completed'],
+        'exercises_total' => $progress_data['exercises_total'],
+        'tutorials_read' => 0,
+        'tutorials_total' => 5,
+        'hours_studied' => $progress_data['exercises_completed'] * 2,
+        'streak_days' => min($progress_data['exercises_completed'], 7)
+    ];
+    $categories = $progress_data['categories'];
+    $activities = $progress_data['activities'];
+}
+
+$progress_percentage = $stats['exercises_total'] > 0 ? round(($stats['exercises_completed'] / $stats['exercises_total']) * 100) : 0;
 
 include 'header.php';
 ?>
@@ -119,45 +192,31 @@ include 'header.php';
                     </h6>
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                            <span>HTML</span>
-                            <span>80%</span>
+                    <?php if (empty($categories)): ?>
+                        <p class="text-muted">Nenhum progresso registrado ainda.</p>
+                        <a href="exercises_index.php" class="btn btn-primary btn-sm">
+                            <i class="fas fa-play me-1"></i>Começar Exercícios
+                        </a>
+                    <?php else: ?>
+                        <?php 
+                        $colors = ['bg-danger', 'bg-primary', 'bg-warning', 'bg-info', 'bg-success'];
+                        $color_index = 0;
+                        foreach ($categories as $category): 
+                            $percentage = $category['total'] > 0 ? round(($category['completed'] / $category['total']) * 100) : 0;
+                            $color = $colors[$color_index % count($colors)];
+                            $color_index++;
+                        ?>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span><?php echo ucfirst($category['category']); ?></span>
+                                <span><?php echo $percentage; ?>% (<?php echo $category['completed']; ?>/<?php echo $category['total']; ?>)</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar <?php echo $color; ?>" style="width: <?php echo $percentage; ?>%"></div>
+                            </div>
                         </div>
-                        <div class="progress">
-                            <div class="progress-bar bg-danger" style="width: 80%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                            <span>CSS</span>
-                            <span>65%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar bg-primary" style="width: 65%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                            <span>JavaScript</span>
-                            <span>45%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar bg-warning" style="width: 45%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-0">
-                        <div class="d-flex justify-content-between">
-                            <span>PHP</span>
-                            <span>30%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar bg-info" style="width: 30%"></div>
-                        </div>
-                    </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -210,29 +269,41 @@ include 'header.php';
                     </h6>
                 </div>
                 <div class="card-body">
-                    <div class="list-group list-group-flush">
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                Completou: Estrutura Básica HTML
+                    <?php if (empty($activities)): ?>
+                        <p class="text-muted">Nenhuma atividade recente.</p>
+                        <a href="exercises_index.php" class="btn btn-primary btn-sm">
+                            <i class="fas fa-play me-1"></i>Começar Agora
+                        </a>
+                    <?php else: ?>
+                        <div class="list-group list-group-flush">
+                            <?php foreach ($activities as $activity): ?>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Completou: <?php echo sanitize($activity['title']); ?>
+                                    <?php if ($activity['score'] > 0): ?>
+                                        <span class="badge bg-primary ms-2"><?php echo $activity['score']; ?> pts</span>
+                                    <?php endif; ?>
+                                </div>
+                                <small class="text-muted">
+                                    <?php 
+                                    $date = new DateTime($activity['completed_at']);
+                                    $now = new DateTime();
+                                    $diff = $now->diff($date);
+                                    
+                                    if ($diff->days == 0) {
+                                        echo 'Hoje';
+                                    } elseif ($diff->days == 1) {
+                                        echo 'Ontem';
+                                    } else {
+                                        echo $diff->days . ' dias atrás';
+                                    }
+                                    ?>
+                                </small>
                             </div>
-                            <small class="text-muted">Hoje</small>
+                            <?php endforeach; ?>
                         </div>
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <i class="fas fa-book text-primary me-2"></i>
-                                Leu: CSS Grid Layout
-                            </div>
-                            <small class="text-muted">Ontem</small>
-                        </div>
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                Completou: Formulários HTML
-                            </div>
-                            <small class="text-muted">2 dias atrás</small>
-                        </div>
-                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

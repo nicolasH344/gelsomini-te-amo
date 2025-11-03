@@ -6,6 +6,7 @@
     <meta name="description" content="<?php echo t('site_description', 'Plataforma interativa para aprender desenvolvimento web com exercícios práticos e feedback em tempo real.'); ?>">
     <meta name="keywords" content="desenvolvimento web, HTML, CSS, JavaScript, PHP, exercícios, tutoriais, programação">
     <meta name="author" content="WebLearn">
+    <meta name="google" content="notranslate">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
