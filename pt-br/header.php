@@ -420,6 +420,10 @@
         }
 
         function changeLanguage(language) {
+            // Marcar que o idioma foi alterado para mostrar LGPD novamente
+            document.cookie = "lgpd_consent=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            document.cookie = "lgpd_language=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            
             // Redirecionar para a pasta do idioma correspondente
             const currentPath = window.location.pathname;
             const currentLang = getCurrentLanguage();

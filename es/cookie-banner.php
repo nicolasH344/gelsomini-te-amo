@@ -7,7 +7,7 @@ if (!isset($_COOKIE['lgpd_consent'])) {
     $show_banner = true;
 }
 
-// Mostrar se mudou de idioma (verificar se há parâmetro de idioma na sessão diferente do cookie)
+// Mostrar se mudou de idioma
 if (isset($_SESSION['language_changed']) || 
     (isset($_COOKIE['lgpd_language']) && $_COOKIE['lgpd_language'] !== ($_SESSION['language'] ?? 'pt-br'))) {
     $show_banner = true;
@@ -21,17 +21,17 @@ if ($show_banner): ?>
                 <div class="d-flex align-items-center">
                     <i class="fas fa-cookie-bite fa-2x text-warning me-3"></i>
                     <div>
-                        <h6 class="mb-1">Uso de Cookies e Dados</h6>
+                        <h6 class="mb-1">Uso de Cookies y Datos</h6>
                         <p class="mb-0 small">
-                            Utilizamos cookies essenciais para o funcionamento da plataforma e dados pessoais conforme nossa 
-                            <a href="lgpd.php" class="text-decoration-underline">Política de Privacidade</a>.
+                            Utilizamos cookies esenciales para el funcionamiento de la plataforma y datos personales según nuestra 
+                            <a href="lgpd.php" class="text-decoration-underline">Política de Privacidad</a>.
                         </p>
                     </div>
                 </div>
             </div>
             <div class="col-lg-4 text-end">
                 <button onclick="acceptCookies()" class="btn btn-success btn-sm me-2">
-                    <i class="fas fa-check me-1"></i>Aceitar
+                    <i class="fas fa-check me-1"></i>Aceptar
                 </button>
                 <button onclick="showCookieSettings()" class="btn btn-outline-light btn-sm">
                     <i class="fas fa-cog me-1"></i>Configurar
@@ -45,26 +45,26 @@ if ($show_banner): ?>
     <div class="container">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">Configurações de Privacidade</h5>
+                <h5 class="mb-0">Configuración de Privacidad</h5>
             </div>
             <div class="card-body">
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" id="essentialCookies" checked disabled>
                     <label class="form-check-label" for="essentialCookies">
-                        <strong>Cookies Essenciais</strong> (Obrigatórios)
-                        <small class="d-block text-muted">Necessários para login e funcionamento básico</small>
+                        <strong>Cookies Esenciales</strong> (Obligatorias)
+                        <small class="d-block text-muted">Necesarias para login y funcionamiento básico</small>
                     </label>
                 </div>
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" id="analyticsCookies">
                     <label class="form-check-label" for="analyticsCookies">
-                        <strong>Cookies de Análise</strong> (Opcionais)
-                        <small class="d-block text-muted">Ajudam a melhorar a plataforma</small>
+                        <strong>Cookies de Análisis</strong> (Opcionales)
+                        <small class="d-block text-muted">Ayudan a mejorar la plataforma</small>
                     </label>
                 </div>
                 <div class="text-end">
                     <button onclick="saveCookieSettings()" class="btn btn-primary">
-                        <i class="fas fa-save me-1"></i>Salvar Preferências
+                        <i class="fas fa-save me-1"></i>Guardar Preferencias
                     </button>
                 </div>
             </div>
@@ -99,7 +99,7 @@ if ($show_banner): ?>
 <script>
 function acceptCookies() {
     const currentLang = getCurrentLanguage();
-    document.cookie = "lgpd_consent=accepted; path=/; max-age=" + (30*60); // 30 minutos
+    document.cookie = "lgpd_consent=accepted; path=/; max-age=" + (30*60);
     document.cookie = "analytics_consent=true; path=/; max-age=" + (30*60);
     document.cookie = "lgpd_language=" + currentLang + "; path=/; max-age=" + (30*60);
     document.getElementById('cookieBanner').style.display = 'none';
