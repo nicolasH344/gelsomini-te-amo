@@ -196,7 +196,7 @@
         </button>
         
         <div class="p-3">
-            <h5 id="settingsTitle" class="mb-3">
+            <h5 id="settingsTitle" class="label">
                 <i class="fas fa-cog me-2" aria-hidden="true"></i>
                 <?php echo t('settings'); ?>
             </h5>

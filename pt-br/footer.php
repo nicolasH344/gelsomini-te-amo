@@ -9,23 +9,23 @@
                         <i class="fas fa-code me-2" aria-hidden="true"></i>
                         <?php echo t('site_title'); ?>
                     </h5>
-                    <p class="text-muted">
+                    <p class="fw-semibold mb-3">
                         <?php echo t('footer_description', 'Plataforma interativa para aprender desenvolvimento web com exercícios práticos, tutoriais detalhados e uma comunidade ativa de desenvolvedores.'); ?>
                     </p>
                     <div class="d-flex gap-3">
-                        <a href="#" class="footer-link" aria-label="Facebook" title="Facebook">
+                        <a href="#" class="fw-semibold mb-3" aria-label="Facebook" title="Facebook">
                             <i class="fab fa-facebook-f" aria-hidden="true"></i>
                         </a>
-                        <a href="#" class="footer-link" aria-label="Twitter" title="Twitter">
+                        <a href="#" class="fw-semibold mb-3" aria-label="Twitter" title="Twitter">
                             <i class="fab fa-twitter" aria-hidden="true"></i>
                         </a>
-                        <a href="#" class="footer-link" aria-label="LinkedIn" title="LinkedIn">
+                        <a href="#" class="fw-semibold mb-3" aria-label="LinkedIn" title="LinkedIn">
                             <i class="fab fa-linkedin-in" aria-hidden="true"></i>
                         </a>
-                        <a href="#" class="footer-link" aria-label="GitHub" title="GitHub">
+                        <a href="#" class="fw-semibold mb-3" aria-label="GitHub" title="GitHub">
                             <i class="fab fa-github" aria-hidden="true"></i>
                         </a>
-                        <a href="#" class="footer-link" aria-label="YouTube" title="YouTube">
+                        <a href="#" class="fw-semibold mb-3" aria-label="YouTube" title="YouTube">
                             <i class="fab fa-youtube" aria-hidden="true"></i>
                         </a>
                     </div>
@@ -35,22 +35,22 @@
                     <h6 class="fw-semibold mb-3"><?php echo t('learning', 'Aprendizado'); ?></h6>
                     <ul class="list-unstyled">
                         <li class="mb-2">
-                            <a href="exercises_index.php" class="text-muted text-decoration-none">
+                            <a href="exercises_index.php" class="fw-semibold mb-3">
                                 <?php echo t('exercises'); ?>
                             </a>
                         </li>
                         <li class="mb-2"> 
-                            <a href="tutorials_index.php" class="footer-link text-decoration-none">
+                            <a href="tutorials_index.php" class="fw-semibold mb-3">
                                 <?php echo t('tutorials'); ?>
                             </a>
                         </li> 
                         <li class="mb-2">
-                            <a href="forum_index.php" class="text-muted text-decoration-none">
+                            <a href="forum_index.php" class="fw-semibold mb-3">
                                 <?php echo t('forum'); ?>
                             </a>
                         </li> 
                         <li class="mb-2">
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="#" class="fw-semibold mb-3">
                                 <?php echo t('challenges', 'Desafios'); ?>
                             </a>
                         </li>
@@ -61,22 +61,22 @@
                     <h6 class="fw-semibold mb-3"><?php echo t('resources', 'Recursos'); ?></h6>
                     <ul class="list-unstyled">
                         <li class="mb-2">
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="#" class="fw-semibold mb-3">
                                 <?php echo t('documentation', 'Documentação'); ?>
                             </a>
                         </li>
                         <li class="mb-2"> 
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="#" class="fw-semibold mb-3">
                                 <?php echo t('api', 'API'); ?>
                             </a>
                         </li> 
                         <li class="mb-2">
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="#" class="fw-semibold mb-3">
                                 <?php echo t('blog', 'Blog'); ?>
                             </a>
                         </li> 
                         <li class="mb-2">
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="#" class="fw-semibold mb-3">
                                 <?php echo t('newsletter', 'Newsletter'); ?>
                             </a>
                         </li>
@@ -87,22 +87,22 @@
                     <h6 class="fw-semibold mb-3"><?php echo t('support', 'Suporte'); ?></h6>
                     <ul class="list-unstyled">
                         <li class="mb-2">
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="#" class="fw-semibold mb-3">
                                 <?php echo t('help_center', 'Central de Ajuda'); ?>
                             </a>
                         </li>
                         <li class="mb-2"> 
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="#" class="fw-semibold mb-3">
                                 <?php echo t('contact', 'Contato'); ?>
                             </a>
                         </li> 
                         <li class="mb-2">
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="#" class="fw-semibold mb-3">
                                 <?php echo t('faq', 'FAQ'); ?>
                             </a>
                         </li> 
                         <li class="mb-2">
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="#" class="fw-semibold mb-3">
                                 <?php echo t('feedback', 'Feedback'); ?>
                             </a>
                         </li>
@@ -113,22 +113,22 @@
                     <h6 class="fw-semibold mb-3"><?php echo t('legal', 'Legal'); ?></h6>
                     <ul class="list-unstyled">
                         <li class="mb-2">
-                            <a href="lgpd.php" class="text-muted text-decoration-none">
+                            <a href="lgpd.php" class="fw-semibold mb-3">
                                 <?php echo t('privacy_policy', 'Política de Privacidade'); ?>
                             </a>
                         </li>
                         <li class="mb-2"> 
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="#" class="fw-semibold mb-3>
                                 <?php echo t('terms_of_service', 'Termos de Serviço'); ?>
                             </a>
                         </li> 
                         <li class="mb-2">
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="#" class="fw-semibold mb-3">
                                 <?php echo t('cookies', 'Cookies'); ?>
                             </a>
                         </li> 
                         <li class="mb-2">
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="#" class="fw-semibold mb-3">
                                 <?php echo t('accessibility_statement', 'Declaração de Acessibilidade'); ?>
                             </a>
                         </li>
@@ -140,18 +140,18 @@
             
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <p class="text-muted mb-0">
+                    <p class="fw-semibold mb-3">
                         &copy; <?php echo date('Y'); ?> <?php echo t('site_title'); ?>. 
                         <?php echo t('all_rights_reserved', 'Todos os direitos reservados.'); ?>
                     </p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <div class="d-flex justify-content-md-end gap-3 mt-3 mt-md-0">
-                        <span class="text-muted small">
+                        <span class="fw-semibold mb-3">
                             <i class="fas fa-heart text-danger me-1" aria-hidden="true"></i>
                             <?php echo t('made_with_love', 'Feito com amor'); ?>
                         </span>
-                        <span class="text-muted small">
+                        <span class="fw-semibold mb-3">
                             <i class="fas fa-universal-access me-1" aria-hidden="true"></i>
                             <?php echo t('accessible_design', 'Design Acessível'); ?>
                         </span>

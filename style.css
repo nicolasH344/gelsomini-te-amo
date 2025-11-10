@@ -24,8 +24,8 @@
     --bg-light: #ffffff;
     
     /* -- Cores de Texto Semânticas (Padrão: Roxo Moderno - Claro) -- */
-    --text-primary: #212529;      /* Cor principal para a maioria dos textos (preto quase total). */
-    --text-secondary: #495057;    /* Cor secundária para textos menos importantes (cinza escuro). */
+    --text-primary: #080808;      /* Cor principal para a maioria dos textos (preto quase total). */
+    --text-secondary: #fff;    /* Cor secundária para textos menos importantes (cinza escuro). */
     --text-muted: #6c757d;        /* Cor para textos suaves, como metadados (cinza médio). */
     --text-light: #f8f9fa;
     
@@ -37,7 +37,7 @@
     /* -- Cores do Rodapé -- */
     --footer-bg: #f8f9fa;
     --footer-text-body: #ffffff;      /* Cor para texto geral no rodapé. */
-    --footer-text-muted: #6c757d; /* Cor para texto suave no rodapé. */
+    --footer-text-muted: #000000; /* Cor para texto suave no rodapé. */
     --footer-link-color: var(--primary-color); /* Cor para links no rodapé. */
     --footer-link-hover-color: var(--primary-dark); /* Cor para links no rodapé (hover). */
     
@@ -76,10 +76,10 @@
     --gradient-hero: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 25%, var(--accent-color) 50%, var(--secondary-color) 75%, var(--primary-color) 100%);
     
     /* -- Cores de Texto (Tema Azul - Claro) -- */
-    --text-primary: #212529;
+    --text-primary: #000000;
     --text-secondary: #343a40;
     --text-light: #f8f9fa;
-    --text-muted: #6c757d; /* Ajustado para ser visível em fundo claro */
+    --text-muted: #000000; /* Ajustado para ser visível em fundo claro */
     --text-heading: #212529;
     --text-body: var(--text-primary);
     --text-link: var(--primary-color);
@@ -87,7 +87,7 @@
     /* -- Cores do Rodapé -- */
     --footer-bg: #f8f9fa;
     --footer-text-body: #212529;
-    --footer-text-muted: #6c757d; /* Ajustado para ser visível em fundo claro */
+    --footer-text-muted: #000000; /* Ajustado para ser visível em fundo claro */
     --footer-link-color: var(--primary-color);
     --footer-link-hover-color: var(--primary-dark);
 }
@@ -105,10 +105,10 @@
     --gradient-hero: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 25%, var(--secondary-color) 50%, var(--accent-color) 75%, var(--primary-color) 100%);
 
     /* -- Cores de Texto (Tema Verde - Claro) -- */
-    --text-primary: #212529; /* Ajustado para ser visível em fundo claro */
+    --text-primary: #000000; /* Ajustado para ser visível em fundo claro */
     --text-secondary: #343a40; /* Ajustado para ser visível em fundo claro */
     --text-light: #f8f9fa;
-    --text-muted: #6c757d; /* Ajustado para ser visível em fundo claro */ 
+    --text-muted: #000000; /* Ajustado para ser visível em fundo claro */ 
     --text-heading: #212529;
     --text-body: var(--text-primary);
     --text-link: var(--primary-color);
@@ -116,7 +116,7 @@
     /* -- Cores do Rodapé -- */
     --footer-bg: #f8f9fa;
     --footer-text-body: #212529;
-    --footer-text-muted: #6c757d; /* Ajustado para ser visível em fundo claro */
+    --footer-text-muted: #000000; /* Ajustado para ser visível em fundo claro */
     --footer-link-color: var(--primary-color);
     --footer-link-hover-color: var(--primary-dark);
 }
@@ -131,14 +131,14 @@
     
     --bg-primary: #121212;
     --bg-secondary: #1e1e1e;
-    --bg-dark: #000000;
+    --bg-dark: #ffffff;
     --bg-light: #2d2d2d;
     
     /* -- Cores de Texto (Tema Escuro) -- */
     --text-primary: #ffffff;
     --text-secondary: #e9ecef;
     --text-light: #ffffff;
-    --text-muted: #adb5bd; /* Ajustado para um cinza mais suave em fundo escuro */
+    --text-muted: #ffffff; /* Ajustado para um cinza mais suave em fundo escuro */
     --text-heading: #f8f9fa; /* Cor para títulos (h1, h2, etc.). */
     --text-body: var(--text-primary);
     --text-link: var(--primary-color);
@@ -146,7 +146,7 @@
     /* -- Cores do Rodapé -- */
     --footer-bg: #1e1e1e;
     --footer-text-body: #ffffff;
-    --footer-text-muted: #adb5bd; /* Ajustado para um cinza mais suave em fundo escuro */
+    --footer-text-muted: #ffffff; /* Ajustado para um cinza mais suave em fundo escuro */
     --footer-link-color: var(--primary-color);
     --footer-link-hover-color: var(--primary-light);
     
@@ -520,7 +520,12 @@ body {
 
 .card-title {
     margin-bottom: var(--bs-card-title-spacer-y);
-    color: var(--text-body);
+    color: var(--text-primary);
+}
+
+.card-title2 {
+    margin-bottom: var(--bs-card-title-spacer-y);
+    color: #000000;
 }
 
 /* =================================================================== */
@@ -605,7 +610,7 @@ body {
 .text-body { color: var(--text-body) !important; }
 .text-link { color: var(--text-link) !important; text-decoration: none; }
 .text-link:hover { color: var(--primary-dark) !important; text-decoration: underline; }
-.text-muted { color: var(--text-muted) !important; }
+.text-muted { color: var(--footer-text-muted)!important; }
 /* Garante que o texto 'muted' no rodapé use a cor correta do rodapé. */
 .footer .text-muted {
     color: var(--footer-text-muted) !important;
@@ -614,6 +619,7 @@ body {
 
 .mb-0 {
     margin-bottom: 0 !important;
+    color: #ffffff;
 }
 
 .mb-2 {
@@ -623,7 +629,11 @@ body {
 
 .mb-3{ /*titulo do rodapé*/
     margin-bottom: 1rem !important;
-    color: var(--text-heading);
+    color: #ffffff;
+}
+.mb-4{ /*titulo do rodapé*/
+    margin-bottom: 1rem !important;
+    color: #000000;
 }
 
 /* Estilos padrão para parágrafos e labels. */
@@ -1171,3 +1181,15 @@ label {
 .badge-category-solidity { background-color: #363636; color: var(--text-light); }
 .badge-category-devops { background-color: #f3f3f3; color: var(--text-primary); border: 1px solid var(--border-color); }
 .badge-category-default { background-color: var(--secondary-color); color: var(--text-light); }
+
+
+
+.row2{
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: calc(-1 * var(--bs-gutter-y));
+    margin-right: calc(-.5 * var(--bs-gutter-x));
+    margin-left: calc(-.5 * var(--bs-gutter-x));
+}

@@ -33,7 +33,7 @@ include 'header.php';
 
 <div class="container mt-4">
     <!-- Header da página -->
-    <div class="row mb-4">
+    <div class="row label">
         <div class="col-md-8">
             <h1><i class="fas fa-book-open" aria-hidden="true"></i> Tutoriais</h1>
             <p class="lead">Aprenda desenvolvimento web com nossos tutoriais detalhados</p>
@@ -122,12 +122,12 @@ include 'header.php';
                     </div>
                     
                     <div class="card-body">
-                        <h3 class="card-title h5"><?php echo htmlspecialchars($tutorial['title']); ?></h3>
+                        <h3 class="card-title h5  "><?php echo htmlspecialchars($tutorial['title']); ?></h3>
                         <p class="card-text"><?php echo htmlspecialchars($tutorial['description']); ?></p>
                         
                         <div class="d-flex justify-content-between text-muted small">
                             <span>
-                                <i class="fas fa-clock me-1" aria-hidden="true"></i>
+                                <i class="fas fa-clock me-1  " aria-hidden="true"></i>
                                 <?php echo htmlspecialchars($tutorial['duration']); ?>
                             </span>
                             <span>
@@ -144,7 +144,7 @@ include 'header.php';
                                 <i class="fas fa-play" aria-hidden="true"></i> Ler Tutorial
                             </a>
                             <a href="show.php?type=tutorial&id=<?php echo $tutorial['id']; ?>&preview=1" 
-                               class="btn btn-outline-secondary btn-sm"
+                               class="btn btn-primary btn-sm flex-fill"
                                aria-label="Visualizar tutorial <?php echo htmlspecialchars($tutorial['title']); ?>">
                                 <i class="fas fa-eye" aria-hidden="true"></i>
                             </a>
@@ -206,9 +206,9 @@ include 'header.php';
     <?php endif; ?>
 
     <!-- Categorias populares -->
-    <div class="row mt-5">
+    <div class="row2 mt-4 ">
         <div class="col-12">
-            <h2 class="h4 mb-4">Categorias Populares</h2>
+            <h2 class="h4 fw-semibold ">Categorias Populares</h2>
         </div>
         
         <div class="col-md-3 col-sm-6 mb-3">
@@ -216,17 +216,17 @@ include 'header.php';
                 <div class="card-body text-center">
                     <i class="fab fa-html5" style="font-size: 2rem;" aria-hidden="true"></i>
                     <h3 class="h5 mt-2">HTML5</h3>
-                    <p class="mb-0">2 tutoriais</p>
+                    <p class="mb-3">2 tutoriais</p>
                 </div>
             </div>
         </div>
         
-        <div class="col-md-3 col-sm-6 mb-3">
+        <div class="col-md-0 col-sm-6 mb-3">
             <div class="card bg-primary text-white">
                 <div class="card-body text-center">
                     <i class="fab fa-css3-alt" style="font-size: 2rem;" aria-hidden="true"></i>
                     <h3 class="h5 mt-2">CSS3</h3>
-                    <p class="mb-0">2 tutoriais</p>
+                    <p class="mb-3">2 tutoriais</p>
                 </div>
             </div>
         </div>
@@ -236,7 +236,7 @@ include 'header.php';
                 <div class="card-body text-center">
                     <i class="fab fa-js-square" style="font-size: 2rem;" aria-hidden="true"></i>
                     <h3 class="h5 mt-2">JavaScript</h3>
-                    <p class="mb-0">1 tutorial</p>
+                    <p class="mb-3">1 tutorial</p>
                 </div>
             </div>
         </div>
@@ -246,14 +246,14 @@ include 'header.php';
                 <div class="card-body text-center">
                     <i class="fab fa-php" style="font-size: 2rem;" aria-hidden="true"></i>
                     <h3 class="h5 mt-2">PHP</h3>
-                    <p class="mb-0">1 tutorial</p>
+                    <p class="mb-3">1 tutorial</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-            <p class="mb-0">1 tutorial</p>
+            
                 </div>
             </div>
         </div>
@@ -264,20 +264,20 @@ include 'header.php';
         <div class="col-md-6">
             <div class="card bg-light">
                 <div class="card-body">
-                    <h2 class="h5 card-title">
-                        <i class="fas fa-graduation-cap text-success" aria-hidden="true"></i> 
+                    <h2 class="h5 card-title2">
+                        <i class="fas fa-graduation-cap text-success  mb-0" aria-hidden="true"></i> 
                         Como Aproveitar os Tutoriais
                     </h2>
-                    <ul class="list-unstyled mb-0">
-                        <li class="mb-2">
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-4">
                             <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                             Leia com atenção e pratique os exemplos
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-4">
                             <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                             Faça anotações dos pontos importantes
                         </li>
-                        <li class="mb-0">
+                        <li class="mb-4">
                             <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                             Aplique o conhecimento nos exercícios
                         </li>
@@ -289,11 +289,11 @@ include 'header.php';
         <div class="col-md-6">
             <div class="card bg-light">
                 <div class="card-body">
-                    <h2 class="h5 card-title">
+                    <h2 class="h5 card-title2">
                         <i class="fas fa-question-circle text-info" aria-hidden="true"></i> 
                         Precisa de Ajuda?
                     </h2>
-                    <p class="mb-3">Tem dúvidas sobre algum tutorial? Nossa comunidade está aqui para ajudar!</p>
+                    <p class="mb-4">Tem dúvidas sobre algum tutorial? Nossa comunidade está aqui para ajudar!</p>
                     <a href="forum_index.php" class="btn btn-info btn-sm">
                         <i class="fas fa-comments" aria-hidden="true"></i> Ir para o Fórum
                     </a>
