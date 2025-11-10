@@ -624,7 +624,7 @@ body {
 
 .mb-2 {
     margin-bottom: .5rem !important;
-    color: var(--text-body) !important;
+    color: var(--footer-text-muted) !important;
 }
 
 .mb-3{ /*titulo do rodapé*/

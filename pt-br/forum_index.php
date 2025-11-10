@@ -58,7 +58,7 @@ include 'header.php';
         <!-- Conteúdo principal -->
         <div class="col-lg-8">
             <!-- Filtros e busca -->
-            <div class="card mb-4">
+            <div class="card mb-2">
                 <div class="card-body">
                     <h2 class="h5 card-title">Filtrar Posts</h2>
                     <form method="GET" action="forum_index.php" class="row g-3">
@@ -92,7 +92,7 @@ include 'header.php';
             <!-- Lista de posts -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="h5 mb-0 ">Posts Recentes</h2>
+                    <h2 class="h5 mb-2 ">Posts Recentes</h2>
                 </div>
                 <div class="card-body p-0">
                     <?php foreach ($forum_posts as $index => $post): ?>
@@ -200,9 +200,9 @@ include 'header.php';
         <!-- Sidebar -->
         <div class="col-lg-4">
             <!-- Estatísticas do fórum -->
-            <div class="card mb-4">
+            <div class="card mb-2">
                 <div class="card-header">
-                    <h2 class="h6 mb-0">
+                    <h2 class="h6 mb-2">
                         <i class="fas fa-chart-bar" aria-hidden="true"></i> Estatísticas
                     </h2>
                 </div>
@@ -221,9 +221,9 @@ include 'header.php';
             </div>
 
             <!-- Categorias -->
-            <div class="card mb-4">
+            <div class="card mb-2">
                 <div class="card-header">
-                    <h2 class="h6 mb-0">
+                    <h2 class="h6 mb-2">
                         <i class="fas fa-tags" aria-hidden="true"></i> Categorias
                     </h2>
                 </div>
@@ -252,7 +252,7 @@ include 'header.php';
             <!-- Posts populares -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="h6 mb-0">
+                    <h2 class="h6 mb-2">
                         <i class="fas fa-fire" aria-hidden="true"></i> Posts Populares
                     </h2>
                 </div>
@@ -261,8 +261,8 @@ include 'header.php';
                     $popular_posts = array_slice($forum_posts, 0, 3);
                     foreach ($popular_posts as $post): 
                     ?>
-                        <div class="mb-3">
-                            <h3 class="h6 mb-1">
+                        <div class="mb-2">
+                            <h3 class="h6 mb-2">
                                 <a href="show.php?type=forum&id=<?php echo $post['id']; ?>" 
                                    class="text-decoration-none">
                                     <?php echo sanitize($post['title']); ?>
@@ -298,7 +298,7 @@ include 'header.php';
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                     Use títulos descritivos para seus posts
                                 </li>
-                                <li class="mb-0">
+                                <li class="mb-2">
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                     Pesquise antes de postar uma dúvida
                                 </li>
@@ -314,7 +314,7 @@ include 'header.php';
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
                                     Evite linguagem ofensiva
                                 </li>
-                                <li class="mb-0">
+                                <li class="mb-2">
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
                                     Não compartilhe informações pessoais
                                 </li>
