@@ -26,7 +26,7 @@ Environment::load();
 define('DB_HOST', Environment::get('DB_HOST', 'localhost'));
 define('DB_NAME', Environment::get('DB_NAME', 'cursinho'));
 define('DB_USER', Environment::get('DB_USER', 'root'));
-define('DB_PASS', Environment::get('DB_PASS', 'Home@spSENAI2025!'));
+define('DB_PASS', Environment::get('DB_PASS', ''));
 define('DB_CHARSET', 'utf8mb4');
 
 // Configurações de erro (desabilitar em produção)

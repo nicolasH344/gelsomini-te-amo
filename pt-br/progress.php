@@ -1,6 +1,6 @@
 <?php
 require_once 'config.php';
-require_once 'setup_progress_tables.php';
+require_once 'database_connector.php';
 
 // Verificar se está logado
 if (!isLoggedIn()) {
@@ -10,9 +10,6 @@ if (!isLoggedIn()) {
 $title = 'Meu Progresso';
 $user = getCurrentUser();
 $user_id = $user['id'];
-
-// Configurar tabelas se necessário
-setupProgressTables();
 
 // Obter dados reais do banco
 function getRealProgressData($user_id) {
@@ -24,7 +21,7 @@ function getRealProgressData($user_id) {
         $total_exercises = $conn->query("SELECT COUNT(*) FROM exercises")->fetchColumn();
         
         // Exercícios completados pelo usuário
-        $completed_exercises = $conn->prepare("SELECT COUNT(*) FROM user_progress WHERE user_id = ? AND completed = 1");
+        $completed_exercises = $conn->prepare("SELECT COUNT(*) FROM user_progress WHERE user_id = ? AND status = 'completed'");
         $completed_exercises->execute([$user_id]);
         $completed_count = $completed_exercises->fetchColumn();
         
@@ -32,7 +29,7 @@ function getRealProgressData($user_id) {
         $category_progress = $conn->prepare("
             SELECT e.category, 
                    COUNT(e.id) as total,
-                   COUNT(CASE WHEN up.completed = 1 THEN 1 END) as completed
+                   COUNT(CASE WHEN up.status = 'completed' THEN 1 END) as completed
             FROM exercises e 
             LEFT JOIN user_progress up ON e.id = up.exercise_id AND up.user_id = ?
             GROUP BY e.category
@@ -45,7 +42,7 @@ function getRealProgressData($user_id) {
             SELECT e.title, up.completed_at, up.score
             FROM user_progress up
             JOIN exercises e ON up.exercise_id = e.id
-            WHERE up.user_id = ? AND up.completed = 1
+            WHERE up.user_id = ? AND up.status = 'completed'
             ORDER BY up.completed_at DESC
             LIMIT 5
         ");
@@ -64,7 +61,7 @@ function getRealProgressData($user_id) {
     }
 }
 
-$progress_data = getRealProgressData($user_id);
+$progress_data = $dbConnector->getUserProgress($user_id);
 
 // Fallback para dados fictícios se não conseguir do banco
 if (!$progress_data) {

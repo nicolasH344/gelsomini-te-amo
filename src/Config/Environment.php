@@ -6,9 +6,18 @@ class Environment {
         if (self::$loaded) return;
         
         $envFile = $path ?: dirname(__DIR__, 2) . '/.env';
-        if (!file_exists($envFile)) return;
         
-        $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        // Validar caminho para prevenir path traversal
+        $realPath = realpath($envFile);
+        $basePath = realpath(dirname(__DIR__, 2));
+        
+        if (!$realPath || !$basePath || strpos($realPath, $basePath) !== 0) {
+            return;
+        }
+        
+        if (!file_exists($realPath)) return;
+        
+        $lines = file($realPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         foreach ($lines as $line) {
             if (strpos($line, '=') !== false && $line[0] !== '#') {
                 list($key, $value) = explode('=', $line, 2);

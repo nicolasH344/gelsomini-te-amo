@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'database_connector.php';
 
 if (!isLoggedIn()) {
     echo json_encode(['success' => false, 'message' => 'Não logado']);
@@ -16,27 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     
-    $conn = getDBConnection();
-    if (!$conn) {
-        echo json_encode(['success' => false, 'message' => 'Erro de conexão']);
-        exit;
-    }
-    
-    try {
-        // Inserir ou atualizar progresso
-        $stmt = $conn->prepare("
-            INSERT INTO user_progress (user_id, exercise_id, completed, score, completed_at) 
-            VALUES (?, ?, 1, ?, NOW())
-            ON DUPLICATE KEY UPDATE 
-            completed = 1, score = GREATEST(score, VALUES(score)), completed_at = NOW()
-        ");
-        
-        $stmt->execute([$user_id, $exercise_id, $score]);
-        
+    if ($dbConnector->completeExercise($user_id, $exercise_id, $score)) {
         echo json_encode(['success' => true, 'message' => 'Exercício completado!']);
-        
-    } catch (PDOException $e) {
-        echo json_encode(['success' => false, 'message' => 'Erro: ' . $e->getMessage()]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Erro ao completar exercício']);
     }
 } else {
     echo json_encode(['success' => false, 'message' => 'Método inválido']);

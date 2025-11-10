@@ -34,8 +34,8 @@ switch ($action) {
             $user = $stmt->fetch();
             
             if ($user) {
-                // Gerar código de 6 dígitos
-                $code = sprintf('%06d', mt_rand(0, 999999));
+                // Gerar código de 6 dígitos seguro
+                $code = sprintf('%06d', random_int(100000, 999999));
                 
                 // Salvar código no banco
                 if (saveResetCode($email, $code)) {

@@ -1,8 +1,6 @@
 <?php
 require_once 'config.php';
-require_once '../src/autoload.php';
-
-use App\Models\Badge;
+require_once 'database_connector.php';
 
 if (!isLoggedIn()) {
     redirect('login.php');
@@ -10,14 +8,14 @@ if (!isLoggedIn()) {
 
 $title = 'Conquistas e Badges';
 $user = getCurrentUser();
-$badgeModel = new Badge();
 
 // Verificar e conceder badges
-$badgeModel->checkAndAwardBadges($user['id']);
+global $feedbackSystem;
+$feedbackSystem->checkBadges($user['id']);
 
 // Buscar badges do usuário
-$userBadges = $badgeModel->getUserBadges($user['id']);
-$allBadges = $badgeModel->findAll();
+$userBadges = $dbConnector->getUserBadges($user['id']);
+$allBadges = $dbConnector->getAllBadges();
 
 include 'header.php';
 ?>
