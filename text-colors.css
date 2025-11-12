@@ -1,0 +1,160 @@
+/* =================================================================== */
+/* CORES DE TEXTO GLOBAIS - ADAPTÁVEIS POR TEMA
+/* =================================================================== */
+
+/* Força todas as cores de texto a seguirem o tema */
+body * {
+    color: inherit;
+}
+
+/* Títulos e cabeçalhos */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    color: var(--text-heading) !important;
+}
+
+/* Parágrafos e texto do corpo */
+p, .text-body, .card-text {
+    color: var(--text-body) !important;
+}
+
+/* Texto secundário e muted */
+.text-muted, small, .small {
+    color: var(--text-muted) !important;
+}
+
+/* Lead text */
+.lead {
+    color: var(--text-body) !important;
+}
+
+/* Cards específicos */
+.card h1, .card h2, .card h3, .card h4, .card h5, .card h6 {
+    color: var(--text-heading) !important;
+}
+
+.card p, .card .card-text {
+    color: var(--text-body) !important;
+}
+
+.card small, .card .text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Testimonials e depoimentos */
+.testimonial-text {
+    color: var(--text-body) !important;
+}
+
+.testimonial-author {
+    color: var(--text-heading) !important;
+}
+
+.testimonial-role {
+    color: var(--text-muted) !important;
+}
+
+/* Seções específicas */
+.hero-section h1, .hero-section h2 {
+    color: var(--text-light) !important;
+}
+
+.hero-section p, .hero-section .lead {
+    color: var(--text-light) !important;
+}
+
+/* Footer */
+.footer h1, .footer h2, .footer h3, .footer h4, .footer h5, .footer h6 {
+    color: var(--footer-text-body) !important;
+}
+
+.footer p {
+    color: var(--footer-text-muted) !important;
+}
+
+.footer small, .footer .text-muted {
+    color: var(--footer-text-muted) !important;
+}
+
+/* Labels e formulários */
+label, .form-label {
+    color: var(--text-primary) !important;
+}
+
+.form-text {
+    color: var(--text-muted) !important;
+}
+
+/* Listas */
+ul li, ol li {
+    color: var(--text-body) !important;
+}
+
+/* Blockquotes */
+blockquote {
+    color: var(--text-body) !important;
+}
+
+blockquote footer {
+    color: var(--text-muted) !important;
+}
+
+/* Tabelas */
+table {
+    color: var(--text-body) !important;
+}
+
+th {
+    color: var(--text-heading) !important;
+}
+
+/* Navegação */
+.navbar-nav .nav-link {
+    color: var(--text-primary) !important;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: var(--primary-color) !important;
+}
+
+/* Breadcrumbs */
+.breadcrumb-item {
+    color: var(--text-muted) !important;
+}
+
+.breadcrumb-item.active {
+    color: var(--text-body) !important;
+}
+
+/* Alertas - mantém cores específicas mas ajusta texto */
+.alert {
+    color: inherit !important;
+}
+
+/* Botões - mantém cores específicas */
+.btn {
+    color: inherit !important;
+}
+
+/* Links */
+a {
+    color: var(--text-link) !important;
+}
+
+a:hover {
+    color: var(--primary-dark) !important;
+}
+
+/* Correção para elementos específicos que podem ter cores hardcoded */
+.feature-description {
+    color: var(--text-body) !important;
+}
+
+.stat-number {
+    color: var(--text-heading) !important;
+}
+
+.stat-label {
+    color: var(--text-muted) !important;
+}

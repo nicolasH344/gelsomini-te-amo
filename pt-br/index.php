@@ -117,26 +117,26 @@ include 'header.php';
 <!-- Seção de Recursos -->
 <section class="py-5 bg-light">
     <div class="container">
-        <div class="row">
+        <div class="row about-section">
             <div class="col-12 text-center mb-5">
-                <h2 class="display-5 fw-bold text-gradient">
+                <h2 class="display-5 fw-bold text-gradient theme-text-heading">
                     <?php echo t('why_choose_us', 'Por que nos escolher?'); ?>
                 </h2>
-                <p class="lead text-muted">
+                <p class="lead theme-text-body">
                     <?php echo t('platform_benefits', 'Descubra os benefícios da nossa plataforma de aprendizagem'); ?>
                 </p>
             </div>
         </div>
         
-        <div class="row g-4">
+        <div class="row g-4 feature-section">
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card theme-card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon mb-3">
                             <i class="fas fa-code fa-3x text-primary"></i>
                         </div>
-                        <h4 class="card-title"><?php echo t('practical_exercises', 'Exercícios Práticos'); ?></h4>
-                        <p class="card-text text-muted">
+                        <h4 class="card-title theme-text-heading"><?php echo t('practical_exercises', 'Exercícios Práticos'); ?></h4>
+                        <p class="card-text theme-text-body">
                             <?php echo t('practical_exercises_desc', 'Aprenda fazendo com exercícios interativos que simulam situações reais de desenvolvimento.'); ?>
                         </p>
                     </div>
@@ -325,7 +325,7 @@ include 'header.php';
         <div class="row g-4">
             <!-- Depoimento 1 -->
             <div class="col-lg-4 d-flex align-items-stretch">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card testimonial-card h-100 border-0 shadow-sm">
                     <div class="card-body text-center p-4 d-flex flex-column">
                         <div class="mb-3">
                             <img src="https://i.pravatar.cc/100?u=1" 
@@ -333,13 +333,13 @@ include 'header.php';
                                  class="rounded-circle border border-2 border-primary p-1">
                         </div>
                         <blockquote class="blockquote flex-grow-1">
-                            <p class="mb-3">
+                            <p class="mb-3 theme-text-body">
                                 "<?php echo t('testimonial_1', 'A plataforma é incrível! Os exercícios práticos me ajudaram a consolidar meus conhecimentos de uma forma que nenhum outro curso online havia conseguido antes.'); ?>"
                             </p>
                         </blockquote>
                         <footer class="blockquote-footer mt-auto">
-                            <strong class="d-block">Joana Silva</strong>
-                            <cite title="<?php echo t('job_title', 'Cargo'); ?>">
+                            <strong class="d-block theme-text-heading">Joana Silva</strong>
+                            <cite title="<?php echo t('job_title', 'Cargo'); ?>" class="theme-text-muted">
                                 <?php echo t('frontend_developer', 'Desenvolvedora Front-end'); ?>
                             </cite>
                         </footer>

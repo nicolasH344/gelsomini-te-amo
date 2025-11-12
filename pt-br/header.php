@@ -27,6 +27,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
+    <link rel="stylesheet" href="../themes.css">
+    <link rel="stylesheet" href="../components.css">
+    <link rel="stylesheet" href="../theme-text.css">
     <link rel="stylesheet" href="../style.css">
     
     <!-- Preload critical resources -->
