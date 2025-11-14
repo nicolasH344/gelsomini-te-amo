@@ -1,111 +1,117 @@
-# 🗄️ Banco de Dados WebLearn
+# Banco de Dados - Plataforma de Aprendizado
 
-Este diretório contém todos os scripts SQL para criar o banco de dados completo do WebLearn.
+Este diretório contém todos os arquivos relacionados ao banco de dados da plataforma.
 
-## 📋 Estrutura dos Arquivos
+## Arquivos
 
-### Scripts de Criação (Execute em ordem):
+### 📄 schema.sql
+Esquema completo do banco de dados com todas as tabelas, índices e relacionamentos.
 
-1. **`01_create_database.sql`** - Cria o banco de dados
-2. **`02_users_table.sql`** - Sistema de usuários
-3. **`03_categories_exercises.sql`** - Categorias e exercícios
-4. **`04_progress_system.sql`** - Sistema de progresso e conquistas
-5. **`05_forum_system.sql`** - Sistema de fórum
-6. **`06_tutorials_system.sql`** - Sistema de tutoriais
-7. **`07_security_system.sql`** - Sistema de segurança
-8. **`08_chat_system.sql`** - Sistema de chat
-9. **`09_notifications_system.sql`** - Sistema de notificações
-10. **`10_insert_sample_data.sql`** - Dados de exemplo
+**Principais tabelas:**
+- `users` - Usuários da plataforma
+- `exercises` - Exercícios de programação
+- `user_progress` - Progresso dos usuários
+- `forum_posts` / `forum_comments` - Sistema de fórum
+- `chat_messages` - Chat em tempo real
+- `badges` / `user_badges` - Sistema de gamificação
+- `collaborative_sessions` - Sessões colaborativas
+- `mentorship_requests` - Sistema de mentoria
 
-## 🚀 Como Usar
+### 📄 seed_data.sql
+Dados iniciais para popular o banco com:
+- Categorias de exercícios
+- Exercícios de exemplo
+- Categorias do fórum
+- Badges do sistema
+- Usuário administrador padrão
+- Posts e tutoriais de exemplo
 
-### Opção 1: Executar Todos os Scripts
+### 📄 install.php
+Script PHP para instalação automática do banco de dados.
+
+## Instalação
+
+### Opção 1: Script Automático
+1. Acesse: `http://localhost/gelsomini-te-amo/database/install.php`
+2. O script criará o banco e inserirá os dados iniciais
+
+### Opção 2: Manual via phpMyAdmin
+1. Abra o phpMyAdmin
+2. Execute o arquivo `schema.sql`
+3. Execute o arquivo `seed_data.sql`
+
+### Opção 3: Linha de Comando MySQL
 ```bash
-# No MySQL/phpMyAdmin, execute os arquivos em ordem
-# Ou use o comando:
-mysql -u root -p < 01_create_database.sql
-mysql -u root -p < 02_users_table.sql
-# ... continue com todos os arquivos
+mysql -u root -p < schema.sql
+mysql -u root -p < seed_data.sql
 ```
 
-### Opção 2: Script Único
-```bash
-# Concatenar todos os arquivos em um só:
-cat *.sql > weblearn_complete.sql
-mysql -u root -p < weblearn_complete.sql
+## Configuração
+
+Após a instalação, configure a conexão no arquivo `config.php`:
+
+```php
+$host = 'localhost';
+$dbname = 'cursinho_db';
+$username = 'root';
+$password = '';
 ```
 
-## 📊 Tabelas Criadas
+## Usuário Padrão
 
-### 👥 Sistema de Usuários
+Após a instalação, você pode fazer login com:
+- **Username:** admin
+- **Email:** admin@cursinho.local  
+- **Senha:** password
+
+## Estrutura das Tabelas
+
+### Usuários e Autenticação
 - `users` - Dados dos usuários
-- `user_sessions` - Sessões ativas
-- `activity_logs` - Logs de atividade
+- `password_reset_codes` - Códigos de recuperação de senha
+- `online_users` - Rastreamento de usuários online
 
-### 📚 Sistema de Aprendizado
-- `categories` - Categorias de conteúdo
-- `exercises` - Exercícios disponíveis
-- `tutorials` - Tutoriais do sistema
-- `user_progress` - Progresso individual
-- `tutorial_progress` - Progresso em tutoriais
+### Sistema de Exercícios
+- `exercise_categories` - Categorias (HTML, CSS, JS, PHP)
+- `exercises` - Exercícios com código inicial e solução
+- `user_progress` - Progresso e submissões dos usuários
 
-### 🏆 Sistema de Gamificação
-- `badges` - Conquistas disponíveis
-- `user_badges` - Conquistas dos usuários
-
-### 💬 Sistema Social
+### Fórum e Comunidade
 - `forum_categories` - Categorias do fórum
-- `forum_posts` - Posts do fórum
-- `forum_comments` - Comentários
-- `forum_votes` - Sistema de votação
-- `chat_rooms` - Salas de chat
-- `chat_messages` - Mensagens do chat
-- `online_users` - Usuários online
+- `forum_posts` - Posts principais
+- `forum_comments` - Comentários e respostas
 
-### 🔐 Sistema de Segurança
-- `password_resets` - Tokens de recuperação
-- `verification_codes` - Códigos de verificação
+### Recursos Colaborativos
+- `chat_messages` - Sistema de chat
+- `collaborative_sessions` - Sessões de código colaborativo
+- `session_participants` - Participantes das sessões
 
-### 🔔 Sistema de Notificações
-- `notifications` - Notificações dos usuários
-- `notification_settings` - Configurações de notificação
-- `email_logs` - Log de emails enviados
+### Gamificação e Mentoria
+- `badges` - Definição dos badges
+- `user_badges` - Badges conquistados pelos usuários
+- `mentorship_requests` - Solicitações de mentoria
 
-## 🔧 Configurações Importantes
+### Conteúdo e Integrações
+- `tutorials` - Tutoriais da plataforma
+- `github_integrations` - Integração com GitHub
 
-- **Charset:** utf8mb4_unicode_ci
-- **Engine:** InnoDB (padrão)
-- **Chaves estrangeiras:** Habilitadas
-- **Índices:** Otimizados para performance
+## Índices e Performance
 
-## 📈 Recursos Avançados
+O banco foi otimizado com índices em:
+- Campos de busca frequente (username, email, slug)
+- Chaves estrangeiras
+- Campos de filtro (status, difficulty, technology)
+- Campos de ordenação (created_at, sort_order)
 
-- **Full-text search** em exercícios e tutoriais
-- **JSON fields** para metadados flexíveis
-- **Soft deletes** com status enum
-- **Timestamps automáticos**
-- **Índices compostos** para queries otimizadas
+## Backup e Manutenção
 
-## 🛠️ Manutenção
-
-### Backup
+Para fazer backup:
 ```bash
-mysqldump -u root -p weblearn_db > backup_$(date +%Y%m%d).sql
+mysqldump -u root -p cursinho_db > backup_$(date +%Y%m%d).sql
 ```
 
-### Limpeza de Dados Antigos
+Para limpeza de dados antigos (chat, sessões expiradas):
 ```sql
--- Limpar sessões antigas (>30 dias)
-DELETE FROM user_sessions WHERE last_activity < DATE_SUB(NOW(), INTERVAL 30 DAY);
-
--- Limpar logs antigos (>90 dias)
-DELETE FROM activity_logs WHERE created_at < DATE_SUB(NOW(), INTERVAL 90 DAY);
+DELETE FROM chat_messages WHERE created_at < DATE_SUB(NOW(), INTERVAL 30 DAY);
+DELETE FROM collaborative_sessions WHERE expires_at < NOW();
 ```
-
-## 📝 Notas
-
-- Todos os scripts são **idempotentes** (podem ser executados múltiplas vezes)
-- Use `IF NOT EXISTS` para evitar erros
-- Dados de exemplo incluem usuário admin padrão
-- Senhas são hasheadas com bcrypt
-- Sistema preparado para **multilíngue** (pt-br, en, es)
