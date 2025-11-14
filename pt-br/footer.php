@@ -61,7 +61,7 @@
                     <h6 class="fw-semibold mb-3"><?php echo t('resources', 'Recursos'); ?></h6>
                     <ul class="list-unstyled">
                         <li class="mb-2">
-                            <a href="#" class="fw-semibold mb-3">
+                            <a href="#" class="fw-semibold mb-3" >
                                 <?php echo t('documentation', 'Documentação'); ?>
                             </a>
                         </li>

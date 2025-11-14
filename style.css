@@ -30,7 +30,7 @@
     --text-light: #f8f9fa;
     
     /* Cores para elementos específicos (baseadas nas cores acima). */
-    --text-heading: #343a40;      /* Cor para títulos (h1, h2, etc.). */
+    --text-heading: #ffffff;      /* Cor para títulos (h1, h2, etc.). */
     --text-body: var(--text-primary); /* Cor para parágrafos e texto principal. */
     --text-link: var(--primary-color); /* Cor para links. */
     
@@ -80,7 +80,7 @@
     --text-secondary: #343a40;
     --text-light: #f8f9fa;
     --text-muted: #000000; /* Ajustado para ser visível em fundo claro */
-    --text-heading: #212529;
+    --text-heading: #ffffff;
     --text-body: var(--text-primary);
     --text-link: var(--primary-color);
 
@@ -109,7 +109,7 @@
     --text-secondary: #343a40; /* Ajustado para ser visível em fundo claro */
     --text-light: #f8f9fa;
     --text-muted: #000000; /* Ajustado para ser visível em fundo claro */ 
-    --text-heading: #212529;
+    --text-heading: #ffffff;
     --text-body: var(--text-primary);
     --text-link: var(--primary-color);
 
@@ -627,10 +627,12 @@ body {
 
 .mb-3 {
     margin-bottom: 1rem !important;
+    color: var(--text-heading)
 }
 
 .mb-4 {
     margin-bottom: 1.5rem !important;
+    color: var(--footer-text-body);
 }
 
 /* Removido - usando classes específicas agora */
