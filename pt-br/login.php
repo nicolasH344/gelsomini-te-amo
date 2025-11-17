@@ -126,7 +126,7 @@ include 'header.php';
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
                 <div class="card-header">
-                    <h1 class="h4 mb-0">
+                    <h1 class="h4 mb-4">
                         <i class="fas fa-sign-in-alt" aria-hidden="true"></i> 
                         Entrar na sua conta
                     </h1>
@@ -134,7 +134,7 @@ include 'header.php';
                 <div class="card-body">
                     <form method="POST" action="login.php" novalidate>
                         <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="username" class="form-label required">Usuário ou Email</label>
                             <input type="text" 
                                    class="form-control" 
@@ -149,7 +149,7 @@ include 'header.php';
                             </div>
                         </div>
                         
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label for="password" class="form-label required">Senha</label>
                             <div class="input-group">
                                 <input type="password" 
@@ -171,13 +171,13 @@ include 'header.php';
                             </div>
                         </div>
                         
-                        <div class="mb-3 form-check">
+                        <div class="mb-4 form-check" style="color: #fff;">
                             <input type="checkbox" 
                                    class="form-check-input" 
                                    id="remember" 
                                    name="remember"
                                    <?php echo isset($_POST['remember']) ? 'checked' : ''; ?>>
-                            <label class="form-check-label" for="remember">
+                            <label class="form-check-label" for="remember" >
                                 Lembrar de mim neste dispositivo
                             </label>
                         </div>
@@ -191,11 +191,11 @@ include 'header.php';
                     <hr>
                     
                     <div class="text-center">
-                        <p class="mb-2">
+                        <p2 class="" style="color: #fff;">
                             Não tem uma conta? 
                             <a href="register.php" class="text-decoration-none">Registre-se aqui</a>
-                        </p>
-                        <p class="mb-0">
+                        </p2>
+                        <p class="" style="color: #fff;">
                             <a href="forgot_password.php" class="text-decoration-none">Esqueceu sua senha?</a>
                         </p>
                     </div>

@@ -22,10 +22,10 @@ if ($show_banner): ?>
                     <i class="fas fa-cookie-bite fa-2x text-warning me-3"></i>
                     <div>
                         <h6 class="mb-1">Uso de Cookies e Dados</h6>
-                        <p class="mb-0 small">
+                        <p2 class=" small" style="color: #fff:">
                             Utilizamos cookies essenciais para o funcionamento da plataforma e dados pessoais conforme nossa 
                             <a href="lgpd.php" class="text-decoration-underline">Política de Privacidade</a>.
-                        </p>
+                        </p2>
                     </div>
                 </div>
             </div>

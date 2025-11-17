@@ -25,24 +25,24 @@
     --bg-light: #ffffff;
     
     /* -- Cores de Texto Semânticas (Padrão: Roxo Moderno - Claro) -- */
-    --botao: #fff;
+       /* -- Cores de Texto (Tema Azul - Claro) -- */
     --text-card: #080808;
-    --text-primary: #080808;      /* Cor principal para a maioria dos textos (preto quase total). */
-    --text-secondary: #fff;    /* Cor secundária para textos menos importantes (cinza escuro). */
-    --text-muted: #6c757d;        /* Cor para textos suaves, como metadados (cinza médio). */
-    --text-light: #ffffff;
-    
-    /* Cores para elementos específicos (baseadas nas cores acima). */
-    --text-heading: #000000;      /* Cor para títulos (h1, h2, etc.). */
-    --text-body: var(--text-primary); /* Cor para parágrafos e texto principal. */
-    --text-link: var(--primary-color); /* Cor para links. */
-    
+    --bg-primary2: #ffffff;
+    --botao: #fff;
+    --text-primary: #000000;
+    --text-secondary: #343a40;
+    --text-light: #f8f9fa;
+    --text-muted: #000000; /* Ajustado para ser visível em fundo claro */
+    --text-heading: #ffffff;
+    --text-body: var(--text-primary2);
+    --text-link: var(--primary-color);
+
     /* -- Cores do Rodapé -- */
     --footer-bg: #f8f9fa;
-    --footer-text-body: #ffffff;      /* Cor para texto geral no rodapé. */
-    --footer-text-muted: #000000; /* Cor para texto suave no rodapé. */
-    --footer-link-color: var(--primary-color); /* Cor para links no rodapé. */
-    --footer-link-hover-color: var(--primary-dark); /* Cor para links no rodapé (hover). */
+    --footer-text-body: #ffffff;
+    --footer-text-muted: #000000; /* Ajustado para ser visível em fundo claro */
+    --footer-link-color: var(--primary-color);
+    --footer-link-hover-color: var(--primary-dark);
     
     /* -- Cores de estado: Usadas para alertas e feedback (sucesso, erro, aviso). */
     --success-color: #28a745;
@@ -86,13 +86,13 @@
     --text-secondary: #343a40;
     --text-light: #f8f9fa;
     --text-muted: #000000; /* Ajustado para ser visível em fundo claro */
-    --text-heading: #000000;
-    --text-body: var(--text-primary);
+    --text-heading: #ffffff;
+    --text-body: var(--text-primary2);
     --text-link: var(--primary-color);
 
     /* -- Cores do Rodapé -- */
     --footer-bg: #f8f9fa;
-    --footer-text-body: #212529;
+    --footer-text-body: #ffffff;
     --footer-text-muted: #000000; /* Ajustado para ser visível em fundo claro */
     --footer-link-color: var(--primary-color);
     --footer-link-hover-color: var(--primary-dark);
@@ -119,13 +119,13 @@
     --text-secondary: #343a40; /* Ajustado para ser visível em fundo claro */
     --text-light: #f8f9fa;
     --text-muted: #000000; /* Ajustado para ser visível em fundo claro */ 
-    --text-heading: #000000;
-    --text-body: var(--text-primary);
+    --text-heading: #ffffff;
+    --text-body: var(--text-primary2);
     --text-link: var(--primary-color);
 
     /* -- Cores do Rodapé -- */
     --footer-bg: #f8f9fa;
-    --footer-text-body: #212529;
+    --footer-text-body: #ffffff;
     --footer-text-muted: #000000; /* Ajustado para ser visível em fundo claro */
     --footer-link-color: var(--primary-color);
     --footer-link-hover-color: var(--primary-dark);
@@ -578,7 +578,7 @@ body {
 .form-text {
     margin-top: .25rem;
     font-size: .875em;
-    color: var(--text-muted);
+    color: var(--text-body);
 }
 
 /* Estilo para badges (pequenas etiquetas coloridas). */
@@ -634,6 +634,7 @@ body {
 
 .mb-0 {
     margin-bottom: 0 !important;
+    color: var(--text-muted);
 }
 
 .mb-2 {

@@ -182,7 +182,7 @@
             <i class="fas fa-palette" aria-hidden="true"></i>
         </button>
         
-        <div class="p-3">
+        <div class="p-3 " style="color: var(--text-muted);">
             <h5 id="settingsTitle" class="label">
                 <i class="fas fa-cog me-2" aria-hidden="true"></i>
                 <?php echo t('settings'); ?>
@@ -190,7 +190,7 @@
             
             <form method="POST" action="" id="settingsForm">
                 <!-- Seletor de Tema -->
-                <div class="mb-3">
+                <div class="mb-0">
                     <label class="form-label fw-semibold"><?php echo t('theme'); ?></label>
                     <div class="d-flex flex-wrap gap-2">
                         <button type="button" class="theme-option theme-purple <?php echo $_SESSION['theme'] === 'purple' ? 'active' : ''; ?>" 
