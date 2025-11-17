@@ -276,6 +276,15 @@ body {
     overflow: hidden;
 }
 
+.hero-section2 {
+    background: var(--gradient-hero);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+
 /* Animação que move a posição do gradiente, criando um efeito de fluxo. */
 @keyframes gradientShift {
     0% { background-position: 0% 50%; }

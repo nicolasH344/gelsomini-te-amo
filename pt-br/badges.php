@@ -30,8 +30,8 @@ include 'header.php';
                 <div class="card-body">
                     <?php if (empty($userBadges)): ?>
                         <div class="text-center py-4">
-                            <i class="fas fa-medal fa-3x text-muted mb-3"></i>
-                            <h6>Nenhuma conquista ainda</h6>
+                            <i class="fas fa-medal fa-3x text-muted "></i>
+                            <h6 class="mb-0">Nenhuma conquista ainda</h6>
                             <p class="text-muted">Complete exercícios e participe da comunidade para ganhar badges!</p>
                         </div>
                     <?php else: ?>

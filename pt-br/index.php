@@ -439,13 +439,13 @@ include 'header.php';
                         </a>
                         <a href="exercises_index.php" class="btn btn-outline-light btn-lg">
                             <i class="fas fa-eye me-2" aria-hidden="true"></i>
-                            <?php echo t('explore_content', 'Explorar Conteúdo'); ?>
+                            <?php echo t('explore_content', 'Explorar Conteúdo');  ?>
                         </a>
                     </div>
                 <?php else: ?>
-                    <a href="exercises_index.php" class="btn btn-light btn-lg">
+                    <a href="exercises_index.php" class="  btn hero-section2" style="color: #fff;">
                         <i class="fas fa-play me-2" aria-hidden="true"></i>
-                        <?php echo t('continue_learning', 'Continuar Aprendendo'); ?>
+                        <?php echo  t('continue_learning', ' Continuar Aprendendo'); ?>
                     </a>
                 <?php endif; ?>
             </div>
