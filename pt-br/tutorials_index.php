@@ -56,7 +56,7 @@ include 'header.php';
 
 <div class="container mt-4">
     <!-- Header da página -->
-    <div class="row mb-4">
+    <div class="row mb-0">
         <div class="col-md-8">
             <h1><i class="fas fa-book-open" aria-hidden="true"></i> Tutoriais</h1>
             <p class="lead">Aprenda desenvolvimento web com nossos tutoriais detalhados</p>
@@ -78,9 +78,9 @@ include 'header.php';
     </div>
 
     <!-- Filtros -->
-    <div class="card mb-4">
+    <div class="card mb-0">
         <div class="card-body">
-            <h2 class="h5 card-title2">Filtrar Tutoriais</h2>
+            <h2 class="h5 mb-0">Filtrar Tutoriais</h2>
             <form method="GET" action="tutorials_index.php" class="row g-3">
                 <?php if ($showAll): ?>
                     <input type="hidden" name="show_all" value="1">
@@ -126,7 +126,7 @@ include 'header.php';
     <!-- Lista de tutoriais -->
     <div class="row">
         <?php foreach ($tutorials as $tutorial): ?>
-            <div class="col-md-6 col-lg-4 mb-4">
+            <div class="col-md-6 col-lg-4 mb-0">
                 <div class="card h-100 shadow-sm">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
@@ -150,7 +150,7 @@ include 'header.php';
                     </div>
                     
                     <div class="card-body">
-                        <h3 class="card-title h5 mb-4"><?php echo htmlspecialchars($tutorial['title']); ?></h3>
+                        <h3 class="card-title h5 mb-0"><?php echo htmlspecialchars($tutorial['title']); ?></h3>
                         <p class="card-text"><?php echo htmlspecialchars($tutorial['description']); ?></p>
                         
                         <div class="d-flex justify-content-between text-muted small">
@@ -243,8 +243,8 @@ include 'header.php';
             <div class="card bg-danger text-white">
                 <div class="card-body text-center">
                     <i class="fab fa-html5" style="font-size: 2rem;" aria-hidden="true"></i>
-                    <h3 class="h5 mt-2">HTML5</h3>
-                    <p class="mb-0"><?php echo count(array_filter($allTutorials, fn($t) => $t['category'] === 'HTML')); ?> tutoriais</p>
+                    <h3 class="h5 mt-2 " style="color: #fff;">HTML5</h3>
+                    <p2 class="mb-4"><?php echo count(array_filter($allTutorials, fn($t) => $t['category'] === 'HTML')); ?> tutoriais</p2>
                 </div>
             </div>
         </div>
@@ -253,8 +253,8 @@ include 'header.php';
             <div class="card bg-primary text-white">
                 <div class="card-body text-center">
                     <i class="fab fa-css3-alt" style="font-size: 2rem;" aria-hidden="true"></i>
-                    <h3 class="h5 mt-2">CSS3</h3>
-                    <p class="mb-0"><?php echo count(array_filter($allTutorials, fn($t) => $t['category'] === 'CSS')); ?> tutoriais</p>
+                    <h3 class="h5 mt-2" color: #fff;>CSS3</h3>
+                    <p2 class="mb-4"><?php echo count(array_filter($allTutorials, fn($t) => $t['category'] === 'CSS')); ?> tutoriais</p2>
                 </div>
             </div>
         </div>
@@ -264,7 +264,7 @@ include 'header.php';
                 <div class="card-body text-center">
                     <i class="fab fa-js-square" style="font-size: 2rem; color: #fff;" aria-hidden="true"></i>
                     <h3 class="h5 mt-2" style="color: #fff;">JavaScript</h3>
-                    <p class="mb-0"><?php echo count(array_filter($allTutorials, fn($t) => $t['category'] === 'JavaScript')); ?> tutorial</p>
+                    <p2 class="mb-4"><?php echo count(array_filter($allTutorials, fn($t) => $t['category'] === 'JavaScript')); ?> tutorial</p2>
                 </div>
             </div>
         </div>
@@ -273,8 +273,8 @@ include 'header.php';
             <div class="card bg-info text-white">
                 <div class="card-body text-center">
                     <i class="fab fa-php" style="font-size: 2rem;" aria-hidden="true"></i>
-                    <h3 class="h5 mt-2">PHP</h3>
-                    <p class="mb-0"><?php echo count(array_filter($allTutorials, fn($t) => $t['category'] === 'PHP')); ?> tutorial</p>
+                    <h3 class="h5 mt-2" color: #fff;>PHP</h3>
+                    <p2 class="mb-4"><?php echo count(array_filter($allTutorials, fn($t) => $t['category'] === 'PHP')); ?> tutorial</p2>
                 </div>
             </div>
         </div>
@@ -290,15 +290,15 @@ include 'header.php';
                         Como Aproveitar os Tutoriais
                     </h2>
                     <ul class="list-unstyled mb-0">
-                        <li class="mb-2">
+                        <li class="mb-0" style="color: #000;">
                             <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                             Leia com atenção e pratique os exemplos
                         </li>
-                        <li class="mb-2">
+                        <li class="mb-0" style="color: #000;">
                             <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                             Faça anotações dos pontos importantes
                         </li>
-                        <li class="mb-0">
+                        <li class="mb-0" style="color: #000;">
                             <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                             Aplique o conhecimento nos exercícios
                         </li>
@@ -314,7 +314,7 @@ include 'header.php';
                         <i class="fas fa-question-circle text-info" aria-hidden="true"></i> 
                         Precisa de Ajuda?
                     </h2>
-                    <li class="mb-0"    >
+                    <li class="mb-0"   style="color: #000;">
                     Tem dúvidas sobre algum tutorial? Nossa comunidade está aqui para ajudar!
                     </li>
                     <a href="forum_index.php" class="btn btn-info btn-sm">

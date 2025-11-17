@@ -36,10 +36,10 @@ include 'header.php';
 
 <div class="container mt-4">
     <!-- Header do fórum -->
-    <div class="row mb-4">
+    <div class="row mb-0">
         <div class="col-md-8">
-            <h1><i class="fas fa-comments" aria-hidden="true"></i> Fórum da Comunidade</h1>
-            <p class="lead">Tire dúvidas, compartilhe conhecimento e conecte-se com outros desenvolvedores</p>
+            <h1><i class="fas fa-comments mb-0" aria-hidden="true"></i> Fórum da Comunidade</h1>
+            <p class="lead mb-0">Tire dúvidas, compartilhe conhecimento e conecte-se com outros desenvolvedores</p>
         </div>
         <div class="col-md-4 text-end">
             <?php if (isLoggedIn()): ?>
@@ -60,7 +60,7 @@ include 'header.php';
             <!-- Filtros e busca -->
             <div class="card mb-2">
                 <div class="card-body">
-                    <h2 class="h5 card-title2">Filtrar Posts</h2>
+                    <h2 class="h5  mb-0">Filtrar Posts</h2>
                     <form method="GET" action="forum_index.php" class="row g-3">
                         <div class="col-md-4">
                             <label for="category" class="form-label">Categoria</label>
@@ -289,32 +289,32 @@ include 'header.php';
                     </h2>
                     <div class="row">
                         <div class="col-md-6">
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-2">
+                            <ul class="list-unstyled ">
+                                <li class="" style="color: #000;">
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                     Seja respeitoso com outros membros
                                 </li>
-                                <li class="mb-2">
+                                <li class="" color: #000;>
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                     Use títulos descritivos para seus posts
                                 </li>
-                                <li class="mb-2">
+                                <li class="" color: #000;>
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                     Pesquise antes de postar uma dúvida
                                 </li>
                             </ul>
                         </div>
                         <div class="col-md-6">
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-2">
+                            <ul class="list-unstyled ">
+                                <li class="" color: #000;>
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
                                     Não faça spam ou posts repetitivos
                                 </li>
-                                <li class="mb-2">
+                                <li class="" color: #000;>
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
                                     Evite linguagem ofensiva
                                 </li>
-                                <li class="mb-2">
+                                <li class="" color: #000;>
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
                                     Não compartilhe informações pessoais
                                 </li>

@@ -9,9 +9,9 @@
                         <i class="fas fa-code me-2" aria-hidden="true"></i>
                         <?php echo t('site_title'); ?>
                     </h5>
-                    <p class="fw-semibold mb-3">
+                    <p2 class="fw-semibold mb-3">
                         <?php echo t('footer_description', 'Plataforma interativa para aprender desenvolvimento web com exercícios práticos, tutoriais detalhados e uma comunidade ativa de desenvolvedores.'); ?>
-                    </p>
+                    </p2>
                     <div class="d-flex gap-3">
                         <a href="#" class="fw-semibold mb-3" aria-label="Facebook" title="Facebook">
                             <i class="fab fa-facebook-f" aria-hidden="true"></i>
@@ -140,10 +140,10 @@
             
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <p class="fw-semibold mb-3" style="color: #ffffffff;">
+                    <p2 class="fw-semibold mb-3" style="color: #ffffffff;">
                         &copy; <?php echo date('Y'); ?> <?php echo t('site_title'); ?>. 
                         <?php echo t('all_rights_reserved', 'Todos os direitos reservados.'); ?>
-                    </p>
+                    </p2>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <div class="d-flex justify-content-md-end gap-3 mt-3 mt-md-0">
