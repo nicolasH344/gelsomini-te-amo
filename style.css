@@ -51,9 +51,9 @@
     --info-color: #17a2b8;
     
     /* -- Sombras: Efeitos de sombra para dar profundidade aos elementos. */
-    --shadow-sm: 0 0.125rem 0.25rem rgba(111, 66, 193, 0.075);
-    --shadow: 0 0.5rem 1rem rgba(111, 66, 193, 0.15);
-    --shadow-lg: 0 1rem 3rem rgba(111, 66, 193, 0.175);
+    --shadow-sm: 0 0.125rem 0.25rem rgba(109, 30, 255, 0.953);
+    --shadow: 0 0.5rem 1rem rgba(76, 22, 175, 0.872);
+    --shadow-lg: 0 1rem 3rem rgba(82, 11, 213, 0.175);
     
     
     /* Bordas: Define o raio e a cor das bordas. */
@@ -384,10 +384,11 @@ body {
 }
  
 /* Estilo dos links no rodapé. */
-.footer a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
+.footer
+    a {
+        color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
+        text-decoration: underline;
+    }
 
 /* =================================================================== */
 /* 5. COMPONENTES REUTILIZÁVEIS (BOTÕES, CARDS, FORMS)
@@ -622,7 +623,8 @@ body {
 }
 
 .alert-info {
-    background: linear-gradient(135deg, var(--info-color), var(--primary-light));
+    background: linear-gradient(
+        142deg, #5a00ff, #a30497);
     color: white;
 }
 
@@ -657,7 +659,7 @@ body {
 
 .mb-4 {
     margin-bottom: 1.5rem !important;
-    color: var(--footer-text-body);
+    color: #000;
 }
 
 .mb-5 {
@@ -683,7 +685,7 @@ p, .text-body {
 
 label {
     display: inline-block;
-    color: var(--text-body) !important;
+    color: #010101;;
 }
 
 /* Removido - usando classes específicas agora */
