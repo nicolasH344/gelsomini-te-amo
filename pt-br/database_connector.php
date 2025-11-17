@@ -208,7 +208,7 @@ class DatabaseConnector {
             SELECT 
                 COUNT(*) as total_exercises,
                 COUNT(CASE WHEN up.status = 'completed' THEN 1 END) as completed_exercises,
-                SUM(CASE WHEN up.status = 'completed' THEN e.points ELSE 0 END) as total_points,
+                SUM(CASE WHEN up.status = 'completed' THEN COALESCE(e.points, 10) ELSE 0 END) as total_points,
                 AVG(CASE WHEN up.status = 'completed' THEN up.score ELSE NULL END) as avg_score
             FROM exercises e 
             LEFT JOIN user_progress up ON e.id = up.exercise_id AND up.user_id = ?

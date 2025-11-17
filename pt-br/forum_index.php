@@ -101,22 +101,20 @@ include 'header.php';
                                 <div class="col-md-8">
                                     <div class="d-flex align-items-center mb-2">
                                         <span class="badge bg-<?php 
-                              
-                              
-                              
-                              $categoryColor = 'secondary';
+                                            $categoryColor = 'secondary';
+                                            $postCategory = $post['category'] ?? 'Geral';
                                             foreach ($categories as $cat) {
-                                                if (strtolower($cat['name']) === strtolower($post['category'])) {
-                                                    $categoryColor = $cat['color'];
+                                                if (strtolower($cat['name']) === strtolower($postCategory)) {
+                                                    $categoryColor = $cat['color'] ?? 'secondary';
                                                     break;
                                                 }
                                             }
                                             echo $categoryColor;
                                         ?> me-2">
-                                            <?php echo sanitize($post['category']); ?>
+                                            <?php echo sanitize($postCategory); ?>
                                         </span>
                                         
-                                        <?php if ($post['is_solved']): ?>
+                                        <?php if (isset($post['is_solved']) && $post['is_solved']): ?>
                                             <span class="badge bg-success me-2">
                                                 <i class="fas fa-check" aria-hidden="true"></i> Resolvido
                                             </span>
@@ -137,7 +135,7 @@ include 'header.php';
                                     <div class="d-flex align-items-center text-muted small">
                                         <span class="me-3">
                                             <i class="fas fa-user me-1" aria-hidden="true"></i>
-                                            <?php echo sanitize($post['author']); ?>
+                                            <?php echo sanitize($post['author'] ?? 'Usuário Anônimo'); ?>
                                         </span>
                                         <span class="me-3">
                                             <i class="fas fa-clock me-1" aria-hidden="true"></i>
@@ -237,7 +235,8 @@ include 'header.php';
                                 <?php 
                                 $count = 0;
                                 foreach ($forum_posts as $post) {
-                                    if (strtolower($post['category']) === strtolower($category['name'])) {
+                                    $postCat = $post['category'] ?? '';
+                                    if (strtolower($postCat) === strtolower($category['name'])) {
                                         $count++;
                                     }
                                 }

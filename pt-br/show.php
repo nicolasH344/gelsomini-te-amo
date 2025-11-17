@@ -2543,10 +2543,15 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showToast('Conteúdo marcado como concluído!', 'success');
+                    showToast('Tutorial marcado como concluído!', 'success');
                     document.querySelector('.progress-bar').style.width = '100%';
                     document.querySelector('.progress-stats span:first-child').textContent = '100% completo';
                     document.querySelector('.progress-stats span:last-child').textContent = 'Concluído';
+                    
+                    // Redirecionar para página de progresso após 2 segundos
+                    setTimeout(() => {
+                        window.location.href = 'progress.php';
+                    }, 2000);
                 } else {
                     showToast('Erro ao salvar progresso. Tente novamente.', 'error');
                 }

@@ -11,60 +11,89 @@ $title = 'Meu Progresso';
 $user = getCurrentUser();
 $user_id = $user['id'];
 
-// Obter dados reais do banco
-function getRealProgressData($user_id) {
-    $conn = getDBConnection();
-    if (!$conn) return null;
+
+
+// Obter dados do progresso usando mysqli
+try {
+    require_once 'database.php';
+    $db = new Database();
+    $conn = $db->conn;
     
-    try {
-        // Total de exercícios
-        $total_exercises = $conn->query("SELECT COUNT(*) FROM exercises")->fetchColumn();
-        
-        // Exercícios completados pelo usuário
-        $completed_exercises = $conn->prepare("SELECT COUNT(*) FROM user_progress WHERE user_id = ? AND status = 'completed'");
-        $completed_exercises->execute([$user_id]);
-        $completed_count = $completed_exercises->fetchColumn();
-        
-        // Progresso por categoria
-        $category_progress = $conn->prepare("
-            SELECT e.category, 
-                   COUNT(e.id) as total,
-                   COUNT(CASE WHEN up.status = 'completed' THEN 1 END) as completed
-            FROM exercises e 
-            LEFT JOIN user_progress up ON e.id = up.exercise_id AND up.user_id = ?
-            GROUP BY e.category
-        ");
-        $category_progress->execute([$user_id]);
-        $categories = $category_progress->fetchAll();
-        
-        // Atividades recentes
-        $recent_activity = $conn->prepare("
-            SELECT e.title, up.completed_at, up.score
-            FROM user_progress up
-            JOIN exercises e ON up.exercise_id = e.id
-            WHERE up.user_id = ? AND up.status = 'completed'
-            ORDER BY up.completed_at DESC
-            LIMIT 5
-        ");
-        $recent_activity->execute([$user_id]);
-        $activities = $recent_activity->fetchAll();
-        
-        return [
-            'exercises_completed' => $completed_count,
-            'exercises_total' => $total_exercises,
-            'categories' => $categories,
-            'activities' => $activities
-        ];
-        
-    } catch (PDOException $e) {
-        return null;
+    // Total de exercícios
+    $result = $conn->query("SELECT COUNT(*) as total FROM exercises");
+    $total_exercises = $result->fetch_assoc()['total'];
+    
+    // Exercícios completados
+    $stmt = $conn->prepare("SELECT COUNT(*) as completed FROM user_progress WHERE user_id = ? AND status = 'completed'");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $completed_exercises = $stmt->get_result()->fetch_assoc()['completed'];
+    
+    // Total de tutoriais
+    $result = $conn->query("SELECT COUNT(*) as total FROM tutorials WHERE status = 'Publicado'");
+    $total_tutorials = $result->fetch_assoc()['total'];
+    
+    // Tutoriais completados
+    $stmt = $conn->prepare("SELECT COUNT(*) as completed FROM tutorial_progress WHERE user_id = ? AND status = 'completed'");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $completed_tutorials = $stmt->get_result()->fetch_assoc()['completed'];
+    
+    // Atividades recentes (exercícios + tutoriais)
+    $activities = [];
+    
+    // Exercícios recentes
+    $stmt = $conn->prepare("
+        SELECT e.title, up.completed_at, up.score, 'exercise' as type
+        FROM user_progress up
+        JOIN exercises e ON up.exercise_id = e.id
+        WHERE up.user_id = ? AND up.status = 'completed'
+        ORDER BY up.completed_at DESC
+        LIMIT 3
+    ");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $activities[] = $row;
     }
-}
-
-$progress_data = $dbConnector->getUserProgress($user_id);
-
-// Fallback para dados fictícios se não conseguir do banco
-if (!$progress_data) {
+    
+    // Tutoriais recentes
+    $stmt = $conn->prepare("
+        SELECT t.title, tp.completed_at, 100 as score, 'tutorial' as type
+        FROM tutorial_progress tp
+        JOIN tutorials t ON tp.tutorial_id = t.id
+        WHERE tp.user_id = ? AND tp.status = 'completed'
+        ORDER BY tp.completed_at DESC
+        LIMIT 3
+    ");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $activities[] = $row;
+    }
+    
+    // Ordenar atividades por data
+    usort($activities, function($a, $b) {
+        return strtotime($b['completed_at']) - strtotime($a['completed_at']);
+    });
+    $activities = array_slice($activities, 0, 5);
+    
+    $stats = [
+        'exercises_completed' => $completed_exercises,
+        'exercises_total' => $total_exercises,
+        'tutorials_read' => $completed_tutorials,
+        'tutorials_total' => $total_tutorials,
+        'hours_studied' => ($completed_exercises + $completed_tutorials) * 1.5,
+        'streak_days' => min($completed_exercises + $completed_tutorials, 7)
+    ];
+    
+    $categories = [];
+    $db->closeConnection();
+    
+} catch (Exception $e) {
+    // Fallback para dados fictícios se houver erro
     $stats = [
         'exercises_completed' => 0,
         'exercises_total' => 8,
@@ -75,17 +104,6 @@ if (!$progress_data) {
     ];
     $categories = [];
     $activities = [];
-} else {
-    $stats = [
-        'exercises_completed' => $progress_data['exercises_completed'],
-        'exercises_total' => $progress_data['exercises_total'],
-        'tutorials_read' => 0,
-        'tutorials_total' => 5,
-        'hours_studied' => $progress_data['exercises_completed'] * 2,
-        'streak_days' => min($progress_data['exercises_completed'], 7)
-    ];
-    $categories = $progress_data['categories'];
-    $activities = $progress_data['activities'];
 }
 
 $progress_percentage = $stats['exercises_total'] > 0 ? round(($stats['exercises_completed'] / $stats['exercises_total']) * 100) : 0;
@@ -276,8 +294,8 @@ include 'header.php';
                             <?php foreach ($activities as $activity): ?>
                             <div class="list-group-item d-flex justify-content-between align-items-center">
                                 <div>
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    Completou: <?php echo sanitize($activity['title']); ?>
+                                    <i class="fas fa-<?php echo ($activity['type'] ?? 'exercise') === 'tutorial' ? 'book' : 'dumbbell'; ?> text-success me-2"></i>
+                                    <?php echo ($activity['type'] ?? 'exercise') === 'tutorial' ? 'Tutorial' : 'Exercício'; ?>: <?php echo sanitize($activity['title']); ?>
                                     <?php if ($activity['score'] > 0): ?>
                                         <span class="badge bg-primary ms-2"><?php echo $activity['score']; ?> pts</span>
                                     <?php endif; ?>
