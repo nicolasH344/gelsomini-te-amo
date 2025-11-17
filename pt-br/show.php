@@ -1171,99 +1171,86 @@ console.log("Tutorial em desenvolvimento");';
                             <div class="community-section">
                                 <div class="discussion-forum mb-4">
                                     <h4 class="section-title">💬 Discussões</h4>
-                                    <div class="discussion-list">
-                                        <div class="discussion-item">
-                                            <div class="discussion-header">
-                                                <img src="https://ui-avatars.com/api/?name=João+Silva&background=random" alt="João Silva" class="user-avatar">
-                                                <div class="user-info">
-                                                    <h6>João Silva</h6>
-                                                    <span class="discussion-date">há 2 horas</span>
-                                                </div>
-                                            </div>
-                                            <div class="discussion-content">
-                                                <p>Alguém pode me ajudar com a parte de validação do formulário? Não estou conseguindo fazer funcionar.</p>
-                                            </div>
-                                            <div class="discussion-actions">
-                                                <button class="btn btn-sm btn-outline-secondary">
-                                                    <i class="far fa-thumbs-up"></i> 5
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-secondary">
-                                                    <i class="far fa-comment"></i> Responder
-                                                </button>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="discussion-item">
-                                            <div class="discussion-header">
-                                                <img src="https://ui-avatars.com/api/?name=Maria+Santos&background=random" alt="Maria Santos" class="user-avatar">
-                                                <div class="user-info">
-                                                    <h6>Maria Santos</h6>
-                                                    <span class="discussion-date">há 1 dia</span>
-                                                </div>
-                                            </div>
-                                            <div class="discussion-content">
-                                                <p>Excelente exercício! Aprendi muito sobre estrutura semântica. Alguém tem dicas para melhorar a acessibilidade?</p>
-                                            </div>
-                                            <div class="discussion-actions">
-                                                <button class="btn btn-sm btn-outline-secondary">
-                                                    <i class="far fa-thumbs-up"></i> 12
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-secondary">
-                                                    <i class="far fa-comment"></i> Responder
-                                                </button>
-                                            </div>
+                                    
+                                    <!-- Container de Discussões (preenchido via AJAX) -->
+                                    <div id="discussionsList">
+                                        <div class="text-center py-4 text-muted">
+                                            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                                            <p>Carregando discussões...</p>
                                         </div>
                                     </div>
                                     
-                                    <div class="add-discussion mt-3">
-                                        <textarea class="form-control" placeholder="Participe da discussão..."></textarea>
-                                        <div class="mt-2 text-end">
-                                            <button class="btn btn-primary">Enviar</button>
+                                    <!-- Botão para adicionar discussão -->
+                                    <?php if (isLoggedIn()): ?>
+                                    <div class="mt-3">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="toggleAddDiscussion()">
+                                            <i class="fas fa-plus"></i> Nova Discussão
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Formulário de Nova Discussão -->
+                                    <div id="addDiscussionForm" class="add-discussion-form" style="display: none;">
+                                        <textarea class="form-control mb-2" id="discussionMessage" 
+                                                  placeholder="Digite sua pergunta ou comentário..." rows="3"></textarea>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button class="btn btn-sm btn-secondary" onclick="toggleAddDiscussion()">
+                                                Cancelar
+                                            </button>
+                                            <button class="btn btn-sm btn-primary" onclick="submitDiscussion()">
+                                                <i class="fas fa-paper-plane"></i> Publicar
+                                            </button>
                                         </div>
                                     </div>
+                                    <?php else: ?>
+                                    <div class="alert alert-info mt-3">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <a href="login.php">Faça login</a> para participar das discussões
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
                                 
                                 <div class="user-solutions">
                                     <h4 class="section-title">💡 Soluções da Comunidade</h4>
-                                    <div class="solutions-grid">
-                                        <div class="solution-card">
-                                            <div class="solution-header">
-                                                <img src="https://ui-avatars.com/api/?name=Carlos+Almeida&background=random" alt="Carlos Almeida" class="user-avatar">
-                                                <div class="user-info">
-                                                    <h6>Carlos Almeida</h6>
-                                                    <span class="solution-date">Solução enviada há 3 dias</span>
-                                                </div>
-                                            </div>
-                                            <div class="solution-preview">
-                                                <pre><code>&lt;!-- Solução limpa e semântica --&gt;</code></pre>
-                                            </div>
-                                            <div class="solution-actions">
-                                                <span class="rating">
-                                                    <i class="fas fa-star text-warning"></i> 4.8
-                                                </span>
-                                                <button class="btn btn-sm btn-outline-primary">Ver Solução</button>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="solution-card">
-                                            <div class="solution-header">
-                                                <img src="https://ui-avatars.com/api/?name=Ana+Costa&background=random" alt="Ana Costa" class="user-avatar">
-                                                <div class="user-info">
-                                                    <h6>Ana Costa</h6>
-                                                    <span class="solution-date">Solução enviada há 1 semana</span>
-                                                </div>
-                                            </div>
-                                            <div class="solution-preview">
-                                                <pre><code>&lt;!-- Abordagem criativa --&gt;</code></pre>
-                                            </div>
-                                            <div class="solution-actions">
-                                                <span class="rating">
-                                                    <i class="fas fa-star text-warning"></i> 4.5
-                                                </span>
-                                                <button class="btn btn-sm btn-outline-primary">Ver Solução</button>
-                                            </div>
+                                    
+                                    <!-- Container de Soluções (preenchido via AJAX) -->
+                                    <div id="solutionsList" class="solutions-grid">
+                                        <div class="text-center py-4 text-muted">
+                                            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                                            <p>Carregando soluções...</p>
                                         </div>
                                     </div>
+                                    
+                                    <!-- Botão para compartilhar solução -->
+                                    <?php if (isLoggedIn()): ?>
+                                    <div class="mt-3">
+                                        <button class="btn btn-outline-success btn-sm" onclick="toggleAddSolution()">
+                                            <i class="fas fa-code"></i> Compartilhar Solução
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Formulário de Nova Solução -->
+                                    <div id="addSolutionForm" class="add-solution-form" style="display: none;">
+                                        <input type="text" class="form-control mb-2" id="solutionTitle" 
+                                               placeholder="Título da solução">
+                                        <select class="form-select mb-2" id="solutionLanguage">
+                                            <option value="html">HTML</option>
+                                            <option value="css">CSS</option>
+                                            <option value="javascript">JavaScript</option>
+                                            <option value="php">PHP</option>
+                                            <option value="python">Python</option>
+                                        </select>
+                                        <textarea class="form-control mb-2" id="solutionCode" 
+                                                  placeholder="Cole seu código aqui..." rows="8"></textarea>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button class="btn btn-sm btn-secondary" onclick="toggleAddSolution()">
+                                                Cancelar
+                                            </button>
+                                            <button class="btn btn-sm btn-success" onclick="submitSolution()">
+                                                <i class="fas fa-share"></i> Compartilhar
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -2050,19 +2037,19 @@ console.log("Tutorial em desenvolvimento");';
 
 .resources-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
     padding: 1rem;
 }
 
 .resource-card {
     text-align: center;
-    padding: 1.25rem;
+    padding: 1rem;
     background: #f8f9fa;
     border-radius: 10px;
     border: 2px solid transparent;
     transition: var(--transition);
-    min-height: 220px;
+    min-height: 180px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -2075,18 +2062,20 @@ console.log("Tutorial em desenvolvimento");';
 }
 
 .resource-card i {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .resource-card h5 {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
     color: var(--text-heading);
+    font-size: 0.9rem;
 }
 
 .resource-card p {
     color: #6c757d;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.8rem;
 }
 
 /* Estilos da Comunidade */
@@ -2095,11 +2084,64 @@ console.log("Tutorial em desenvolvimento");';
 }
 
 .add-discussion-form,
-.add-solution-form {
+.add-solution-form,
+.reply-form {
     background: #f8f9fa;
     padding: 1rem;
     border-radius: 10px;
     border: 2px dashed var(--primary-color);
+    margin-top: 1rem;
+}
+
+.modal-code-container {
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.modal-code-container pre {
+    margin: 0;
+    color: #d4d4d4;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+}
+
+.discussion-replies {
+    margin-top: 1rem;
+    padding-left: 2rem;
+    border-left: 3px solid #e9ecef;
+}
+
+.reply-item {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    border: 1px solid #e9ecef;
+}
+
+.reply-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.reply-header .user-avatar {
+    width: 30px;
+    height: 30px;
+}
+
+.reply-header strong {
+    font-size: 0.9rem;
+}
+
+.reply-content {
+    color: var(--text-body);
+    font-size: 0.9rem;
 }
 
 .discussion-item {
@@ -2387,14 +2429,25 @@ const contentType = '<?php echo $type; ?>';
 const contentId = <?php echo $id; ?>;
 const isLoggedIn = <?php echo isLoggedIn() ? 'true' : 'false'; ?>;
 
+// Debug: Log das variáveis globais
+console.log('🔧 Comunidade Debug:', {
+    contentType: contentType,
+    contentId: contentId,
+    isLoggedIn: isLoggedIn
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // Carrega discussões e soluções ao abrir a aba de comunidade
     const communityTab = document.querySelector('[data-bs-target="#community"]');
     if (communityTab) {
+        console.log('✅ Aba de comunidade encontrada');
         communityTab.addEventListener('shown.bs.tab', function() {
+            console.log('📂 Aba de comunidade aberta - carregando dados...');
             loadDiscussions();
             loadSolutions();
         });
+    } else {
+        console.error('❌ Aba de comunidade NÃO encontrada');
     }
     
     // Sistema de abas
@@ -2648,20 +2701,33 @@ function toggleAddSolution() {
 
 // Carregar discussões
 function loadDiscussions() {
+    console.log('🔄 Carregando discussões...');
+    
     fetch(`api/get_discussions.php?content_type=${contentType}&content_id=${contentId}`)
-        .then(response => response.json())
+        .then(response => {
+            console.log('📥 Resposta recebida:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('📊 Dados das discussões:', data);
             const container = document.getElementById('discussionsList');
+            
+            if (!container) {
+                console.error('❌ Container discussionsList não encontrado!');
+                return;
+            }
             
             if (!data.success || data.discussions.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-4 text-muted">
-                        <i class="fas fa-comments fa-3x mb-3"></i>
-                        <p>Nenhuma discussão ainda. Seja o primeiro a participar!</p>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Nenhuma discussão ainda. Seja o primeiro a participar!
                     </div>
                 `;
                 return;
             }
+            
+            console.log(`✅ ${data.discussions.length} discussões encontradas`);
             
             container.innerHTML = data.discussions.map(d => `
                 <div class="discussion-item">
@@ -2680,61 +2746,95 @@ function loadDiscussions() {
                         <button class="btn btn-sm btn-outline-primary" onclick="likeDiscussion(${d.id}, this)">
                             <i class="fas fa-thumbs-up"></i> <span>${d.likes}</span>
                         </button>
-                        <button class="btn btn-sm btn-outline-secondary">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleReplyForm(${d.id})">
                             <i class="fas fa-reply"></i> Responder (${d.replies})
                         </button>
                     </div>
+                    <div id="replyForm${d.id}" class="reply-form" style="display: none;">
+                        <textarea class="form-control mb-2" id="replyText${d.id}" 
+                                  placeholder="Digite sua resposta..." rows="2"></textarea>
+                        <button class="btn btn-sm btn-primary" onclick="submitReply(${d.id})">
+                            Enviar Resposta
+                        </button>
+                    </div>
+                    <div id="replies${d.id}" class="discussion-replies"></div>
                 </div>
             `).join('');
         })
         .catch(err => {
-            console.error('Erro ao carregar discussões:', err);
-            document.getElementById('discussionsList').innerHTML = `
-                <div class="alert alert-danger">Erro ao carregar discussões</div>
-            `;
+            console.error('❌ Erro ao carregar discussões:', err);
+            const container = document.getElementById('discussionsList');
+            if (container) {
+                container.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Erro ao carregar discussões. Verifique o console.
+                    </div>
+                `;
+            }
         });
 }
 
 // Carregar soluções
 function loadSolutions() {
+    console.log('🔄 Carregando soluções...');
+    
     fetch(`api/get_solutions.php?content_type=${contentType}&content_id=${contentId}`)
-        .then(response => response.json())
+        .then(response => {
+            console.log('📥 Resposta recebida:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('📊 Dados das soluções:', data);
             const container = document.getElementById('solutionsList');
+            
+            if (!container) {
+                console.error('❌ Container solutionsList não encontrado!');
+                return;
+            }
             
             if (!data.success || data.solutions.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-4 text-muted">
-                        <i class="fas fa-code fa-3x mb-3"></i>
-                        <p>Nenhuma solução compartilhada ainda.</p>
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        Nenhuma solução compartilhada ainda. Seja o primeiro!
                     </div>
                 `;
                 return;
             }
             
-            container.innerHTML = data.solutions.map(s => `
-                <div class="solution-card">
-                    <div class="solution-header">
-                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(s.username)}&background=random" 
-                             class="user-avatar" alt="${s.username}">
-                        <div class="flex-grow-1">
-                            <h6>${escapeHtml(s.title)}</h6>
-                            <small class="text-muted">por ${s.username} • ${timeAgo(s.created_at)}</small>
+            console.log(`✅ ${data.solutions.length} soluções encontradas`);
+            
+            container.innerHTML = data.solutions.map(s => {
+                const escapedCode = s.code.replace(/`/g, '\\`').replace(/\$/g, '\\$').replace(/\\/g, '\\\\');
+                const escapedTitle = escapeHtml(s.title).replace(/'/g, "\\'");
+                return `
+                    <div class="solution-card">
+                        <div class="solution-header">
+                            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(s.username)}&background=random" 
+                                 class="user-avatar" alt="${s.username}">
+                            <div class="flex-grow-1">
+                                <h6>${escapeHtml(s.title)}</h6>
+                                <small class="text-muted">por ${s.username} • ${timeAgo(s.created_at)}</small>
+                            </div>
+                        </div>
+                        <div class="solution-preview">
+                            <pre><code class="language-${s.language}">${escapeHtml(s.code.substring(0, 150))}${s.code.length > 150 ? '...' : ''}</code></pre>
+                        </div>
+                        <div class="solution-actions">
+                            <button class="btn btn-sm btn-primary" onclick='viewFullSolution(${s.id}, "${escapedTitle}", "${s.language}", \`${escapedCode}\`)'>
+                                <i class="fas fa-eye"></i> Ver Completo
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick='copySolutionCode(this, \`${escapedCode}\`)'>
+                                <i class="fas fa-copy"></i> Copiar
+                            </button>
+                            <span class="badge bg-success ms-2">
+                                <i class="fas fa-thumbs-up"></i> ${s.likes}
+                            </span>
                         </div>
                     </div>
-                    <div class="solution-preview">
-                        <pre><code class="language-${s.language}">${escapeHtml(s.code)}</code></pre>
-                    </div>
-                    <div class="solution-actions">
-                        <button class="btn btn-sm btn-outline-success">
-                            <i class="fas fa-thumbs-up"></i> ${s.likes}
-                        </button>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="copySolutionCode(this)">
-                            <i class="fas fa-copy"></i> Copiar
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         })
         .catch(err => {
             console.error('Erro ao carregar soluções:', err);
@@ -2862,10 +2962,7 @@ function likeDiscussion(discussionId, button) {
 }
 
 // Copiar código de solução
-function copySolutionCode(button) {
-    const codeElement = button.closest('.solution-card').querySelector('code');
-    const code = codeElement.textContent;
-    
+function copySolutionCode(button, code) {
     navigator.clipboard.writeText(code).then(() => {
         const originalHTML = button.innerHTML;
         button.innerHTML = '<i class="fas fa-check"></i> Copiado';
@@ -2873,7 +2970,138 @@ function copySolutionCode(button) {
         setTimeout(() => {
             button.innerHTML = originalHTML;
         }, 2000);
+        
+        showToast('Código copiado!', 'success');
+    }).catch(err => {
+        console.error('Erro ao copiar:', err);
+        showToast('Erro ao copiar código', 'error');
     });
+}
+
+// Ver solução completa em modal
+function viewFullSolution(id, title, language, code) {
+    const modalHtml = `
+        <div class="modal fade" id="solutionModal${id}" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">${escapeHtml(title)}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <span class="badge bg-secondary">${language}</span>
+                        </div>
+                        <div class="modal-code-container">
+                            <pre><code class="language-${language}">${escapeHtml(code)}</code></pre>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="copySolutionCode(this, \`${code.replace(/`/g, '\\`')}\`)">
+                            <i class="fas fa-copy"></i> Copiar Código
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove modal anterior se existir
+    const oldModal = document.getElementById(`solutionModal${id}`);
+    if (oldModal) oldModal.remove();
+    
+    // Adiciona novo modal
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Abre o modal
+    const modal = new bootstrap.Modal(document.getElementById(`solutionModal${id}`));
+    modal.show();
+}
+
+// Alternar formulário de resposta
+function toggleReplyForm(discussionId) {
+    const form = document.getElementById(`replyForm${discussionId}`);
+    const repliesContainer = document.getElementById(`replies${discussionId}`);
+    
+    if (form.style.display === 'none') {
+        form.style.display = 'block';
+        document.getElementById(`replyText${discussionId}`).focus();
+        
+        // Carregar respostas existentes
+        loadReplies(discussionId);
+    } else {
+        form.style.display = 'none';
+        repliesContainer.innerHTML = '';
+    }
+}
+
+// Submeter resposta
+function submitReply(discussionId) {
+    if (!isLoggedIn) {
+        showToast('Faça login para responder', 'warning');
+        return;
+    }
+    
+    const replyText = document.getElementById(`replyText${discussionId}`).value.trim();
+    
+    if (replyText.length < 5) {
+        showToast('A resposta deve ter pelo menos 5 caracteres', 'warning');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('discussion_id', discussionId);
+    formData.append('message', replyText);
+    
+    fetch('api/add_reply.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Resposta publicada!', 'success');
+            document.getElementById(`replyText${discussionId}`).value = '';
+            loadReplies(discussionId);
+            loadDiscussions(); // Atualiza contador
+        } else {
+            showToast(data.message || 'Erro ao responder', 'error');
+        }
+    })
+    .catch(err => {
+        console.error('Erro:', err);
+        showToast('Erro ao publicar resposta', 'error');
+    });
+}
+
+// Carregar respostas de uma discussão
+function loadReplies(discussionId) {
+    fetch(`api/get_replies.php?discussion_id=${discussionId}`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById(`replies${discussionId}`);
+            
+            if (!data.success || data.replies.length === 0) {
+                container.innerHTML = '<p class="text-muted small mt-2">Nenhuma resposta ainda</p>';
+                return;
+            }
+            
+            container.innerHTML = data.replies.map(r => `
+                <div class="reply-item">
+                    <div class="reply-header">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(r.username)}&background=random" 
+                             class="user-avatar" alt="${escapeHtml(r.username)}">
+                        <strong>${escapeHtml(r.username)}</strong>
+                        <small class="text-muted ms-2">${timeAgo(r.created_at)}</small>
+                    </div>
+                    <div class="reply-content">
+                        ${escapeHtml(r.message)}
+                    </div>
+                </div>
+            `).join('');
+        })
+        .catch(err => console.error('Erro ao carregar respostas:', err));
 }
 
 // Funções auxiliares
