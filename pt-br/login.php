@@ -124,7 +124,6 @@ include 'header.php';
             <?php endif; ?>
 
             <div class="card shadow">
-                <div class="card-header bg-primary text-white">
                 <div class="card-header">
                     <h1 class="h4 mb-4">
                         <i class="fas fa-sign-in-alt" aria-hidden="true"></i> 

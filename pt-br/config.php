@@ -61,7 +61,7 @@ if (!isset($_SESSION['language'])) { $_SESSION['language'] = 'pt-br'; }
 if (!isset($_SESSION['accessibility_mode'])) { $_SESSION['accessibility_mode'] = false; }
 
 // Detectar idioma pela URL
-$current_path = $_SERVER['REQUEST_URI'];
+$current_path = $_SERVER['REQUEST_URI'] ?? '';
 if (strpos($current_path, '/en/') !== false) {
     $_SESSION['language'] = 'en';
 } elseif (strpos($current_path, '/es/') !== false) {
@@ -75,39 +75,19 @@ if (strpos($current_path, '/en/') !== false) {
 // =================================================================
 
 /**
- * Conexão com o Banco de Dados
+ * Conexão com o Banco de Dados usando mysqli
  */
 if (!function_exists('getDBConnection')) {
     function getDBConnection() {
         try {
-            $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
-            $pdo = new PDO($dsn, DB_USER, DB_PASS);
-            
-            // Configurar PDO para lançar exceções
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-            
-            return $pdo;
-            
-        } catch (PDOException $e) {
-            // Tentar conexão sem senha como fallback
-            try {
-                $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
-                $pdo = new PDO($dsn, DB_USER, '');
-                
-                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-                $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-                
-                return $pdo;
-                
-            } catch (PDOException $e2) {
-                if (DEBUG_MODE) {
-                    error_log("Erro de conexão com o banco: " . $e->getMessage());
-                }
-                return null;
+            require_once 'database.php';
+            $db = new Database();
+            return $db->conn;
+        } catch (Exception $e) {
+            if (DEBUG_MODE) {
+                error_log("Erro de conexão com o banco: " . $e->getMessage());
             }
+            return null;
         }
     }
 }
@@ -582,7 +562,7 @@ if (!function_exists('processRegister')) {
 // =================================================================
 
 // >> CORREÇÃO: Processar mudanças de configuração com redirecionamento (Padrão Post-Redirect-Get)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $configChanged = false;
 
     if (isset($_POST['change_theme']) && isset($_POST['theme'])) {

@@ -37,6 +37,4 @@ class Database {
     }
 }
 
-// Testando a conexão
-$db = new Database();
-$db->closeConnection();
+// Classe Database pronta para uso
