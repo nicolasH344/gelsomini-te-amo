@@ -60,7 +60,7 @@ include 'header.php';
             <!-- Filtros e busca -->
             <div class="card mb-2">
                 <div class="card-body">
-                    <h2 class="h5 card-title">Filtrar Posts</h2>
+                    <h2 class="h5 card-title2">Filtrar Posts</h2>
                     <form method="GET" action="forum_index.php" class="row g-3">
                         <div class="col-md-4">
                             <label for="category" class="form-label">Categoria</label>

@@ -11,6 +11,7 @@
     --primary-light: #8e5dd9;
     --secondary-color: #e83e8c;
     --accent-color: #fd7e14;
+    --btn-color: #;
     
     /* Gradientes: Combinações de cores para fundos e efeitos visuais. */
     --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 50%, var(--secondary-color) 100%);
@@ -18,19 +19,21 @@
     --gradient-hero: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 25%, var(--secondary-color) 50%, var(--accent-color) 75%, var(--primary-color) 100%);
     
     /* -- Cores de fundo: Define as cores para o corpo da página, cards, etc. */
-    --bg-primary: #ffffff;
+    --bg-primary2: #ffffff;
     --bg-secondary: #ffffff;
     --bg-dark: #212529;
     --bg-light: #ffffff;
     
     /* -- Cores de Texto Semânticas (Padrão: Roxo Moderno - Claro) -- */
+    --botao: #fff;
+    --text-card: #080808;
     --text-primary: #080808;      /* Cor principal para a maioria dos textos (preto quase total). */
     --text-secondary: #fff;    /* Cor secundária para textos menos importantes (cinza escuro). */
     --text-muted: #6c757d;        /* Cor para textos suaves, como metadados (cinza médio). */
-    --text-light: #f8f9fa;
+    --text-light: #ffffff;
     
     /* Cores para elementos específicos (baseadas nas cores acima). */
-    --text-heading: #ffffff;      /* Cor para títulos (h1, h2, etc.). */
+    --text-heading: #000000;      /* Cor para títulos (h1, h2, etc.). */
     --text-body: var(--text-primary); /* Cor para parágrafos e texto principal. */
     --text-link: var(--primary-color); /* Cor para links. */
     
@@ -76,11 +79,14 @@
     --gradient-hero: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 25%, var(--accent-color) 50%, var(--secondary-color) 75%, var(--primary-color) 100%);
     
     /* -- Cores de Texto (Tema Azul - Claro) -- */
+    --text-card: #080808;
+    --bg-primary2: #ffffff;
+    --botao: #fff;
     --text-primary: #000000;
     --text-secondary: #343a40;
     --text-light: #f8f9fa;
     --text-muted: #000000; /* Ajustado para ser visível em fundo claro */
-    --text-heading: #ffffff;
+    --text-heading: #000000;
     --text-body: var(--text-primary);
     --text-link: var(--primary-color);
 
@@ -104,12 +110,16 @@
     --gradient-secondary: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
     --gradient-hero: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 25%, var(--secondary-color) 50%, var(--accent-color) 75%, var(--primary-color) 100%);
 
-    /* -- Cores de Texto (Tema Verde - Claro) -- */
+
+   /* -- Cores de Texto (Tema Verde - Claro) -- */
+    --text-card: #080808;
+    --bg-primary2: #ffffff;
+    --botao: #fff;
     --text-primary: #000000; /* Ajustado para ser visível em fundo claro */
     --text-secondary: #343a40; /* Ajustado para ser visível em fundo claro */
     --text-light: #f8f9fa;
     --text-muted: #000000; /* Ajustado para ser visível em fundo claro */ 
-    --text-heading: #ffffff;
+    --text-heading: #000000;
     --text-body: var(--text-primary);
     --text-link: var(--primary-color);
 
@@ -129,18 +139,22 @@
     --secondary-color: #03dac6;
     --accent-color: #cf6679;
     
-    --bg-primary: #121212;
+    --bg-primary2: #121212;
     --bg-secondary: #1e1e1e;
     --bg-dark: #ffffff;
     --bg-light: #2d2d2d;
     
     /* -- Cores de Texto (Tema Escuro) -- */
-    --text-primary: #ffffff;
+
+    --text-card: #000000;
+    --text-card2: #e9ecef;
+    --botao: #000;
+    --text-primary: #000000;
     --text-secondary: #e9ecef;
     --text-light: #ffffff;
     --text-muted: #ffffff; /* Ajustado para um cinza mais suave em fundo escuro */
-    --text-heading: #f8f9fa; /* Cor para títulos (h1, h2, etc.). */
-    --text-body: var(--text-primary);
+    --text-heading: #ffffff; /* Cor para títulos (h1, h2, etc.). */
+    --text-body: var(--text-secondary); /* Cor para parágrafos e texto principal. */
     --text-link: var(--primary-color);
     
     /* -- Cores do Rodapé -- */
@@ -184,7 +198,7 @@
     --text-secondary: #1a1a1a;
     --text-muted: #333333;
     --text-heading: #000000;
-    --text-body: var(--text-primary);
+    --text-body: #ffffff;
     --text-link: var(--primary-color);
 
     /* -- Cores do Rodapé -- */
@@ -243,7 +257,7 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: var(--bg-primary);
+    background-color: var(--bg-primary2);
     color: var(--text-primary);
     transition: var(--transition);
     scroll-behavior: smooth;
@@ -321,7 +335,7 @@ body {
 /* Estilo dos links na barra de navegação. */
 .navbar-nav .nav-link {
     font-weight: 500;
-    color: var(--text-primary) !important;
+    color: var(--primary-color) !important;
     transition: var(--transition);
     position: relative;
     margin: 0 0.5rem;
@@ -459,8 +473,8 @@ body {
 
 .btn-light {
     background: var(--bg-light);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
+    color: var(--text-heading);
+    border: 1px solid ;
 }
 
 .btn-sm {
@@ -520,8 +534,9 @@ body {
 
 .card-title {
     margin-bottom: var(--bs-card-title-spacer-y);
-    color: var(--text-primary);
+    color: var(--text-card);
 }
+
 
 .card-title2 {
     margin-bottom: var(--bs-card-title-spacer-y);
@@ -551,7 +566,7 @@ body {
 .form-label {
     font-weight: 600;
     margin-bottom: 0.5rem;
-    
+    color: var(--text-body);
 }
 
 /* Estilo para checkboxes quando marcados. */
@@ -635,6 +650,11 @@ body {
     color: var(--footer-text-body);
 }
 
+.mb-5 {
+    margin-bottom: 1rem !important;
+    color: var(--text-primary);
+}
+
 /* Removido - usando classes específicas agora */
 
 /* Estilos padrão para parágrafos e labels. */
@@ -644,9 +664,16 @@ p, .text-body {
     color: var(--text-body) !important;
 }
 
+.p2, .text-body {
+    margin-top: 0px;
+    margin-bottom: 1rem;
+    color: var(--text-primary) !important;
+}
+
+
 label {
     display: inline-block;
-    color: var(--text-primary) !important;
+    color: var(--text-body) !important;
 }
 
 /* Removido - usando classes específicas agora */
@@ -770,7 +797,7 @@ label {
     background: var(--gradient-primary);
     border: none;
     border-radius: var(--border-radius-lg);
-    color: var(--text-light);
+    color: var(--botao);
     font-size: 1.5rem;
     cursor: pointer;
     transition: var(--transition);

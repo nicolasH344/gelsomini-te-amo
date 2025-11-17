@@ -20,9 +20,9 @@ include 'header.php';
                     <h1 class="display-4 fw-bold mb-4 fade-in-up">
                         <?php echo t('learn_web_dev', 'Aprenda Desenvolvimento Web'); ?>
                     </h1>
-                    <p class="lead mb-4 fade-in-up" style="animation-delay: 0.2s;">
+                    <p2 class="lead mb-4 fade-in-up" style="animation-delay: 0.2s;">
                         <?php echo t('interactive_platform', 'Plataforma interativa para aprender programação'); ?>
-                    </p>
+                    </p2>
                     
                     <div class="d-flex flex-column flex-sm-row gap-3 mb-4 fade-in-up" style="animation-delay: 0.4s;">
                         <?php if (isLoggedIn()): ?>
@@ -87,7 +87,7 @@ include 'header.php';
                                     <div class="bg-warning rounded-circle" style="width: 12px; height: 12px;"></div>
                                     <div class="bg-success rounded-circle" style="width: 12px; height: 12px;"></div>
                                 </div>
-                                <small class="text-muted ms-3">index.html</small>
+                                <small class=" ms-3 mb-4">index.html</small>
                             </div>
                             <pre class="text-start text-light mb-0" style="font-size: 0.9rem;"><code id="typingCode"></code></pre>
                         </div>
@@ -115,10 +115,10 @@ include 'header.php';
 </section>
 
 <!-- Seção de Recursos -->
-<section class="py-5 bg-light">
+<section class="py-5 bg-primary2">
     <div class="container">
         <div class="row about-section">
-            <div class="col-12 text-center mb-5">
+            <div class="col-12 text-center mb-4">
                 <h2 class="display-5 fw-bold text-gradient theme-text-heading">
                     <?php echo t('why_choose_us', 'Por que nos escolher?'); ?>
                 </h2>
@@ -135,7 +135,7 @@ include 'header.php';
                         <div class="feature-icon mb-3">
                             <i class="fas fa-code fa-3x text-primary"></i>
                         </div>
-                        <h4 class="card-title theme-text-heading"><?php echo t('practical_exercises', 'Exercícios Práticos'); ?></h4>
+                        <h4 class="card-title2 theme-text-heading"><?php echo t('practical_exercises', 'Exercícios Práticos'); ?></h4>
                         <p class="card-text theme-text-body">
                             <?php echo t('practical_exercises_desc', 'Aprenda fazendo com exercícios interativos que simulam situações reais de desenvolvimento.'); ?>
                         </p>
@@ -149,7 +149,7 @@ include 'header.php';
                         <div class="feature-icon mb-3">
                             <i class="fas fa-bolt fa-3x text-warning"></i>
                         </div>
-                        <h4 class="card-title"><?php echo t('instant_feedback', 'Feedback Instantâneo'); ?></h4>
+                        <h4 class="card-title2"><?php echo t('instant_feedback', 'Feedback Instantâneo'); ?></h4>
                         <p class="card-text text-muted">
                             <?php echo t('instant_feedback_desc', 'Receba feedback imediato sobre seu código e aprenda com seus erros em tempo real.'); ?>
                         </p>
@@ -163,7 +163,7 @@ include 'header.php';
                         <div class="feature-icon mb-3">
                             <i class="fas fa-users fa-3x text-success"></i>
                         </div>
-                        <h4 class="card-title"><?php echo t('active_community', 'Comunidade Ativa'); ?></h4>
+                        <h4 class="card-title2"><?php echo t('active_community', 'Comunidade Ativa'); ?></h4>
                         <p class="card-text text-muted">
                             <?php echo t('active_community_desc', 'Conecte-se com outros desenvolvedores, tire dúvidas e compartilhe conhecimento.'); ?>
                         </p>
@@ -177,7 +177,7 @@ include 'header.php';
                         <div class="feature-icon mb-3">
                             <i class="fas fa-chart-line fa-3x text-info"></i>
                         </div>
-                        <h4 class="card-title"><?php echo t('progress_tracking', 'Acompanhamento de Progresso'); ?></h4>
+                        <h4 class="card-title2"><?php echo t('progress_tracking', 'Acompanhamento de Progresso'); ?></h4>
                         <p class="card-text text-muted">
                             <?php echo t('progress_tracking_desc', 'Acompanhe seu progresso com estatísticas detalhadas e alcance seus objetivos.'); ?>
                         </p>
@@ -191,7 +191,7 @@ include 'header.php';
                         <div class="feature-icon mb-3">
                             <i class="fas fa-mobile-alt fa-3x text-danger"></i>
                         </div>
-                        <h4 class="card-title"><?php echo t('responsive_design', 'Design Responsivo'); ?></h4>
+                        <h4 class="card-title2"><?php echo t('responsive_design', 'Design Responsivo'); ?></h4>
                         <p class="card-text text-muted">
                             <?php echo t('responsive_design_desc', 'Acesse a plataforma de qualquer dispositivo, a qualquer hora e em qualquer lugar.'); ?>
                         </p>
@@ -205,7 +205,7 @@ include 'header.php';
                         <div class="feature-icon mb-3">
                             <i class="fas fa-universal-access fa-3x text-secondary"></i>
                         </div>
-                        <h4 class="card-title"><?php echo t('accessibility', 'Acessibilidade'); ?></h4>
+                        <h4 class="card-title2"><?php echo t('accessibility', 'Acessibilidade'); ?></h4>
                         <p class="card-text text-muted">
                             <?php echo t('accessibility_desc', 'Plataforma totalmente acessível, incluindo suporte para pessoas com daltonismo.'); ?>
                         </p>
@@ -217,10 +217,10 @@ include 'header.php';
 </section>
 
 <!-- Seção de Trilhas de Aprendizado -->
-<section class="py-5">
+<section class="py-5 ">
     <div class="container">
         <div class="row">
-            <div class="col-12 text-center mb-5">
+            <div class="col-12 text-center mb-4">
                 <h2 class="display-5 fw-bold text-gradient">
                     <?php echo t('learning_paths', 'Trilhas de Aprendizado'); ?>
                 </h2>
@@ -234,8 +234,8 @@ include 'header.php';
             <div class="col-lg-6">
                 <div class="card border-gradient h-100">
                     <div class="card-header bg-primary text-white">
-                        <h4 class="card-title mb-0">
-                            <i class="fas fa-seedling me-2" aria-hidden="true"></i>
+                        <h4 class="card-title mb-4">
+                            <i class="fas fa-seedling mb-3" aria-hidden="true"></i>
                             <?php echo t('beginner_path', 'Trilha Iniciante'); ?>
                         </h4>
                     </div>
@@ -244,19 +244,19 @@ include 'header.php';
                             <?php echo t('beginner_path_desc', 'Perfeito para iniciantes. Aprenda HTML, CSS e JavaScript do zero.'); ?>
                         </p>
                         <ul class="list-unstyled">
-                            <li class="mb-2">
+                            <li class="mb-3">
                                 <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                 HTML5 <?php echo t('fundamentals', 'Fundamentos'); ?>
                             </li>
-                            <li class="mb-2">
+                            <li class="mb-3">
                                 <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                 CSS3 & <?php echo t('responsive_design', 'Design Responsivo'); ?>
                             </li>
-                            <li class="mb-2">
+                            <li class="mb-3">
                                 <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                 JavaScript <?php echo t('basics', 'Básico'); ?>
                             </li>
-                            <li class="mb-2">
+                            <li class="mb-3">
                                 <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                 <?php echo t('first_projects', 'Primeiros Projetos'); ?>
                             </li>
@@ -271,7 +271,7 @@ include 'header.php';
             <div class="col-lg-6">
                 <div class="card border-gradient h-100">
                     <div class="card-header bg-warning text-dark">
-                        <h4 class="card-title mb-0">
+                        <h4 class="card-title mb-4">
                             <i class="fas fa-rocket me-2" aria-hidden="true"></i>
                             <?php echo t('advanced_path', 'Trilha Avançada'); ?>
                         </h4>
@@ -281,19 +281,19 @@ include 'header.php';
                             <?php echo t('advanced_path_desc', 'Para desenvolvedores que querem se aprofundar em tecnologias modernas.'); ?>
                         </p>
                         <ul class="list-unstyled">
-                            <li class="mb-2">
+                            <li class="mb-3">
                                 <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                 React & Vue.js
                             </li>
-                            <li class="mb-2">
+                            <li class="mb-3">
                                 <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                 Node.js & Express
                             </li>
-                            <li class="mb-2">
+                            <li class="mb-3">
                                 <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                 <?php echo t('databases', 'Bancos de Dados'); ?>
                             </li>
-                            <li class="mb-2">
+                            <li class="mb-3">
                                 <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                 <?php echo t('deployment', 'Deploy e DevOps'); ?>
                             </li>
@@ -309,16 +309,16 @@ include 'header.php';
 </section>
 
 <!-- Seção de Depoimentos -->
-<section class="py-5 bg-light">
+<section class="py-5 bg-primary2">
     <div class="container">
         <div class="row">
-            <div class="col-12 text-center mb-5">
+            <div class="col-12 text-center mb-4">
                 <h2 class="display-5 fw-bold text-gradient">
                     <?php echo t('what_students_say', 'O que nossos estudantes dizem'); ?>
                 </h2>
-                <p class="lead text-muted">
+                <p2 class="lead fw-bold mb-4" style="color: #fff;">
                     <?php echo t('testimonials_desc', 'Veja a experiência de quem já está na jornada'); ?>
-                </p>
+                </p2>
             </div>
         </div>
 
@@ -337,13 +337,13 @@ include 'header.php';
                                 "<?php echo t('testimonial_1', 'A plataforma é incrível! Os exercícios práticos me ajudaram a consolidar meus conhecimentos de uma forma que nenhum outro curso online havia conseguido antes.'); ?>"
                             </p>
                         </blockquote>
-                        <footer class="blockquote-footer mt-auto">
-                            <strong class="d-block theme-text-heading">Joana Silva</strong>
+                        <footer class="blockquote-footer mt-auto mb-3">
+                            <strong class="d-block theme-text-heading mb-3">Joana Silva</strong>
                             <cite title="<?php echo t('job_title', 'Cargo'); ?>" class="theme-text-muted">
                                 <?php echo t('frontend_developer', 'Desenvolvedora Front-end'); ?>
                             </cite>
                         </footer>
-                        <div class="mt-3 text-warning">
+                        <div class="mt-3 text-warning mb-3>
                             <i class="fas fa-star" aria-hidden="true"></i>
                             <i class="fas fa-star" aria-hidden="true"></i>
                             <i class="fas fa-star" aria-hidden="true"></i>
@@ -368,7 +368,7 @@ include 'header.php';
                                 "<?php echo t('testimonial_2', 'O feedback instantâneo é um divisor de águas. Pude corrigir meus erros e evoluir muito mais rápido. Recomendo para todos!'); ?>"
                             </p>
                         </blockquote>
-                        <footer class="blockquote-footer mt-auto">
+                        <footer class="blockquote-footer mt-auto mb-3">
                             <strong class="d-block">Carlos Souza</strong>
                             <cite title="<?php echo t('job_title', 'Cargo'); ?>">
                                 <?php echo t('fullstack_developer', 'Estudante de Análise de Sistemas'); ?>
@@ -399,7 +399,7 @@ include 'header.php';
                                 "<?php echo t('testimonial_3', 'A comunidade é muito ativa e prestativa. Sempre que tive dúvidas, encontrei ajuda no fórum. Isso faz toda a diferença no aprendizado.'); ?>"
                             </p>
                         </blockquote>
-                        <footer class="blockquote-footer mt-auto">
+                        <footer class="blockquote-footer mt-auto mb-3">
                             <strong class="d-block">Mariana Lima</strong>
                             <cite title="<?php echo t('job_title', 'Cargo'); ?>">
                                 <?php echo t('ui_designer', 'Designer UI/UX'); ?>
@@ -420,20 +420,20 @@ include 'header.php';
 </section>
 
 <!-- Call to Action -->
-<section class="py-5 bg-primary text-white">
+<section class="py-5 bg-primary text-white hero-section" style="min-height: auto;">
     <div class="container text-center">
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <h2 class="display-5 fw-bold mb-4">
                     <?php echo t('ready_to_start', 'Pronto para começar sua jornada?'); ?>
                 </h2>
-                <p class="lead mb-4">
+                <p2 class="lead mb-4">
                     <?php echo t('join_thousands', 'Junte-se a milhares de desenvolvedores que já transformaram suas carreiras conosco.'); ?>
-                </p>
+                </p2>
                 
                 <?php if (!isLoggedIn()): ?>
                     <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
-                        <a href="register.php" class="btn btn-light btn-lg">
+                        <a href="register.php" class="btn btn-outline-light btn-lg">
                             <i class="fas fa-user-plus me-2" aria-hidden="true"></i>
                             <?php echo t('create_free_account', 'Criar Conta Gratuita'); ?>
                         </a>

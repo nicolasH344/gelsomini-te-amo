@@ -279,8 +279,8 @@ include 'header.php';
                     
                     $progress_percent = $total_available > 0 ? round(($user_completed / $total_available) * 100) : 0;
                     ?>
-                    <p class="mb-2">Exercícios disponíveis: <strong><?php echo $total_available; ?></strong></p>
-                    <p class="mb-2">Exercícios concluídos: <strong><?php echo $user_completed; ?></strong></p>
+                    <li class="mb-2">Exercícios disponíveis: <strong><?php echo $total_available; ?></strong></li>
+                    <li accesskey="mb-2" class="mb-2" style="color: #000;">Exercícios concluídos: <strong><?php echo $user_completed; ?></strong></li>
                     <div class="progress mb-3">
                         <div class="progress-bar" role="progressbar" style="width: <?php echo $progress_percent; ?>%" 
                              aria-valuenow="<?php echo $progress_percent; ?>" aria-valuemin="0" aria-valuemax="100" 

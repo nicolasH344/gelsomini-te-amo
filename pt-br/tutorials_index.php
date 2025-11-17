@@ -80,7 +80,7 @@ include 'header.php';
     <!-- Filtros -->
     <div class="card mb-4">
         <div class="card-body">
-            <h2 class="h5 card-title">Filtrar Tutoriais</h2>
+            <h2 class="h5 card-title2">Filtrar Tutoriais</h2>
             <form method="GET" action="tutorials_index.php" class="row g-3">
                 <?php if ($showAll): ?>
                     <input type="hidden" name="show_all" value="1">
@@ -150,7 +150,7 @@ include 'header.php';
                     </div>
                     
                     <div class="card-body">
-                        <h3 class="card-title h5"><?php echo htmlspecialchars($tutorial['title']); ?></h3>
+                        <h3 class="card-title h5 mb-4"><?php echo htmlspecialchars($tutorial['title']); ?></h3>
                         <p class="card-text"><?php echo htmlspecialchars($tutorial['description']); ?></p>
                         
                         <div class="d-flex justify-content-between text-muted small">
@@ -262,8 +262,8 @@ include 'header.php';
         <div class="col-md-3 col-sm-6 mb-3">
             <div class="card bg-warning text-dark">
                 <div class="card-body text-center">
-                    <i class="fab fa-js-square" style="font-size: 2rem;" aria-hidden="true"></i>
-                    <h3 class="h5 mt-2">JavaScript</h3>
+                    <i class="fab fa-js-square" style="font-size: 2rem; color: #fff;" aria-hidden="true"></i>
+                    <h3 class="h5 mt-2" style="color: #fff;">JavaScript</h3>
                     <p class="mb-0"><?php echo count(array_filter($allTutorials, fn($t) => $t['category'] === 'JavaScript')); ?> tutorial</p>
                 </div>
             </div>
@@ -314,7 +314,9 @@ include 'header.php';
                         <i class="fas fa-question-circle text-info" aria-hidden="true"></i> 
                         Precisa de Ajuda?
                     </h2>
-                    <p class="mb-3">Tem dúvidas sobre algum tutorial? Nossa comunidade está aqui para ajudar!</p>
+                    <li class="mb-0"    >
+                    Tem dúvidas sobre algum tutorial? Nossa comunidade está aqui para ajudar!
+                    </li>
                     <a href="forum_index.php" class="btn btn-info btn-sm">
                         <i class="fas fa-comments" aria-hidden="true"></i> Ir para o Fórum
                     </a>
@@ -326,6 +328,7 @@ include 'header.php';
 
 <style>
 /* Estilos customizados para tutoriais usando variáveis CSS do tema */
+
 .tech-gradient {
     background: var(--gradient-primary);
     -webkit-background-clip: text;

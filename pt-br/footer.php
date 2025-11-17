@@ -140,7 +140,7 @@
             
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <p class="fw-semibold mb-3">
+                    <p class="fw-semibold mb-3" style="color: #ffffffff;">
                         &copy; <?php echo date('Y'); ?> <?php echo t('site_title'); ?>. 
                         <?php echo t('all_rights_reserved', 'Todos os direitos reservados.'); ?>
                     </p>
