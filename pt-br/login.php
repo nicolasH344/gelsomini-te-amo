@@ -195,7 +195,7 @@ include 'header.php';
                             <a href="register.php" class="text-decoration-none">Registre-se aqui</a>
                         </p2>
                         <p class="" style="color: #fff;">
-                            <a href="forgot_password.php" class="text-decoration-none">Esqueceu sua senha?</a>
+                            <a href="esqueci-senha.php" class="text-decoration-none">Esqueceu sua senha?</a>
                         </p>
                     </div>
                     
