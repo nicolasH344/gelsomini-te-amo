@@ -312,11 +312,11 @@ include 'header.php';
 <section class="py-5 bg-primary2">
     <div class="container">
         <div class="row">
-            <div class="col-12 text-center mb-4">
+            <div class="col-12 text-center mb-0">
                 <h2 class="display-5 fw-bold text-gradient">
                     <?php echo t('what_students_say', 'O que nossos estudantes dizem'); ?>
                 </h2>
-                <p2 class="lead fw-bold mb-4" style="color: #fff;">
+                <p2 class="lead fw-bold mb-0" >
                     <?php echo t('testimonials_desc', 'Veja a experiência de quem já está na jornada'); ?>
                 </p2>
             </div>
