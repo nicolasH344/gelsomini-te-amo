@@ -79,16 +79,22 @@ if (strpos($current_path, '/en/') !== false) {
  */
 if (!function_exists('getDBConnection')) {
     function getDBConnection() {
-        try {
-            require_once 'database.php';
-            $db = new Database();
-            return $db->conn;
-        } catch (Exception $e) {
-            if (DEBUG_MODE) {
-                error_log("Erro de conexão com o banco: " . $e->getMessage());
+        static $connection = null;
+        
+        if ($connection === null) {
+            try {
+                require_once 'database.php';
+                $db = new Database();
+                $connection = $db->conn;
+            } catch (Exception $e) {
+                if (DEBUG_MODE) {
+                    error_log("Erro de conexão com o banco: " . $e->getMessage());
+                }
+                return null;
             }
-            return null;
         }
+        
+        return $connection;
     }
 }
 

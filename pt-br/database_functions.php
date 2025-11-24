@@ -65,27 +65,48 @@ function processRegister($data) {
 
 function getStats() {
     try {
-        $exerciseModel = new Exercise();
-        $tutorialModel = new Tutorial();
-        $forumModel = new Forum();
-        $userModel = new User();
+        $conn = getDBConnection();
         
-        $exerciseStats = $exerciseModel->getStats();
-        $tutorialStats = $tutorialModel->getStats();
+        if (!$conn) {
+            throw new Exception("Conexão não disponível");
+        }
         
         // Contar usuários ativos
-        $conn = getDBConnection();
+        $userCount = 0;
         $stmt = $conn->query("SELECT COUNT(*) as total FROM users WHERE is_active = 1");
-        $userCount = $stmt->fetch()['total'];
+        if ($stmt) {
+            $userResult = $stmt->fetch_assoc();
+            $userCount = $userResult ? $userResult['total'] : 0;
+        }
+        
+        // Contar exercícios
+        $exerciseCount = 0;
+        $stmt = $conn->query("SELECT COUNT(*) as total FROM exercises WHERE is_active = 1");
+        if ($stmt) {
+            $exerciseResult = $stmt->fetch_assoc();
+            $exerciseCount = $exerciseResult ? $exerciseResult['total'] : 0;
+        }
+        
+        // Contar tutoriais
+        $tutorialCount = 0;
+        $stmt = $conn->query("SELECT COUNT(*) as total FROM tutorials WHERE is_active = 1");
+        if ($stmt) {
+            $tutorialResult = $stmt->fetch_assoc();
+            $tutorialCount = $tutorialResult ? $tutorialResult['total'] : 0;
+        }
         
         // Contar posts do fórum
+        $forumCount = 0;
         $stmt = $conn->query("SELECT COUNT(*) as total FROM forum_posts");
-        $forumCount = $stmt->fetch()['total'];
+        if ($stmt) {
+            $forumResult = $stmt->fetch_assoc();
+            $forumCount = $forumResult ? $forumResult['total'] : 0;
+        }
         
         return [
             'total_users' => $userCount,
-            'total_exercises' => $exerciseStats['total_exercises'],
-            'total_tutorials' => $tutorialStats['total_tutorials'],
+            'total_exercises' => $exerciseCount,
+            'total_tutorials' => $tutorialCount,
             'total_forum_posts' => $forumCount
         ];
         
