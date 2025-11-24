@@ -194,79 +194,135 @@ include 'header.php';
         <div class="col-lg-8">
             <!-- Cabeçalho do Conteúdo -->
             <div class="content-header-card mb-4">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                        <div class="d-flex align-items-center mb-2 flex-wrap">
-                            <span class="content-type-badge <?php echo $type === 'tutorial' ? 'tutorial' : 'exercise'; ?> me-2">
-                                <i class="fas fa-<?php echo $type === 'tutorial' ? 'book' : 'dumbbell'; ?> me-1"></i>
-                                <?php echo $type === 'tutorial' ? 'Tutorial' : 'Exercício'; ?>
-                            </span>
-                            <span class="difficulty-badge difficulty-<?php echo strtolower($item['difficulty']); ?> me-2">
-                                <?php echo sanitize($item['difficulty']); ?>
-                            </span>
-                            <?php if (isset($item['rating'])): ?>
-                            <span class="rating-badge me-2">
-                                <i class="fas fa-star text-warning"></i>
-                                <?php echo $item['rating']; ?> (<?php echo $item['rating_count']; ?>)
-                            </span>
-                            <?php endif; ?>
-                            <?php if (isset($item['downloads'])): ?>
-                            <span class="downloads-badge">
-                                <i class="fas fa-download"></i>
-                                <?php echo $item['downloads']; ?> downloads
-                            </span>
-                            <?php endif; ?>
+                <!-- Background decorativo -->
+                <div class="header-background"></div>
+                
+                <div class="header-content">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div class="flex-grow-1">
+                            <!-- Badges no topo -->
+                            <div class="badges-row mb-3">
+                                <span class="badge-modern type-badge <?php echo $type === 'tutorial' ? 'tutorial' : 'exercise'; ?>">
+                                    <i class="fas fa-<?php echo $type === 'tutorial' ? 'graduation-cap' : 'code'; ?>"></i>
+                                    <?php echo $type === 'tutorial' ? 'Tutorial' : 'Exercício'; ?>
+                                </span>
+                                <span class="badge-modern difficulty-badge-modern difficulty-<?php echo strtolower($item['difficulty']); ?>">
+                                    <i class="fas fa-signal"></i>
+                                    <?php echo sanitize($item['difficulty']); ?>
+                                </span>
+                            </div>
+                            
+                            <!-- Título principal -->
+                            <h1 class="header-title mb-3"><?php echo sanitize($item['title']); ?></h1>
+                            
+                            <!-- Descrição -->
+                            <p class="header-description mb-4"><?php echo sanitize($item['description']); ?></p>
+                            
+                            <!-- Estatísticas em destaque -->
+                            <div class="header-stats">
+                                <?php if (isset($item['rating'])): ?>
+                                <div class="stat-badge">
+                                    <div class="stat-icon rating">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-value"><?php echo $item['rating']; ?></span>
+                                        <span class="stat-label">(<?php echo $item['rating_count']; ?>)</span>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <?php if (isset($item['downloads'])): ?>
+                                <div class="stat-badge">
+                                    <div class="stat-icon downloads">
+                                        <i class="fas fa-download"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-value"><?php echo number_format($item['downloads']); ?></span>
+                                        <span class="stat-label">downloads</span>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                            </div>
                         </div>
-                        <h1 class="display-6 fw-bold mb-3"><?php echo sanitize($item['title']); ?></h1>
-                        <p class="lead text-muted mb-4"><?php echo sanitize($item['description']); ?></p>
                         
-                        <!-- Tags -->
-                        <?php if (isset($item['tags'])): ?>
-                        <div class="tags-container mb-3">
-                            <?php foreach ($item['tags'] as $tag): ?>
-                                <span class="tag"><?php echo $tag; ?></span>
-                            <?php endforeach; ?>
+                        <!-- Ações do header -->
+                        <div class="header-actions-modern">
+                            <button class="btn-action-modern favorite" title="Adicionar aos favoritos">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="btn-action-modern share" title="Compartilhar">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <button class="btn-action-modern bookmark" title="Salvar para depois">
+                                <i class="far fa-bookmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Metadados em grid -->
+                    <div class="metadata-grid-modern">
+                        <div class="metadata-card">
+                            <div class="metadata-icon category">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                            <div class="metadata-text">
+                                <span class="metadata-label">Categoria</span>
+                                <span class="metadata-value"><?php echo sanitize($item['category']); ?></span>
+                            </div>
+                        </div>
+                        
+                        <?php if ($type === 'tutorial'): ?>
+                        <div class="metadata-card">
+                            <div class="metadata-icon duration">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="metadata-text">
+                                <span class="metadata-label">Duração</span>
+                                <span class="metadata-value"><?php echo sanitize($item['duration']); ?></span>
+                            </div>
+                        </div>
+                        
+                        <div class="metadata-card">
+                            <div class="metadata-icon views">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="metadata-text">
+                                <span class="metadata-label">Visualizações</span>
+                                <span class="metadata-value"><?php echo number_format($item['views']); ?></span>
+                            </div>
+                        </div>
+                        <?php else: ?>
+                        <div class="metadata-card">
+                            <div class="metadata-icon time">
+                                <i class="fas fa-stopwatch"></i>
+                            </div>
+                            <div class="metadata-text">
+                                <span class="metadata-label">Tempo estimado</span>
+                                <span class="metadata-value"><?php echo $item['estimated_time']; ?></span>
+                            </div>
                         </div>
                         <?php endif; ?>
                         
-                        <!-- Metadados -->
-                        <div class="metadata-grid">
-                            <div class="metadata-item">
-                                <i class="fas fa-tag"></i>
-                                <span><?php echo sanitize($item['category']); ?></span>
+                        <div class="metadata-card">
+                            <div class="metadata-icon author">
+                                <i class="fas fa-user-circle"></i>
                             </div>
-                            <?php if ($type === 'tutorial'): ?>
-                            <div class="metadata-item">
-                                <i class="fas fa-clock"></i>
-                                <span><?php echo sanitize($item['duration']); ?></span>
-                            </div>
-                            <div class="metadata-item">
-                                <i class="fas fa-eye"></i>
-                                <span><?php echo number_format($item['views']); ?> visualizações</span>
-                            </div>
-                            <?php else: ?>
-                            <div class="metadata-item">
-                                <i class="fas fa-stopwatch"></i>
-                                <span><?php echo $item['estimated_time']; ?></span>
-                            </div>
-                            <?php endif; ?>
-                            <div class="metadata-item">
-                                <i class="fas fa-user"></i>
-                                <span><?php echo isset($item['author']) ? $item['author'] : 'Equipe CodeLearn'; ?></span>
-                            </div>
-                            <div class="metadata-item">
-                                <i class="fas fa-calendar"></i>
-                                <span><?php echo isset($item['last_updated']) ? date('d/m/Y', strtotime($item['last_updated'])) : 'Atualizado recentemente'; ?></span>
+                            <div class="metadata-text">
+                                <span class="metadata-label">Autor</span>
+                                <span class="metadata-value"><?php echo isset($item['author']) ? $item['author'] : 'Equipe WebLearn'; ?></span>
                             </div>
                         </div>
-                    </div>
-                    <div class="header-actions">
-                        <button class="btn btn-icon" title="Favoritar">
-                            <i class="far fa-heart"></i>
-                        </button>
-                        <button class="btn btn-icon" title="Compartilhar">
-                            <i class="fas fa-share-alt"></i>
-                        </button>
+                        
+                        <div class="metadata-card">
+                            <div class="metadata-icon date">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="metadata-text">
+                                <span class="metadata-label">Atualização</span>
+                                <span class="metadata-value"><?php echo isset($item['last_updated']) ? date('d/m/Y', strtotime($item['last_updated'])) : date('d/m/Y'); ?></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1562,27 +1618,84 @@ console.log("Tutorial em desenvolvimento");';
 
             <!-- Card de Progresso -->
             <div class="progress-card mb-4">
-                <div class="card-header">
-                    <h6 class="mb-0">
-                        <i class="fas fa-chart-line me-2"></i>
-                        Seu Progresso
-                    </h6>
+                <div class="card-header bg-gradient-progress text-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6 class="mb-0 fw-bold">
+                            <i class="fas fa-trophy me-2"></i>
+                            Seu Progresso
+                        </h6>
+                        <?php if ($user_progress >= 100): ?>
+                            <span class="badge bg-white bg-opacity-25">
+                                <i class="fas fa-medal"></i> Completo
+                            </span>
+                        <?php endif; ?>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="progress mb-3" style="height: 8px;">
-                        <div class="progress-bar bg-success" style="width: <?php echo $user_progress; ?>%"></div>
+                <div class="card-body p-4">
+                    <!-- Círculo de Progresso -->
+                    <div class="progress-circle-container mb-4">
+                        <svg class="progress-ring" width="120" height="120">
+                            <circle class="progress-ring__circle-bg" 
+                                    stroke="#e9ecef" 
+                                    stroke-width="8" 
+                                    fill="transparent" 
+                                    r="52" 
+                                    cx="60" 
+                                    cy="60"/>
+                            <circle class="progress-ring__circle" 
+                                    stroke="url(#gradient)" 
+                                    stroke-width="8" 
+                                    fill="transparent" 
+                                    r="52" 
+                                    cx="60" 
+                                    cy="60"
+                                    style="stroke-dasharray: <?php echo 2 * 3.14159 * 52; ?>; stroke-dashoffset: <?php echo 2 * 3.14159 * 52 * (1 - $user_progress / 100); ?>;"/>
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#06ffa5;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#06d6a0;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="progress-percentage">
+                            <span class="percentage-value"><?php echo $user_progress; ?>%</span>
+                            <span class="percentage-label">Completo</span>
+                        </div>
                     </div>
-                    <div class="progress-stats">
-                        <span><?php echo $user_progress; ?>% completo</span>
-                        <span><?php echo $time_remaining; ?></span>
+                    
+                    <!-- Status e Tempo -->
+                    <div class="progress-info">
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <i class="fas fa-clock text-primary"></i>
+                            </div>
+                            <div class="info-text">
+                                <small class="text-muted">Status</small>
+                                <div class="fw-semibold"><?php echo $time_remaining; ?></div>
+                            </div>
+                        </div>
+                        
+                        <?php if ($user_progress > 0 && $user_progress < 100): ?>
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <i class="fas fa-fire text-danger"></i>
+                            </div>
+                            <div class="info-text">
+                                <small class="text-muted">Sequência</small>
+                                <div class="fw-semibold"><?php echo rand(1, 7); ?> dias</div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
                     </div>
+                    
+                    <!-- Botão de Ação -->
                     <?php if ($user_progress < 100): ?>
-                    <button class="btn btn-outline-primary btn-sm w-100 mt-2" id="continueBtn">
-                        <i class="fas fa-play me-1"></i> Continuar
+                    <button class="btn btn-gradient-success w-100 mt-3" id="continueBtn">
+                        <i class="fas fa-play me-2"></i> Continuar Aprendendo
                     </button>
                     <?php else: ?>
-                    <button class="btn btn-success btn-sm w-100 mt-2">
-                        <i class="fas fa-check me-1"></i> Concluído
+                    <button class="btn btn-success w-100 mt-3" disabled>
+                        <i class="fas fa-check-circle me-2"></i> Concluído com Sucesso
                     </button>
                     <?php endif; ?>
                 </div>
@@ -1590,13 +1703,13 @@ console.log("Tutorial em desenvolvimento");';
 
             <!-- Card de Conteúdo Relacionado -->
             <div class="related-card">
-                <div class="card-header">
-                    <h6 class="mb-0">
-                        <i class="fas fa-layer-group me-2"></i>
-                        Conteúdo Relacionado
+                <div class="card-header bg-gradient-related text-white">
+                    <h6 class="mb-0 fw-bold">
+                        <i class="fas fa-compass me-2"></i>
+                        Continue Explorando
                     </h6>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-3">
                     <div class="related-list">
                         <?php
                         // Buscar conteúdo relacionado
@@ -1643,68 +1756,143 @@ console.log("Tutorial em desenvolvimento");';
                         }
                         
                         // Exibir itens relacionados
-                        foreach ($relatedItems as $related):
-                            $iconClass = match($related['category']) {
-                                'HTML' => 'fab fa-html5 text-danger',
-                                'CSS' => 'fab fa-css3-alt text-primary',
-                                'JavaScript' => 'fab fa-js-square text-warning',
-                                'PHP' => 'fab fa-php text-info',
-                                default => 'fas fa-book text-secondary'
-                            };
-                            
-                            $relatedType = $type; // Mantém o mesmo tipo
-                            $relatedLabel = $type === 'tutorial' ? 'Tutorial' : 'Exercício';
-                            $relatedInfo = $type === 'tutorial' 
-                                ? ($related['duration'] ?? '30 min')
-                                : ($related['difficulty'] ?? 'Intermediário');
-                        ?>
-                            <a href="show.php?type=<?php echo $relatedType; ?>&id=<?php echo $related['id']; ?>" class="related-item">
-                                <div class="related-icon">
-                                    <i class="<?php echo $iconClass; ?>"></i>
-                                </div>
-                                <div class="related-content">
-                                    <h6><?php echo htmlspecialchars($related['title']); ?></h6>
-                                    <span class="text-muted"><?php echo $relatedLabel; ?> • <?php echo $relatedInfo; ?></span>
-                                </div>
-                            </a>
-                        <?php
-                        endforeach;
-                        
                         if (empty($relatedItems)): ?>
-                            <div class="text-muted text-center py-3">
-                                <i class="fas fa-info-circle me-1"></i>
-                                Nenhum conteúdo relacionado disponível no momento.
+                            <div class="empty-related text-center py-5">
+                                <i class="fas fa-compass fa-3x text-muted mb-3 opacity-25"></i>
+                                <p class="text-muted mb-0">Nenhum conteúdo relacionado disponível</p>
                             </div>
-                        <?php endif; ?>
+                        <?php else:
+                            foreach ($relatedItems as $index => $related):
+                                $iconClass = match($related['category']) {
+                                    'HTML' => 'fab fa-html5',
+                                    'CSS' => 'fab fa-css3-alt',
+                                    'JavaScript' => 'fab fa-js-square',
+                                    'PHP' => 'fab fa-php',
+                                    default => 'fas fa-book'
+                                };
+                                
+                                $colorClass = match($related['category']) {
+                                    'HTML' => 'html',
+                                    'CSS' => 'css',
+                                    'JavaScript' => 'js',
+                                    'PHP' => 'php',
+                                    default => 'default'
+                                };
+                                
+                                $relatedType = $type;
+                                $relatedLabel = $type === 'tutorial' ? 'Tutorial' : 'Exercício';
+                                $relatedInfo = $type === 'tutorial' 
+                                    ? ($related['duration'] ?? '30 min')
+                                    : ($related['difficulty'] ?? 'Intermediário');
+                            ?>
+                                <a href="show.php?type=<?php echo $relatedType; ?>&id=<?php echo $related['id']; ?>" 
+                                   class="related-item-modern" 
+                                   style="animation-delay: <?php echo $index * 0.1; ?>s">
+                                    <div class="related-icon-modern <?php echo $colorClass; ?>">
+                                        <i class="<?php echo $iconClass; ?>"></i>
+                                    </div>
+                                    <div class="related-content-modern">
+                                        <h6 class="related-title"><?php echo htmlspecialchars($related['title']); ?></h6>
+                                        <div class="related-meta">
+                                            <span class="badge-type"><?php echo $relatedLabel; ?></span>
+                                            <span class="badge-info">
+                                                <i class="fas fa-clock"></i>
+                                                <?php echo $relatedInfo; ?>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="related-arrow">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </div>
+                                </a>
+                            <?php
+                            endforeach;
+                        endif; ?>
                     </div>
                 </div>
             </div>
             
             <!-- Card de Estatísticas -->
             <div class="stats-card mt-4">
-                <div class="card-header">
-                    <h6 class="mb-0">
-                        <i class="fas fa-chart-bar me-2"></i>
-                        Estatísticas
-                    </h6>
+                <div class="card-header bg-gradient-stats text-white">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6 class="mb-0 fw-bold">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Estatísticas
+                        </h6>
+                        <span class="badge bg-white bg-opacity-25">Últimos 30 dias</span>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-value"><?php echo isset($item['downloads']) ? $item['downloads'] : '1.2k'; ?></div>
-                            <div class="stat-label">Downloads</div>
+                <div class="card-body p-0">
+                    <div class="stats-grid-modern">
+                        <div class="stat-item-modern">
+                            <div class="stat-icon-container downloads">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <div class="stat-details">
+                                <div class="stat-value-modern"><?php echo isset($item['downloads']) ? number_format($item['downloads']) : '1,200'; ?></div>
+                                <div class="stat-label-modern">Downloads</div>
+                                <div class="stat-trend positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>+12% este mês</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value"><?php echo isset($item['rating_count']) ? $item['rating_count'] : '245'; ?></div>
-                            <div class="stat-label">Avaliações</div>
+                        
+                        <div class="stat-item-modern">
+                            <div class="stat-icon-container ratings">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-details">
+                                <div class="stat-value-modern"><?php echo isset($item['rating_count']) ? number_format($item['rating_count']) : '245'; ?></div>
+                                <div class="stat-label-modern">Avaliações</div>
+                                <div class="stat-trend positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>+8% este mês</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value"><?php echo isset($item['views']) ? $item['views'] : '3.4k'; ?></div>
-                            <div class="stat-label">Visualizações</div>
+                        
+                        <div class="stat-item-modern">
+                            <div class="stat-icon-container views">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="stat-details">
+                                <div class="stat-value-modern"><?php echo isset($item['views']) ? number_format($item['views']) : '3,400'; ?></div>
+                                <div class="stat-label-modern">Visualizações</div>
+                                <div class="stat-trend positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>+15% este mês</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value">87%</div>
-                            <div class="stat-label">Taxa de Conclusão</div>
+                        
+                        <div class="stat-item-modern">
+                            <div class="stat-icon-container completion">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-details">
+                                <div class="stat-value-modern">87%</div>
+                                <div class="stat-label-modern">Taxa de Conclusão</div>
+                                <div class="progress stat-progress mt-2">
+                                    <div class="progress-bar bg-success" role="progressbar" 
+                                         style="width: 87%"
+                                         aria-valuenow="87" 
+                                         aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer com estatísticas adicionais -->
+                    <div class="stats-footer">
+                        <div class="footer-stat-item">
+                            <i class="fas fa-fire text-danger"></i>
+                            <span><strong>Popular</strong> - Top 10 desta semana</span>
+                        </div>
+                        <div class="footer-stat-item">
+                            <i class="fas fa-users text-primary"></i>
+                            <span><strong><?php echo rand(50, 200); ?></strong> usuários ativos agora</span>
                         </div>
                     </div>
                 </div>
@@ -1727,17 +1915,422 @@ console.log("Tutorial em desenvolvimento");';
     --transition: all 0.3s ease;
 }
 
-/* Estilos para a página de detalhes */
+/* ========================================
+   ESTILOS PARA A PÁGINA DE DETALHES
+   ======================================== */
+
+/* Card principal do cabeçalho - container do topo da página */
 .content-header-card {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    color: white;
-    padding: 2.5rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    position: relative;
-    overflow: hidden;
+    background: white; /* Fundo branco base (coberto pelo gradiente) */
+    border-radius: 20px; /* Cantos arredondados suaves */
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08); /* Sombra sutil para profundidade */
+    position: relative; /* Permite posicionamento absoluto dos filhos */
+    overflow: hidden; /* Esconde elementos que ultrapassam os limites */
 }
 
+/* Fundo gradiente decorativo do header */
+.header-background {
+    position: absolute; /* Posicionado em relação ao .content-header-card */
+    top: 0; /* Alinhado ao topo */
+    left: 0; /* Alinhado à esquerda */
+    right: 0; /* Alinhado à direita */
+    height: 250px; /* Altura fixa do gradiente */
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); /* Gradiente diagonal das cores do site */
+    opacity: 1; /* Totalmente opaco */
+    z-index: 0; /* Fica atrás do conteúdo */
+}
+
+/* Círculo decorativo superior direito (efeito visual) */
+.header-background::before {
+    content: ''; /* Cria elemento vazio */
+    position: absolute; /* Posicionado em relação ao .header-background */
+    top: -50%; /* Posicionado acima do topo (parcialmente oculto) */
+    right: -10%; /* Posicionado à direita (parcialmente oculto) */
+    width: 400px; /* Largura do círculo */
+    height: 400px; /* Altura do círculo */
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); /* Gradiente radial branco transparente */
+    border-radius: 50%; /* Torna o elemento circular */
+}
+
+/* Círculo decorativo inferior esquerdo (efeito visual) */
+.header-background::after {
+    content: ''; /* Cria elemento vazio */
+    position: absolute; /* Posicionado em relação ao .header-background */
+    bottom: -30%; /* Posicionado abaixo do fundo (parcialmente oculto) */
+    left: -5%; /* Posicionado à esquerda (parcialmente oculto) */
+    width: 300px; /* Largura do círculo */
+    height: 300px; /* Altura do círculo */
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); /* Gradiente radial branco mais sutil */
+    border-radius: 50%; /* Torna o elemento circular */
+}
+
+/* Container do conteúdo visível do header */
+.header-content {
+    position: relative; /* Permite controlar z-index */
+    z-index: 1; /* Fica acima do fundo gradiente */
+    padding: 2.5rem; /* Espaçamento interno generoso */
+}
+
+/* ========================================
+   BADGES MODERNOS
+   ======================================== */
+
+/* Container flexível para badges (Tutorial/Exercício, Dificuldade) */
+.badges-row {
+    display: flex; /* Layout flexível horizontal */
+    align-items: center; /* Alinha verticalmente ao centro */
+    gap: 0.75rem; /* Espaçamento entre badges */
+    flex-wrap: wrap; /* Permite quebra de linha em telas pequenas */
+}
+
+/* Estilo base para todos os badges modernos */
+.badge-modern {
+    display: inline-flex; /* Flexbox inline para ícone + texto */
+    align-items: center; /* Alinha verticalmente ao centro */
+    gap: 0.5rem; /* Espaço entre ícone e texto */
+    padding: 0.5rem 1rem; /* Espaçamento interno (vertical horizontal) */
+    border-radius: 25px; /* Cantos bem arredondados (formato pílula) */
+    font-size: 0.85rem; /* Tamanho da fonte pequeno */
+    font-weight: 600; /* Fonte semi-negrito */
+    backdrop-filter: blur(10px); /* Efeito de desfoque do fundo (glassmorphism) */
+    transition: all 0.3s ease; /* Transição suave para hover */
+}
+
+/* Efeito hover nos badges - levanta e adiciona sombra */
+.badge-modern:hover {
+    transform: translateY(-2px); /* Move 2px para cima */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2); /* Adiciona sombra forte */
+}
+
+/* Badge de tipo Tutorial - branco semi-transparente */
+.type-badge.tutorial {
+    background: rgba(255,255,255,0.25); /* Fundo branco 25% opaco */
+    color: white; /* Texto branco */
+    border: 2px solid rgba(255,255,255,0.3); /* Borda branca 30% opaca */
+}
+
+/* Badge de tipo Exercício - verde semi-transparente */
+.type-badge.exercise {
+    background: rgba(40, 167, 69, 0.25); /* Fundo verde 25% opaco */
+    color: white; /* Texto branco */
+    border: 2px solid rgba(40, 167, 69, 0.3); /* Borda verde 30% opaca */
+}
+
+/* Badge de dificuldade - branco semi-transparente */
+.difficulty-badge-modern {
+    background: rgba(255,255,255,0.2); /* Fundo branco 20% opaco */
+    color: white; /* Texto branco */
+    border: 2px solid rgba(255,255,255,0.25); /* Borda branca 25% opaca */
+}
+
+/* Ícone dentro do badge de dificuldade - tamanho menor */
+.difficulty-badge-modern i {
+    font-size: 0.75rem; /* Ícone pequeno */
+}
+
+/* ========================================
+   TÍTULO E DESCRIÇÃO
+   ======================================== */
+
+/* Título principal do tutorial/exercício */
+.header-title {
+    font-size: 2.5rem; /* Título grande e impactante */
+    font-weight: 800; /* Fonte extra-negrito */
+    color: white; /* Texto branco */
+    line-height: 1.2; /* Espaçamento entre linhas compacto */
+    margin: 0; /* Remove margem padrão */
+    text-shadow: 0 2px 20px rgba(0,0,0,0.3); /* Sombra forte para contraste */
+}
+
+/* Descrição/subtítulo do conteúdo */
+.header-description {
+    font-size: 1.1rem; /* Fonte ligeiramente maior que o normal */
+    color: white; /* Texto branco */
+    line-height: 1.6; /* Espaçamento entre linhas confortável */
+    margin: 0; /* Remove margem padrão */
+    text-shadow: 0 1px 10px rgba(0,0,0,0.2); /* Sombra média para legibilidade */
+    font-weight: 500; /* Fonte média */
+}
+
+/* ========================================
+   ESTATÍSTICAS EM DESTAQUE
+   ======================================== */
+
+/* Container flexível para badges de estatísticas (rating, downloads) */
+.header-stats {
+    display: flex; /* Layout flexível horizontal */
+    gap: 1.5rem; /* Espaçamento entre badges */
+    flex-wrap: wrap; /* Permite quebra de linha em telas pequenas */
+}
+
+/* Badge individual de estatística */
+.stat-badge {
+    display: flex; /* Layout flexível horizontal */
+    align-items: center; /* Alinha verticalmente ao centro */
+    gap: 0.75rem; /* Espaço entre ícone e informação */
+    padding: 0.75rem 1.25rem; /* Espaçamento interno generoso */
+    background: rgba(255,255,255,0.2); /* Fundo branco 20% opaco */
+    backdrop-filter: blur(10px); /* Efeito glassmorphism */
+    border-radius: 15px; /* Cantos arredondados */
+    border: 2px solid rgba(255,255,255,0.3); /* Borda branca 30% opaca */
+    transition: all 0.3s ease; /* Transição suave para hover */
+}
+
+/* Efeito hover nos badges de estatística */
+.stat-badge:hover {
+    background: rgba(255,255,255,0.3); /* Aumenta opacidade do fundo */
+    transform: translateY(-3px); /* Move 3px para cima */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* Adiciona sombra elevada */
+}
+
+/* Container do ícone da estatística */
+.stat-icon {
+    width: 40px; /* Largura fixa */
+    height: 40px; /* Altura fixa (quadrado) */
+    border-radius: 12px; /* Cantos arredondados */
+    display: flex; /* Flexbox para centralizar ícone */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    font-size: 1.1rem; /* Tamanho do ícone */
+}
+
+/* Ícone de rating (estrela) - gradiente amarelo/laranja */
+.stat-icon.rating {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); /* Gradiente amarelo para laranja */
+    color: white; /* Ícone branco */
+}
+
+/* Ícone de downloads - gradiente azul claro/escuro */
+.stat-icon.downloads {
+    background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%); /* Gradiente azul claro para escuro */
+    color: white; /* Ícone branco */
+}
+
+/* Container das informações da estatística (valor + label) */
+.stat-info {
+    display: flex; /* Layout flexível */
+    flex-direction: column; /* Empilha verticalmente */
+}
+
+/* Valor numérico da estatística (ex: 4.8, 380) */
+.stat-value {
+    font-size: 1.25rem; /* Fonte grande para destaque */
+    font-weight: 800; /* Fonte extra-negrito */
+    color: white; /* Texto branco */
+    line-height: 1; /* Sem espaçamento extra */
+    text-shadow: 0 1px 5px rgba(0,0,0,0.2); /* Sombra para contraste */
+}
+
+/* Label da estatística (ex: "(144)", "downloads") */
+.stat-label {
+    font-size: 0.75rem; /* Fonte pequena */
+    color: white; /* Texto branco */
+    font-weight: 600; /* Fonte semi-negrito */
+    text-shadow: 0 1px 3px rgba(0,0,0,0.15); /* Sombra sutil */
+}
+
+/* ========================================
+   AÇÕES DO HEADER
+   ======================================== */
+
+/* Container para botões de ação (favoritar, compartilhar, salvar) */
+.header-actions-modern {
+    display: flex; /* Layout flexível */
+    gap: 0.5rem; /* Espaçamento entre botões */
+    flex-direction: column; /* Empilha verticalmente */
+}
+
+/* Botão de ação circular */
+.btn-action-modern {
+    width: 48px; /* Largura fixa */
+    height: 48px; /* Altura fixa (circular) */
+    border-radius: 50%; /* Totalmente circular */
+    display: flex; /* Flexbox para centralizar ícone */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    background: rgba(255,255,255,0.2); /* Fundo branco 20% opaco */
+    backdrop-filter: blur(10px); /* Efeito glassmorphism */
+    border: 2px solid rgba(255,255,255,0.3); /* Borda branca 30% opaca */
+    color: white; /* Ícone branco */
+    font-size: 1.1rem; /* Tamanho do ícone */
+    cursor: pointer; /* Cursor de clique */
+    transition: all 0.3s ease; /* Transição suave para hover */
+}
+
+/* Efeito hover nos botões de ação */
+.btn-action-modern:hover {
+    background: rgba(255,255,255,0.35); /* Aumenta opacidade */
+    transform: scale(1.1) rotate(5deg); /* Aumenta e rotaciona levemente */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2); /* Adiciona sombra */
+}
+
+/* Hover específico do botão favoritar - fica vermelho */
+.btn-action-modern.favorite:hover {
+    color: #ff6b6b; /* Ícone vermelho */
+}
+
+/* Hover específico do botão compartilhar - fica azul */
+.btn-action-modern.share:hover {
+    color: #4cc9f0; /* Ícone azul claro */
+}
+
+/* Hover específico do botão salvar - fica amarelo */
+.btn-action-modern.bookmark:hover {
+    color: #ffd93d; /* Ícone amarelo */
+}
+
+/* ========================================
+   GRID DE METADADOS MODERNO
+   ======================================== */
+
+/* Grid responsivo para cards de metadados (Categoria, Duração, etc) */
+.metadata-grid-modern {
+    display: grid; /* Layout em grid */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Colunas responsivas mínimo 200px */
+    gap: 1rem; /* Espaçamento entre cards */
+    margin-top: 2rem; /* Margem superior */
+    padding-top: 2rem; /* Padding superior */
+    border-top: 2px solid rgba(255,255,255,0.2); /* Linha divisória superior */
+}
+
+/* Card individual de metadado */
+.metadata-card {
+    display: flex; /* Layout flexível horizontal */
+    align-items: center; /* Alinha verticalmente ao centro */
+    gap: 1rem; /* Espaço entre ícone e texto */
+    padding: 1rem; /* Espaçamento interno */
+    background: rgba(255,255,255,0.15); /* Fundo branco 15% opaco */
+    backdrop-filter: blur(10px); /* Efeito glassmorphism */
+    border-radius: 12px; /* Cantos arredondados */
+    border: 1px solid rgba(255,255,255,0.2); /* Borda sutil */
+    transition: all 0.3s ease; /* Transição suave para hover */
+}
+
+/* Efeito hover nos cards de metadado */
+.metadata-card:hover {
+    background: rgba(255,255,255,0.25); /* Aumenta opacidade do fundo */
+    transform: translateY(-2px); /* Move 2px para cima */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Adiciona sombra */
+}
+
+/* Container do ícone do metadado */
+.metadata-icon {
+    width: 42px; /* Largura fixa */
+    height: 42px; /* Altura fixa (quadrado) */
+    border-radius: 10px; /* Cantos arredondados */
+    display: flex; /* Flexbox para centralizar ícone */
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    flex-shrink: 0; /* Não encolhe em espaços pequenos */
+    font-size: 1.1rem; /* Tamanho do ícone */
+    transition: all 0.3s ease; /* Transição suave para animação */
+}
+
+/* Animação do ícone no hover do card */
+.metadata-card:hover .metadata-icon {
+    transform: scale(1.1) rotate(-5deg); /* Aumenta e rotaciona */
+}
+
+/* Ícone de Categoria - gradiente branco semi-transparente */
+.metadata-icon.category {
+    background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.15) 100%); /* Gradiente branco */
+    color: white; /* Ícone branco */
+    border: 2px solid rgba(255,255,255,0.3); /* Borda branca */
+}
+
+/* Ícone de Duração/Tempo - gradiente azul semi-transparente */
+.metadata-icon.duration,
+.metadata-icon.time {
+    background: linear-gradient(135deg, rgba(76,201,240,0.3) 0%, rgba(67,97,238,0.3) 100%); /* Gradiente azul */
+    color: white; /* Ícone branco */
+    border: 2px solid rgba(255,255,255,0.25); /* Borda branca */
+}
+
+/* Ícone de Visualizações - gradiente verde semi-transparente */
+.metadata-icon.views {
+    background: linear-gradient(135deg, rgba(6,255,165,0.25) 0%, rgba(6,214,160,0.25) 100%); /* Gradiente verde */
+    color: white; /* Ícone branco */
+    border: 2px solid rgba(255,255,255,0.25); /* Borda branca */
+}
+
+/* Ícone de Autor - gradiente rosa/roxo semi-transparente */
+.metadata-icon.author {
+    background: linear-gradient(135deg, rgba(247,37,133,0.25) 0%, rgba(181,23,158,0.25) 100%); /* Gradiente rosa */
+    color: white; /* Ícone branco */
+    border: 2px solid rgba(255,255,255,0.25); /* Borda branca */
+}
+
+/* Ícone de Data - gradiente amarelo/laranja semi-transparente */
+.metadata-icon.date {
+    background: linear-gradient(135deg, rgba(255,193,7,0.25) 0%, rgba(255,152,0,0.25) 100%); /* Gradiente amarelo */
+    color: white; /* Ícone branco */
+    border: 2px solid rgba(255,255,255,0.25); /* Borda branca */
+}
+
+/* Container do texto do metadado (label + valor) */
+.metadata-text {
+    display: flex; /* Layout flexível */
+    flex-direction: column; /* Empilha verticalmente */
+    gap: 0.15rem; /* Pequeno espaço entre label e valor */
+}
+
+/* Label do metadado (ex: "CATEGORIA", "DURAÇÃO") */
+.metadata-label {
+    font-size: 0.75rem; /* Fonte pequena */
+    color: #ffffff; /* Branco sólido */
+    text-transform: uppercase; /* Texto em maiúsculas */
+    letter-spacing: 1px; /* Espaçamento entre letras */
+    font-weight: 800; /* Fonte extra-negrito */
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4); /* Sombra forte para contraste */
+    opacity: 1; /* Totalmente opaco */
+}
+
+/* Valor do metadado (ex: "CSS", "25 min") */
+.metadata-value {
+    font-size: 1rem; /* Fonte normal */
+    color: #ffffff; /* Branco sólido */
+    font-weight: 800; /* Fonte extra-negrito */
+    text-shadow: 0 2px 10px rgba(0,0,0,0.4); /* Sombra forte para contraste */
+}
+
+/* Animação de entrada */
+@keyframes headerFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.content-header-card {
+    animation: headerFadeIn 0.6s ease-out;
+}
+
+.metadata-card {
+    animation: slideInMetadata 0.5s ease;
+}
+
+@keyframes slideInMetadata {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.metadata-card:nth-child(1) { animation-delay: 0.1s; }
+.metadata-card:nth-child(2) { animation-delay: 0.2s; }
+.metadata-card:nth-child(3) { animation-delay: 0.3s; }
+.metadata-card:nth-child(4) { animation-delay: 0.4s; }
+.metadata-card:nth-child(5) { animation-delay: 0.5s; }
+
+/* Estilos antigos - mantidos para compatibilidade */
 .content-header-card::before {
     content: '';
     position: absolute;
@@ -2807,6 +3400,312 @@ console.log("Tutorial em desenvolvimento");';
     color: #6c757d;
 }
 
+/* ========================================
+   CARD DE PROGRESSO MODERNO
+   ======================================== */
+.bg-gradient-progress {
+    background: linear-gradient(135deg, #06ffa5 0%, #06d6a0 100%);
+}
+
+.progress-circle-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+    display: block;
+    margin: 0 auto;
+}
+
+.progress-ring__circle {
+    transition: stroke-dashoffset 1.5s ease-in-out;
+    stroke-linecap: round;
+}
+
+.progress-ring__circle-bg {
+    opacity: 0.2;
+}
+
+.progress-percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.percentage-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #06d6a0;
+    line-height: 1;
+}
+
+.percentage-label {
+    display: block;
+    font-size: 0.75rem;
+    color: #718096;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.25rem;
+}
+
+.progress-info {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.info-row:hover {
+    background: #e9ecef;
+    transform: translateX(3px);
+}
+
+.info-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 10px;
+    flex-shrink: 0;
+    font-size: 1.1rem;
+}
+
+.info-text {
+    flex: 1;
+}
+
+.info-text small {
+    display: block;
+    font-size: 0.75rem;
+    margin-bottom: 0.15rem;
+}
+
+.info-text .fw-semibold {
+    color: #2d3748;
+    font-size: 0.95rem;
+}
+
+.btn-gradient-success {
+    background: linear-gradient(135deg, #06ffa5 0%, #06d6a0 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(6, 214, 160, 0.3);
+}
+
+.btn-gradient-success:hover {
+    background: linear-gradient(135deg, #06d6a0 0%, #06b389 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(6, 214, 160, 0.4);
+    color: white;
+}
+
+/* ========================================
+   CONTEÚDO RELACIONADO MODERNO
+   ======================================== */
+.bg-gradient-related {
+    background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+}
+
+.related-item-modern {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border: 2px solid #f1f3f4;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    margin-bottom: 0.75rem;
+    position: relative;
+    overflow: hidden;
+    animation: slideInRelated 0.5s ease;
+}
+
+.related-item-modern::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.related-item-modern:hover {
+    border-color: transparent;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transform: translateX(5px);
+    text-decoration: none;
+    color: inherit;
+}
+
+.related-item-modern:hover::before {
+    width: 100%;
+    opacity: 0.05;
+}
+
+.related-item-modern:hover .related-arrow {
+    transform: translateX(5px);
+    opacity: 1;
+}
+
+.related-icon-modern {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.related-icon-modern.html {
+    background: linear-gradient(135deg, rgba(227, 76, 38, 0.1), rgba(241, 101, 41, 0.1));
+    color: #e34c26;
+}
+
+.related-icon-modern.css {
+    background: linear-gradient(135deg, rgba(38, 77, 228, 0.1), rgba(33, 150, 243, 0.1));
+    color: #264de4;
+}
+
+.related-icon-modern.js {
+    background: linear-gradient(135deg, rgba(240, 219, 79, 0.2), rgba(247, 223, 30, 0.2));
+    color: #f0db4f;
+}
+
+.related-icon-modern.php {
+    background: linear-gradient(135deg, rgba(119, 123, 180, 0.1), rgba(79, 93, 149, 0.1));
+    color: #777bb3;
+}
+
+.related-icon-modern.default {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    color: #667eea;
+}
+
+.related-item-modern:hover .related-icon-modern {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.related-item-modern:hover .related-icon-modern.html::before {
+    background: linear-gradient(135deg, #e34c26, #f16529);
+}
+
+.related-item-modern:hover .related-icon-modern.css::before {
+    background: linear-gradient(135deg, #264de4, #2196f3);
+}
+
+.related-item-modern:hover .related-icon-modern.js::before {
+    background: linear-gradient(135deg, #f0db4f, #f7df1e);
+}
+
+.related-item-modern:hover .related-icon-modern.php::before {
+    background: linear-gradient(135deg, #777bb3, #4f5d95);
+}
+
+.related-content-modern {
+    flex: 1;
+    min-width: 0;
+}
+
+.related-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 0.35rem 0;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.related-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.badge-type {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    background: #e9ecef;
+    color: #495057;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.badge-info {
+    font-size: 0.75rem;
+    color: #718096;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.badge-info i {
+    font-size: 0.7rem;
+}
+
+.related-arrow {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #cbd5e0;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    opacity: 0.5;
+}
+
+.empty-related {
+    padding: 3rem 1rem;
+}
+
+@keyframes slideInRelated {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 .related-list {
     display: grid;
     gap: 0.75rem;
@@ -2877,6 +3776,220 @@ console.log("Tutorial em desenvolvimento");';
     font-size: 0.8rem;
     color: #6c757d;
 }
+
+/* Estatísticas Modernas */
+.bg-gradient-stats {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stats-grid-modern {
+    display: grid;
+    gap: 0;
+}
+
+.stat-item-modern {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid #f1f3f4;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-item-modern:last-child {
+    border-bottom: none;
+}
+
+.stat-item-modern::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.stat-item-modern:hover {
+    background: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.stat-item-modern:nth-child(1):hover::before {
+    background: linear-gradient(to bottom, #667eea, #764ba2);
+}
+
+.stat-item-modern:nth-child(2):hover::before {
+    background: linear-gradient(to bottom, #f72585, #b5179e);
+}
+
+.stat-item-modern:nth-child(3):hover::before {
+    background: linear-gradient(to bottom, #4cc9f0, #4361ee);
+}
+
+.stat-item-modern:nth-child(4):hover::before {
+    background: linear-gradient(to bottom, #06ffa5, #06d6a0);
+}
+
+.stat-icon-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.stat-icon-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 15px;
+    padding: 2px;
+    background: linear-gradient(135deg, currentColor, transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0.3;
+}
+
+.stat-icon-container.downloads {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    color: #667eea;
+}
+
+.stat-icon-container.ratings {
+    background: linear-gradient(135deg, rgba(247, 37, 133, 0.1), rgba(181, 23, 158, 0.1));
+    color: #f72585;
+}
+
+.stat-icon-container.views {
+    background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(67, 97, 238, 0.1));
+    color: #4cc9f0;
+}
+
+.stat-icon-container.completion {
+    background: linear-gradient(135deg, rgba(6, 255, 165, 0.1), rgba(6, 214, 160, 0.1));
+    color: #06ffa5;
+}
+
+.stat-item-modern:hover .stat-icon-container {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stat-details {
+    flex: 1;
+}
+
+.stat-value-modern {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #2d3748;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label-modern {
+    font-size: 0.875rem;
+    color: #718096;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.stat-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+}
+
+.stat-trend.positive {
+    background: rgba(6, 214, 160, 0.1);
+    color: #06d6a0;
+}
+
+.stat-trend.negative {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.stat-trend i {
+    font-size: 0.7rem;
+}
+
+.stat-progress {
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.stat-progress .progress-bar {
+    transition: width 1.5s ease;
+    border-radius: 10px;
+}
+
+.stats-footer {
+    background: linear-gradient(to bottom, transparent, #f8f9fa);
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.footer-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    font-size: 0.875rem;
+    color: #4a5568;
+}
+
+.footer-stat-item:first-child {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.footer-stat-item i {
+    font-size: 1.1rem;
+}
+
+.footer-stat-item strong {
+    color: #2d3748;
+}
+
+/* Animação de entrada */
+@keyframes statFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-item-modern {
+    animation: statFadeIn 0.5s ease;
+}
+
+.stat-item-modern:nth-child(1) { animation-delay: 0.1s; }
+.stat-item-modern:nth-child(2) { animation-delay: 0.2s; }
+.stat-item-modern:nth-child(3) { animation-delay: 0.3s; }
+.stat-item-modern:nth-child(4) { animation-delay: 0.4s; }
 
 /* Responsividade */
 @media (max-width: 768px) {

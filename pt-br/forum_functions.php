@@ -110,14 +110,51 @@ function createForumPost($title, $content, $category_id, $user_id) {
         $db = new Database();
         $conn = $db->conn;
         
+        // Debug: verificar dados recebidos
+        if (DEBUG_MODE) {
+            error_log("createForumPost - Title: $title, Content: $content, Category: $category_id, User: $user_id");
+        }
+        
+        // Validar dados
+        if (empty($title) || empty($content) || empty($user_id)) {
+            if (DEBUG_MODE) {
+                error_log("createForumPost - Dados vazios");
+            }
+            return false;
+        }
+        
+        // Preparar e executar
         $stmt = $conn->prepare("INSERT INTO forum_posts (title, content, category_id, user_id) VALUES (?, ?, ?, ?)");
+        if (!$stmt) {
+            if (DEBUG_MODE) {
+                error_log("createForumPost - Erro no prepare: " . $conn->error);
+            }
+            return false;
+        }
+        
         $stmt->bind_param("ssii", $title, $content, $category_id, $user_id);
         $result = $stmt->execute();
         
+        if (!$result) {
+            if (DEBUG_MODE) {
+                error_log("createForumPost - Erro no execute: " . $stmt->error);
+            }
+            $db->closeConnection();
+            return false;
+        }
+        
+        $post_id = $conn->insert_id;
+        if (DEBUG_MODE) {
+            error_log("createForumPost - Post criado com ID: $post_id");
+        }
+        
         $db->closeConnection();
-        return $result;
+        return true;
         
     } catch (Exception $e) {
+        if (DEBUG_MODE) {
+            error_log("createForumPost - Exception: " . $e->getMessage());
+        }
         return false;
     }
 }
