@@ -176,7 +176,7 @@ include 'header.php';
                                    id="remember" 
                                    name="remember"
                                    <?php echo isset($_POST['remember']) ? 'checked' : ''; ?>>
-                            <label class="form-check-label" for="remember" >
+                            <label class="form-check-label mb-0" for="remember" >
                                 Lembrar de mim neste dispositivo
                             </label>
                         </div>
