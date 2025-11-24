@@ -186,7 +186,7 @@ include 'header.php';
                                    required
                                    aria-describedby="terms-help"
                                    <?php echo isset($_POST['terms']) ? 'checked' : ''; ?>>
-                            <label class="form-check-label required" for="terms">
+                            <label class="form-check-label required mb-0" for="terms">
                                 Aceito os termos de uso
                             </label>
                             <div id="terms-help" class="form-text">
@@ -202,7 +202,7 @@ include 'header.php';
                                    required
                                    aria-describedby="lgpd-help"
                                    <?php echo isset($_POST['lgpd_consent']) ? 'checked' : ''; ?>>
-                            <label class="form-check-label required" for="lgpd_consent">
+                            <label class="form-check-label required mb-0" for="lgpd_consent">
                                 Aceito a <a href="lgpd.php" class="text-decoration-none" target="_blank">Política de Privacidade (LGPD)</a>
                             </label>
                             <div id="lgpd-help" class="form-text">
