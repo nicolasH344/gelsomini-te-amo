@@ -118,7 +118,7 @@
                             </a>
                         </li>
                         <li class="mb-2"> 
-                            <a href="#" class="fw-semibold mb-3>
+                            <a href="#" class="fw-semibold mb-3">
                                 <?php echo t('terms_of_service', 'Termos de Serviço'); ?>
                             </a>
                         </li> 
