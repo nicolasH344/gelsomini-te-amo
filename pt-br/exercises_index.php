@@ -179,9 +179,11 @@ include 'header.php';
                     $conn = getDBConnection();
                     if ($conn) {
                         $stmt = $conn->prepare("SELECT status FROM user_progress WHERE user_id = ? AND exercise_id = ?");
-                        $stmt->execute([$user_id, $exercise['id']]);
-                        $result = $stmt->fetch();
-                        $completed = $result && $result['status'] === 'completed';
+                        $stmt->bind_param("ii", $user_id, $exercise['id']);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        $row = $result->fetch_assoc();
+                        $completed = $row && $row['status'] === 'completed';
                     }
                 }
             ?>
@@ -218,7 +220,7 @@ include 'header.php';
                         
                         <div class="card-footer bg-transparent">
                             <div class="d-flex gap-2">
-                                <a href="exercise_detail.php?id=<?php echo $exercise['id'] ?? 1; ?>" 
+                                <a href="show.php?type=exercise&id=<?php echo $exercise['id'] ?? 1; ?>" 
                                    class="btn btn-primary btn-sm flex-fill">
                                     <i class="fas fa-play" aria-hidden="true"></i> 
                                     <?php echo $completed ? 'Revisar' : 'Começar'; ?>
@@ -336,15 +338,17 @@ include 'header.php';
                         $conn = getDBConnection();
                         if ($conn) {
                             $stmt = $conn->prepare("SELECT COUNT(*) FROM user_progress WHERE user_id = ? AND status = 'completed'");
-                            $stmt->execute([$user_id]);
-                            $user_completed = $stmt->fetchColumn();
+                            $stmt->bind_param("i", $user_id);
+                            $stmt->execute();
+                            $result = $stmt->get_result();
+                            $user_completed = $result->fetch_row()[0];
                         }
                     }
                     
                     $progress_percent = $total_available > 0 ? round(($user_completed / $total_available) * 100) : 0;
                     ?>
-                    <li class="mb-2">Exercícios disponíveis: <strong><?php echo $total_available; ?></strong></li>
-                    <li accesskey="mb-2" class="mb-2" style="color: #000;">Exercícios concluídos: <strong><?php echo $user_completed; ?></strong></li>
+                    <p class="mb-2">Exercícios disponíveis: <strong><?php echo $total_available; ?></strong></p>
+                    <p class="mb-2">Exercícios concluídos: <strong><?php echo $user_completed; ?></strong></p>
                     <div class="progress mb-3">
                         <div class="progress-bar" role="progressbar" style="width: <?php echo $progress_percent; ?>%" 
                              aria-valuenow="<?php echo $progress_percent; ?>" aria-valuemin="0" aria-valuemax="100" 
@@ -365,7 +369,7 @@ include 'header.php';
 function completeExercise(exerciseId) {
     if (!confirm('Marcar este exercício como concluído?')) return;
     
-    fetch('complete_exercise.php', {
+    fetch('api/mark_complete.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
