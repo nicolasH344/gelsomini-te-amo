@@ -190,7 +190,7 @@ include 'header.php';
                     <hr>
                     
                     <div class="text-center">
-                        <p2 class="" style="color: #fff;">
+                        <p2 class="mb-0" >
                             Não tem uma conta? 
                             <a href="register.php" class="text-decoration-none">Registre-se aqui</a>
                         </p2>
