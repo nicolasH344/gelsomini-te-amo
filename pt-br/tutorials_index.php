@@ -1,6 +1,5 @@
 <?php
 require_once 'config.php';
-require_once 'tutorial_functions.php';
 
 $title = 'Tutoriais';
 
@@ -9,10 +8,76 @@ $category = sanitize($_GET['category'] ?? '');
 $level = sanitize($_GET['level'] ?? '');
 $search = sanitize($_GET['search'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
+$perPage = 9;
 
-// Buscar tutoriais
-$tutorials = getTutorials($category, $level, $search, $page);
-$categories = getTutorialCategories();
+// Buscar tutoriais do banco
+$tutorials = [];
+$categories = [];
+$conn = getDBConnection();
+
+if ($conn) {
+    // Buscar categorias
+    $catResult = $conn->query("SELECT * FROM categories ORDER BY name");
+    if ($catResult) {
+        while ($row = $catResult->fetch_assoc()) {
+            $categories[] = [
+                'name' => $row['name'],
+                'slug' => strtolower($row['name']),
+                'color' => 'primary',
+                'icon' => 'fas fa-code'
+            ];
+        }
+    }
+    
+    // Buscar tutoriais
+    $where = [];
+    $params = [];
+    $types = '';
+    
+    if ($category) {
+        $where[] = "c.name = ?";
+        $params[] = $category;
+        $types .= 's';
+    }
+    
+    if ($level) {
+        $where[] = "t.difficulty = ?";
+        $params[] = $level;
+        $types .= 's';
+    }
+    
+    if ($search) {
+        $where[] = "(t.title LIKE ? OR t.description LIKE ?)";
+        $params[] = "%$search%";
+        $params[] = "%$search%";
+        $types .= 'ss';
+    }
+    
+    $whereClause = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+    
+    $sql = "SELECT t.*, c.name as category, 'primary' as category_color, 0 as views, '15 min' as duration
+            FROM tutorials t 
+            LEFT JOIN categories c ON t.category_id = c.id 
+            $whereClause 
+            ORDER BY t.created_at DESC 
+            LIMIT ? OFFSET ?";
+    
+    $params[] = $perPage;
+    $params[] = ($page - 1) * $perPage;
+    $types .= 'ii';
+    
+    $stmt = $conn->prepare($sql);
+    if ($stmt && $types) {
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $tutorials = $result->fetch_all(MYSQLI_ASSOC);
+    } elseif ($stmt) {
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $tutorials = $result->fetch_all(MYSQLI_ASSOC);
+    }
+}
 
 include 'header.php';
 ?>
@@ -95,10 +160,11 @@ include 'header.php';
                                 <?php echo sanitize($tutorial['category']); ?>
                             </span>
                             <span class="badge bg-<?php 
-                                echo $tutorial['level'] === 'beginner' ? 'success' : 
-                                    ($tutorial['level'] === 'intermediate' ? 'warning' : 'danger'); 
+                                $level = $tutorial['difficulty'] ?? 'beginner';
+                                echo $level === 'beginner' ? 'success' : 
+                                    ($level === 'intermediate' ? 'warning' : 'danger'); 
                             ?>">
-                                <?php echo ucfirst($tutorial['level']); ?>
+                                <?php echo ucfirst($level ?? 'beginner'); ?>
                             </span>
                         </div>
                         

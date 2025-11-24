@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plataforma interativa para aprender desenvolvimento web com exercícios práticos e feedback em tempo real.">
+    <meta name="keywords" content="desenvolvimento web, HTML, CSS, JavaScript, PHP, exercícios, tutoriais, programação">
+    <meta name="author" content="WebLearn">
+    <meta name="google" content="notranslate">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Tutoriais - WebLearn - Jornada do Desenvolvedor">
+    <meta property="og:description" content="Plataforma interativa para aprender desenvolvimento web">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Tutoriais - WebLearn - Jornada do Desenvolvedor">
+    <meta property="twitter:description" content="Plataforma interativa para aprender desenvolvimento web">
+    
+    <title>Tutoriais - WebLearn - Jornada do Desenvolvedor</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../themes.css">
+    <link rel="stylesheet" href="../components.css">
+    <link rel="stylesheet" href="../theme-text.css">
+    <link rel="stylesheet" href="../style.css">
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="theme-purple" id="body">
+    <!-- Skip to main content for screen readers -->
+    <a href="#main-content" class="visually-hidden-focusable btn btn-primary position-absolute top-0 start-0 m-2" style="z-index: 9999;">
+        Pular para o conteúdo principal    </a>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" role="navigation" aria-label="Navegação principal">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.php" aria-label="Página inicial">
+                <i class="fas fa-code me-2" aria-hidden="true"></i>
+                WebLearn - Jornada do Desenvolvedor            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Alternar navegação">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link " 
+                           href="index.php" 
+                           >
+                            <i class="fas fa-home me-1" aria-hidden="true"></i>
+                            Início                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " 
+                           href="exercises_index.php"
+                           >
+                            <i class="fas fa-tasks me-1" aria-hidden="true"></i>
+                            Exercícios                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" 
+                           href="tutorials_index.php"
+                           aria-current="page">
+                            <i class="fas fa-book me-1" aria-hidden="true"></i>
+                            Tutoriais                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " 
+                           href="forum_index.php"
+                           >
+                            <i class="fas fa-comments me-1" aria-hidden="true"></i>
+                            Fórum                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " 
+                           href="badges.php"
+                           >
+                            <i class="fas fa-trophy me-1" aria-hidden="true"></i>
+                            Conquistas
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                                            <li class="nav-item">
+                            <a class="nav-link" href="login.php">
+                                <i class="fas fa-sign-in-alt me-1" aria-hidden="true"></i>
+                                Entrar                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="register.php">
+                                <i class="fas fa-user-plus me-1" aria-hidden="true"></i>
+                                Registrar                            </a>
+                        </li>
+                                        
+                    <!-- Botão de configurações sempre visível -->
+                    <li class="nav-item">
+                        <button class="nav-link btn btn-link" onclick="toggleSettings()" 
+                                aria-label="Configurações" title="Configurações">
+                            <i class="fas fa-palette" aria-hidden="true"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Seletor de Tema e Configurações -->
+    <div class="theme-selector collapsed" id="themeSelector" role="dialog" aria-labelledby="settingsTitle" aria-hidden="true">
+        <button class="theme-toggle" onclick="toggleSettings()" aria-label="Alternar configurações">
+            <i class="fas fa-palette" aria-hidden="true"></i>
+        </button>
+        
+        <div class="p-3 " style="color: var(--text-muted);">
+            <h5 id="settingsTitle" class="label">
+                <i class="fas fa-cog me-2" aria-hidden="true"></i>
+                Configurações            </h5>
+            
+            <form method="POST" action="" id="settingsForm">
+                <!-- Seletor de Tema -->
+                <div class="mb-0">
+                    <label class="form-label fw-semibold">Tema</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="theme-option theme-purple active" 
+                                onclick="changeTheme('purple')" 
+                                aria-label="Roxo Moderno"
+                                title="Roxo Moderno"></button>
+                        <button type="button" class="theme-option theme-blue " 
+                                onclick="changeTheme('blue')" 
+                                aria-label="Azul Clássico"
+                                title="Azul Clássico"></button>
+                        <button type="button" class="theme-option theme-green " 
+                                onclick="changeTheme('green')" 
+                                aria-label="Verde Natural"
+                                title="Verde Natural"></button>
+                        <button type="button" class="theme-option theme-dark " 
+                                onclick="changeTheme('dark')" 
+                                aria-label="Escuro"
+                                title="Escuro"></button>
+                    </div>
+                </div>
+                
+                <!-- Seletor de Idioma -->
+                <div class="mb-3">
+                    <label for="languageSelect" class="form-label fw-semibold">Idioma</label>
+                    <select class="form-select form-select-sm" id="languageSelect" name="language" onchange="changeLanguage(this.value)">
+                        <option value="pt-br" selected>
+                            🇧🇷 Português                        </option>
+                        <option value="en" >
+                            🇺🇸 English                        </option>
+                        <option value="es" >
+                            🇪🇸 Español                        </option>
+                    </select>
+                </div>
+                
+                <!-- Modo Acessibilidade -->
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="accessibilityMode" 
+                                                              onchange="toggleAccessibility()">
+                        <label class="form-check-label fw-semibold" for="accessibilityMode">
+                            <i class="fas fa-universal-access me-1" aria-hidden="true"></i>
+                            Modo para Daltônicos                        </label>
+                    </div>
+                    <small class="text-muted">
+                        Ativa cores e padrões otimizados para pessoas com daltonismo                    </small>
+                </div>
+                
+                <input type="hidden" name="change_theme" value="1">
+                <input type="hidden" name="theme" id="themeInput" value="purple">
+                <input type="hidden" name="change_language" value="1">
+                <input type="hidden" name="toggle_accessibility" value="1" id="accessibilityInput">
+            </form>
+        </div>
+    </div>
+
+    <!-- Overlay para fechar configurações -->
+    <div class="settings-overlay" id="settingsOverlay" onclick="closeSettings()" style="display: none;"></div>
+
+    <!-- Main Content -->
+    <main id="main-content" role="main" style="padding-top: 80px;">
+        
+        <div id="cookieBanner" class="cookie-banner">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-cookie-bite fa-2x text-warning me-3"></i>
+                    <div>
+                        <h6 class="mb-1">Uso de Cookies e Dados</h6>
+                        <p2 class=" small" style="color: #fff:">
+                            Utilizamos cookies essenciais para o funcionamento da plataforma e dados pessoais conforme nossa 
+                            <a href="lgpd.php" class="text-decoration-underline">Política de Privacidade</a>.
+                        </p2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-end">
+                <button onclick="acceptCookies()" class="btn btn-success btn-sm me-2">
+                    <i class="fas fa-check me-1"></i>Aceitar
+                </button>
+                <button onclick="showCookieSettings()" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-cog me-1"></i>Configurar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="cookieSettings" class="cookie-settings" style="display: none;">
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Configurações de Privacidade</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="essentialCookies" checked disabled>
+                    <label class="form-check-label" for="essentialCookies">
+                        <strong>Cookies Essenciais</strong> (Obrigatórios)
+                        <small class="d-block text-muted">Necessários para login e funcionamento básico</small>
+                    </label>
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="analyticsCookies">
+                    <label class="form-check-label" for="analyticsCookies">
+                        <strong>Cookies de Análise</strong> (Opcionais)
+                        <small class="d-block text-muted">Ajudam a melhorar a plataforma</small>
+                    </label>
+                </div>
+                <div class="text-end">
+                    <button onclick="saveCookieSettings()" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Salvar Preferências
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.95);
+    color: #ffffff;
+    padding: 1rem 0;
+    z-index: 1000;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+    font-weight: 500;
+}
+
+.cookie-banner h6 {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.cookie-banner p {
+    color: #f8f9fa;
+}
+
+.cookie-banner a {
+    color: #ffc107;
+    font-weight: 600;
+}
+
+.cookie-settings {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.8);
+    padding: 2rem 0;
+    z-index: 1001;
+}
+</style>
+
+<script>
+function acceptCookies() {
+    const currentLang = getCurrentLanguage();
+    document.cookie = "lgpd_consent=accepted; path=/; max-age=" + (30*60); // 30 minutos
+    document.cookie = "analytics_consent=true; path=/; max-age=" + (30*60);
+    document.cookie = "lgpd_language=" + currentLang + "; path=/; max-age=" + (30*60);
+    document.getElementById('cookieBanner').style.display = 'none';
+}
+
+function getCurrentLanguage() {
+    const path = window.location.pathname;
+    if (path.includes('/en/')) return 'en';
+    if (path.includes('/es/')) return 'es';
+    return 'pt-br';
+}
+
+function showCookieSettings() {
+    document.getElementById('cookieSettings').style.display = 'block';
+}
+
+function saveCookieSettings() {
+    const analytics = document.getElementById('analyticsCookies').checked;
+    const currentLang = getCurrentLanguage();
+    document.cookie = "lgpd_consent=configured; path=/; max-age=" + (30*60);
+    document.cookie = "analytics_consent=" + analytics + "; path=/; max-age=" + (30*60);
+    document.cookie = "lgpd_language=" + currentLang + "; path=/; max-age=" + (30*60);
+    document.getElementById('cookieBanner').style.display = 'none';
+    document.getElementById('cookieSettings').style.display = 'none';
+}
+</script>
+        
+        <!-- Mensagens de Feedback -->
+        
+        
+        
+        
+    <script>
+        let settingsOpen = false;
+        
+        function toggleSettings() {
+            const selector = document.getElementById('themeSelector');
+            const overlay = document.getElementById('settingsOverlay');
+            
+            if (settingsOpen) {
+                closeSettings();
+            } else {
+                openSettings();
+            }
+        }
+        
+        function openSettings() {
+            const selector = document.getElementById('themeSelector');
+            const overlay = document.getElementById('settingsOverlay');
+            
+            selector.classList.remove('collapsed');
+            selector.setAttribute('aria-hidden', 'false');
+            overlay.style.display = 'block';
+            overlay.classList.add('show');
+            settingsOpen = true;
+            
+            // Anunciar abertura para leitores de tela
+            if (typeof announceChange === 'function') {
+                announceChange('Configurações abertas');
+            }
+            
+            // Focus no primeiro elemento focável
+            setTimeout(() => {
+                const firstInput = selector.querySelector('button:not(.theme-toggle), input, select');
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+        
+        function closeSettings() {
+            const selector = document.getElementById('themeSelector');
+            const overlay = document.getElementById('settingsOverlay');
+            
+            selector.classList.add('collapsed');
+            selector.setAttribute('aria-hidden', 'true');
+            overlay.classList.remove('show');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+            settingsOpen = false;
+            
+            // Anunciar fechamento para leitores de tela
+            if (typeof announceChange === 'function') {
+                announceChange('Configurações fechadas');
+            }
+        }
+
+        function changeTheme(theme) {
+            // Atualizar visual imediatamente
+            document.body.className = document.body.className.replace(/theme-\w+/g, '');
+            document.body.classList.add('theme-' + theme);
+            
+            // Atualizar botões ativos
+            document.querySelectorAll('.theme-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const selectedTheme = document.querySelector('.theme-option.theme-' + theme);
+            if (selectedTheme) {
+                selectedTheme.classList.add('active');
+            }
+            
+            // Anunciar mudança de tema
+            const themeNames = {
+                'purple': 'Roxo Moderno',
+                'blue': 'Azul Clássico',
+                'green': 'Verde Natural',
+                'dark': 'Escuro'
+            };
+            
+            if (typeof announceChange === 'function') {
+                announceChange('Tema alterado para ' + themeNames[theme]);
+            }
+            
+            // Enviar para servidor
+            document.getElementById('themeInput').value = theme;
+            
+            // Criar formulário temporário para envio
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.style.display = 'none';
+            
+            const themeInput = document.createElement('input');
+            themeInput.name = 'theme';
+            themeInput.value = theme;
+            
+            const changeThemeInput = document.createElement('input');
+            changeThemeInput.name = 'change_theme';
+            changeThemeInput.value = '1';
+            
+            form.appendChild(themeInput);
+            form.appendChild(changeThemeInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function changeLanguage(language) {
+            // Marcar que o idioma foi alterado para mostrar LGPD novamente
+            document.cookie = "lgpd_consent=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            document.cookie = "lgpd_language=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            
+            // Redirecionar para a pasta do idioma correspondente
+            const currentPath = window.location.pathname;
+            const currentLang = getCurrentLanguage();
+            const newPath = currentPath.replace('/' + currentLang + '/', '/' + language + '/');
+            window.location.href = newPath;
+        }
+        
+        function getCurrentLanguage() {
+            const path = window.location.pathname;
+            if (path.includes('/en/')) return 'en';
+            if (path.includes('/es/')) return 'es';
+            return 'pt-br';
+        }
+
+        function toggleAccessibility() {
+            const checkbox = document.getElementById('accessibilityMode');
+            
+            // Atualizar visual imediatamente
+            if (checkbox.checked) {
+                document.body.classList.add('accessibility-mode');
+            } else {
+                document.body.classList.remove('accessibility-mode');
+            }
+            
+            // Criar formulário temporário para envio
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.style.display = 'none';
+            
+            const accessInput = document.createElement('input');
+            accessInput.name = 'toggle_accessibility';
+            accessInput.value = '1';
+            
+            form.appendChild(accessInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // Fechar configurações com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && settingsOpen) {
+                closeSettings();
+            }
+        });
+
+        // Aplicar tema inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentTheme = 'purple';
+            const accessibilityMode = false;
+            
+            document.body.classList.add('theme-' + currentTheme);
+            if (accessibilityMode) {
+                document.body.classList.add('accessibility-mode');
+            }
+        });
+    </script>
+
+    <style>
+        /* Estilos específicos para melhorar a experiência do usuário */
+        .theme-selector.first-visit {
+            animation: pulse 2s infinite;
+        }
+        
+        .theme-selector.first-visit::after {
+            content: 'Clique para personalizar';
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            animation: fadeInTooltip 0.5s ease-in-out 1s forwards;
+            
+        }
+  
+        @keyframes fadeInTooltip {
+            to { opacity: 1; }
+        }
+        
+        /* Melhorias para dispositivos móveis */
+        @media (max-width: 768px) {
+            .theme-selector.first-visit::after {
+                top: -35px;
+                font-size: 0.7rem;
+                padding: 6px 10px;
+            }
+        }
+        
+    </style>
+
+
+<div class="container mt-4">
+    <!-- Header da página -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1><i class="fas fa-book-open" aria-hidden="true"></i> Tutoriais</h1>
+            <p class="lead">Aprenda desenvolvimento web com nossos tutoriais detalhados</p>
+        </div>
+        <div class="col-md-4 text-end">
+                    </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="h5 card-title">Filtrar Tutoriais</h2>
+            <form method="GET" action="tutorials_index.php" class="row g-3">
+                <div class="col-md-3">
+                    <label for="category" class="form-label">Categoria</label>
+                    <select class="form-select" id="category" name="category">
+                        <option value="">Todas as categorias</option>
+                                                    <option value="git" >
+                                Git                            </option>
+                                                    <option value="html" >
+                                HTML                            </option>
+                                                    <option value="html &amp; css" >
+                                HTML &amp; CSS                            </option>
+                                                    <option value="javascript" >
+                                JavaScript                            </option>
+                                                    <option value="mysql" >
+                                MySQL                            </option>
+                                                    <option value="php" >
+                                PHP                            </option>
+                                                    <option value="python" >
+                                Python                            </option>
+                                            </select>
+                </div>
+                
+                <div class="col-md-3">
+                    <label for="level" class="form-label">Nível</label>
+                    <select class="form-select" id="level" name="level">
+                        <option value="">Todos os níveis</option>
+                        <option value="beginner" >Iniciante</option>
+                        <option value="intermediate" >Intermediário</option>
+                        <option value="advanced" >Avançado</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-4">
+                    <label for="search" class="form-label">Buscar</label>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           value=""
+                           placeholder="Digite palavras-chave...">
+                </div>
+                
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search" aria-hidden="true"></i> Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de tutoriais -->
+    <div class="row">
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary">
+                                HTML                            </span>
+                            <span class="badge bg-
+Warning: Undefined array key "level" in C:\xampp\htdocs\gelsomini-te-amo\pt-br\tutorials_index.php on line 163
+
+Warning: Undefined array key "level" in C:\xampp\htdocs\gelsomini-te-amo\pt-br\tutorials_index.php on line 164
+danger">
+                                
+Warning: Undefined array key "level" in C:\xampp\htdocs\gelsomini-te-amo\pt-br\tutorials_index.php on line 166
+
+Deprecated: ucfirst(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\gelsomini-te-amo\pt-br\tutorials_index.php on line 166
+                            </span>
+                        </div>
+                        
+                        <div class="card-body">
+                            <h3 class="card-title h5 mb-3">Introdução ao HTML</h3>
+                            <p class="card-text">Aprenda os fundamentos do HTML</p>
+                            
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span>
+                                    <i class="fas fa-clock me-1" aria-hidden="true"></i>
+                                    15 min                                </span>
+                                <span>
+                                    <i class="fas fa-eye me-1" aria-hidden="true"></i>
+                                    0 visualizações
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex gap-2">
+                                <a href="show.php?type=tutorial&id=1" 
+                                   class="btn btn-primary btn-sm flex-fill">
+                                    <i class="fas fa-play" aria-hidden="true"></i> Ler Tutorial
+                                </a>
+                                <button class="btn btn-outline-secondary btn-sm" 
+                                        onclick="showTutorialPreview(1)"
+                                        aria-label="Visualizar tutorial">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                        </div>
+
+    <!-- Categorias populares -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="h4 mb-4">Categorias Populares</h2>
+        </div>
+        
+                    <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
+                        <h3 class="h5 mt-2">Git</h3>
+                        <a href="?category=git" class="btn btn-light btn-sm">
+                            Ver Tutoriais
+                        </a>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
+                        <h3 class="h5 mt-2">HTML</h3>
+                        <a href="?category=html" class="btn btn-light btn-sm">
+                            Ver Tutoriais
+                        </a>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
+                        <h3 class="h5 mt-2">HTML &amp; CSS</h3>
+                        <a href="?category=html & css" class="btn btn-light btn-sm">
+                            Ver Tutoriais
+                        </a>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
+                        <h3 class="h5 mt-2">JavaScript</h3>
+                        <a href="?category=javascript" class="btn btn-light btn-sm">
+                            Ver Tutoriais
+                        </a>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
+                        <h3 class="h5 mt-2">MySQL</h3>
+                        <a href="?category=mysql" class="btn btn-light btn-sm">
+                            Ver Tutoriais
+                        </a>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
+                        <h3 class="h5 mt-2">PHP</h3>
+                        <a href="?category=php" class="btn btn-light btn-sm">
+                            Ver Tutoriais
+                        </a>
+                    </div>
+                </div>
+            </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
+                        <h3 class="h5 mt-2">Python</h3>
+                        <a href="?category=python" class="btn btn-light btn-sm">
+                            Ver Tutoriais
+                        </a>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+    <!-- Informações adicionais -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h2 class="h5 card-title">
+                        <i class="fas fa-graduation-cap text-success" aria-hidden="true"></i> 
+                        Como Aproveitar os Tutoriais
+                    </h2>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                            Leia com atenção e pratique os exemplos
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                            Faça anotações dos pontos importantes
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                            Aplique o conhecimento nos exercícios
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h2 class="h5 card-title">
+                        <i class="fas fa-question-circle text-info" aria-hidden="true"></i> 
+                        Precisa de Ajuda?
+                    </h2>
+                    <p class="mb-3">
+                        Tem dúvidas sobre algum tutorial? Nossa comunidade está aqui para ajudar!
+                    </p>
+                    <a href="forum_index.php" class="btn btn-info btn-sm">
+                        <i class="fas fa-comments" aria-hidden="true"></i> Ir para o Fórum
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showTutorialPreview(id) {
+    // Implementar preview do tutorial
+    alert('Preview do tutorial ' + id);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Filtros em tempo real
+    const categorySelect = document.getElementById('category');
+    const levelSelect = document.getElementById('level');
+    
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            this.closest('form').submit();
+        });
+    }
+
+    if (levelSelect) {
+        levelSelect.addEventListener('change', function() {
+            this.closest('form').submit();
+        });
+    }
+});
+</script>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5 mt-5" role="contentinfo">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="text-gradient fw-bold mb-3">
+                        <i class="fas fa-code me-2" aria-hidden="true"></i>
+                        WebLearn - Jornada do Desenvolvedor                    </h5>
+                    <p2 class="fw-semibold mb-3">
+                        Plataforma interativa para aprender desenvolvimento web com exercícios práticos, tutoriais detalhados e uma comunidade ativa de desenvolvedores.                    </p2>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="fw-semibold mb-3" aria-label="Facebook" title="Facebook">
+                            <i class="fab fa-facebook-f" aria-hidden="true"></i>
+                        </a>
+                        <a href="#" class="fw-semibold mb-3" aria-label="Twitter" title="Twitter">
+                            <i class="fab fa-twitter" aria-hidden="true"></i>
+                        </a>
+                        <a href="#" class="fw-semibold mb-3" aria-label="LinkedIn" title="LinkedIn">
+                            <i class="fab fa-linkedin-in" aria-hidden="true"></i>
+                        </a>
+                        <a href="#" class="fw-semibold mb-3" aria-label="GitHub" title="GitHub">
+                            <i class="fab fa-github" aria-hidden="true"></i>
+                        </a>
+                        <a href="#" class="fw-semibold mb-3" aria-label="YouTube" title="YouTube">
+                            <i class="fab fa-youtube" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="fw-semibold mb-3">Aprendizado</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="exercises_index.php" class="fw-semibold mb-3">
+                                Exercícios                            </a>
+                        </li>
+                        <li class="mb-2"> 
+                            <a href="tutorials_index.php" class="fw-semibold mb-3">
+                                Tutoriais                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="forum_index.php" class="fw-semibold mb-3">
+                                Fórum                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Desafios                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="fw-semibold mb-3">Recursos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3" >
+                                Documentação                            </a>
+                        </li>
+                        <li class="mb-2"> 
+                            <a href="#" class="fw-semibold mb-3">
+                                API                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Blog                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Newsletter                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="fw-semibold mb-3">Suporte</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Central de Ajuda                            </a>
+                        </li>
+                        <li class="mb-2"> 
+                            <a href="#" class="fw-semibold mb-3">
+                                Contato                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                FAQ                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Feedback                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="fw-semibold mb-3">Legal</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="lgpd.php" class="fw-semibold mb-3">
+                                Política de Privacidade                            </a>
+                        </li>
+                        <li class="mb-2"> 
+                            <a href="#" class="fw-semibold mb-3">
+                                Termos de Serviço                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Cookies                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Declaração de Acessibilidade                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="my-4 border-secondary">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p2 class="fw-semibold mb-3" style="color: #ffffffff;">
+                        &copy; 2025 WebLearn - Jornada do Desenvolvedor. 
+                        Todos os direitos reservados.                    </p2>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex justify-content-md-end gap-3 mt-3 mt-md-0">
+                        <span class="fw-semibold mb-3">
+                            <i class="fas fa-heart text-danger me-1" aria-hidden="true"></i>
+                            Feito com amor                        </span>
+                        <span class="fw-semibold mb-3">
+                            <i class="fas fa-universal-access me-1" aria-hidden="true"></i>
+                            Design Acessível                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botão Voltar ao Topo -->
+    <button id="backToTop" class="btn btn-primary position-fixed bottom-0 end-0 m-4 rounded-circle" 
+            style="width: 50px; height: 50px; display: none; z-index: 1000;" 
+            onclick="scrollToTop()" 
+            aria-label="Voltar ao topo"
+            title="Voltar ao topo">
+        <i class="fas fa-arrow-up" aria-hidden="true"></i>
+    </button>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Botão voltar ao topo
+        window.addEventListener('scroll', function() {
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Animações de entrada
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.card, .alert, .badge');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in-up');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            elements.forEach(element => {
+                observer.observe(element);
+            });
+        }
+
+        // Melhorias de acessibilidade
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar animações
+            animateOnScroll();
+            
+            // Melhorar navegação por teclado
+            const focusableElements = document.querySelectorAll(
+                'a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+            );
+            
+            // Adicionar indicadores visuais de foco
+            focusableElements.forEach(element => {
+                element.addEventListener('focus', function() {
+                    this.style.outline = '2px solid var(--primary-color)';
+                    this.style.outlineOffset = '2px';
+                });
+                
+                element.addEventListener('blur', function() {
+                    this.style.outline = '';
+                    this.style.outlineOffset = '';
+                });
+            });
+
+            // Anunciar mudanças de página para leitores de tela
+            const pageTitle = document.title;
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'visually-hidden';
+            announcement.textContent = `Página carregada: ${pageTitle}`;
+            document.body.appendChild(announcement);
+
+            // Remover anúncio após 3 segundos
+            setTimeout(() => {
+                if (announcement.parentNode) {
+                    announcement.parentNode.removeChild(announcement);
+                }
+            }, 3000);
+
+            // Configurar tooltips do Bootstrap
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Configurar popovers do Bootstrap
+            const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+
+        // Função para detectar preferências de movimento reduzido
+        function respectMotionPreferences() {
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+            
+            if (prefersReducedMotion.matches) {
+                // Desabilitar animações para usuários que preferem movimento reduzido
+                const style = document.createElement('style');
+                style.textContent = `
+                    *, *::before, *::after {
+                        animation-duration: 0.01ms !important;
+                        animation-iteration-count: 1 !important;
+                        transition-duration: 0.01ms !important;
+                        scroll-behavior: auto !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        // Aplicar preferências de movimento
+        respectMotionPreferences();
+
+        // Função para melhorar contraste em modo de alto contraste
+        function handleHighContrast() {
+            if (window.matchMedia('(prefers-contrast: high)').matches) {
+                document.body.classList.add('high-contrast-mode');
+            }
+        }
+
+        // Aplicar modo de alto contraste se necessário
+        handleHighContrast();
+
+        // Função para anunciar mudanças dinâmicas
+        function announceChange(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.className = 'visually-hidden';
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+            
+            setTimeout(() => {
+                if (announcement.parentNode) {
+                    announcement.parentNode.removeChild(announcement);
+                }
+            }, 1000);
+        }
+
+        // Função para validação de formulários acessível
+        function setupAccessibleValidation() {
+            const forms = document.querySelectorAll('form');
+            
+            forms.forEach(form => {
+                const inputs = form.querySelectorAll('input, textarea, select');
+                
+                inputs.forEach(input => {
+                    input.addEventListener('invalid', function(e) {
+                        e.preventDefault();
+                        
+                        // Criar mensagem de erro acessível
+                        let errorMessage = this.validationMessage;
+                        
+                        // Personalizar mensagens em português
+                        if (this.validity.valueMissing) {
+                            errorMessage = 'Este campo é obrigatório';
+                        } else if (this.validity.typeMismatch) {
+                            if (this.type === 'email') {
+                                errorMessage = 'Por favor, insira um email válido';
+                            }
+                        } else if (this.validity.tooShort) {
+                            errorMessage = `Mínimo de ${this.minLength} caracteres`;
+                        }
+                        
+                        // Anunciar erro
+                        announceChange(errorMessage);
+                        
+                        // Focar no campo com erro
+                        this.focus();
+                    });
+                });
+            });
+        }
+
+        // Configurar validação acessível
+        setupAccessibleValidation();
+    </script>
+
+    <!-- Estilos adicionais para acessibilidade -->
+    <style>
+        /* Modo de alto contraste */
+        .high-contrast-mode {
+            filter: contrast(150%);
+        }
+
+        /* Melhorias para foco */
+        *:focus {
+            outline: 2px solid var(--primary-color) !important;
+            outline-offset: 2px !important;
+        }
+
+        /* Indicadores visuais para elementos interativos */
+        button, a, input, textarea, select {
+            transition: all 0.2s ease;
+        }
+
+        button:hover, a:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Melhorias para leitores de tela */
+        .visually-hidden-focusable:not(:focus):not(:focus-within) {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+
+        /* Animação suave para mudanças de tema */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Melhorias para dispositivos móveis */
+        @media (max-width: 768px) {
+            .btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        /* Indicadores para modo acessibilidade */
+        .accessibility-mode .btn::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+    </style>
+
+</body>
+</html>

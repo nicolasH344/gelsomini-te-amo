@@ -1,6 +1,5 @@
 <?php
 require_once 'config.php';
-require_once 'database_connector.php';
 
 $title = 'Exercícios';
 
@@ -11,9 +10,74 @@ $search = sanitize($_GET['search'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 9;
 
-// Buscar dados
-$exercises = $dbConnector->getExercises($category, $difficulty, $search, $page, $perPage);
-$totalResults = count($exercises) > 0 ? 50 : 0; // Simplificado
+// Buscar dados do banco
+$exercises = [];
+$totalResults = 0;
+$conn = getDBConnection();
+
+if ($conn) {
+    $where = [];
+    $params = [];
+    $types = '';
+    
+    if ($category) {
+        $where[] = "c.name = ?";
+        $params[] = $category;
+        $types .= 's';
+    }
+    
+    if ($difficulty) {
+        $where[] = "e.difficulty = ?";
+        $params[] = $difficulty;
+        $types .= 's';
+    }
+    
+    if ($search) {
+        $where[] = "(e.title LIKE ? OR e.description LIKE ?)";
+        $params[] = "%$search%";
+        $params[] = "%$search%";
+        $types .= 'ss';
+    }
+    
+    $whereClause = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+    
+    $sql = "SELECT e.*, c.name as category_name 
+            FROM exercises e 
+            LEFT JOIN categories c ON e.category_id = c.id 
+            $whereClause 
+            ORDER BY e.created_at DESC 
+            LIMIT ? OFFSET ?";
+    
+    $params[] = $perPage;
+    $params[] = ($page - 1) * $perPage;
+    $types .= 'ii';
+    
+    $stmt = $conn->prepare($sql);
+    if ($stmt && $types) {
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $exercises = $result->fetch_all(MYSQLI_ASSOC);
+    } elseif ($stmt) {
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $exercises = $result->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    // Contar total
+    $countSql = "SELECT COUNT(*) FROM exercises e LEFT JOIN categories c ON e.category_id = c.id $whereClause";
+    if ($where) {
+        $countParams = array_slice($params, 0, -2);
+        $countTypes = substr($types, 0, -2);
+        $countStmt = $conn->prepare($countSql);
+        $countStmt->bind_param($countTypes, ...$countParams);
+        $countStmt->execute();
+        $totalResults = $countStmt->get_result()->fetch_row()[0];
+    } else {
+        $totalResults = $conn->query($countSql)->fetch_row()[0];
+    }
+}
+
 $totalPages = $totalResults > 0 ? ceil($totalResults / $perPage) : 1;
 
 include 'header.php';
