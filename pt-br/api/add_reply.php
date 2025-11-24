@@ -6,7 +6,6 @@
 
 session_start();
 require_once '../config.php';
-require_once '../database_connector.php';
 
 header('Content-Type: application/json');
 
@@ -44,20 +43,24 @@ try {
     $conn = getDBConnection();
     $user = getCurrentUser();
     
+    if (!$conn || !$user) {
+        echo json_encode(['success' => false, 'message' => 'Erro de conexão ou sessão']);
+        exit;
+    }
+    
+    $user_id = $user['id'];
+    $user_name = $user['username'] ?? $user['name'] ?? 'Usuário';
+    
     // Inserir resposta
     $stmt = $conn->prepare("
-        INSERT INTO discussion_replies (discussion_id, user_id, username, message, created_at)
+        INSERT INTO discussion_replies (discussion_id, user_id, user_name, message, created_at)
         VALUES (?, ?, ?, ?, NOW())
     ");
     
-    $stmt->execute([
-        $discussion_id,
-        $user['id'],
-        $user['username'],
-        $message
-    ]);
+    $stmt->bind_param("iiss", $discussion_id, $user_id, $user_name, $message);
+    $stmt->execute();
     
-    $reply_id = $conn->lastInsertId();
+    $reply_id = $stmt->insert_id;
     
     echo json_encode([
         'success' => true,
@@ -65,15 +68,16 @@ try {
         'reply' => [
             'id' => $reply_id,
             'discussion_id' => $discussion_id,
-            'username' => $user['username'],
+            'user_name' => $user_name,
             'message' => $message,
             'created_at' => date('Y-m-d H:i:s')
         ]
     ]);
     
-} catch (PDOException $e) {
+} catch (Exception $e) {
     echo json_encode([
         'success' => false,
         'message' => 'Erro ao salvar resposta: ' . $e->getMessage()
     ]);
 }
+

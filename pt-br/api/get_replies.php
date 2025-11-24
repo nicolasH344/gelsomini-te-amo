@@ -5,7 +5,6 @@
  */
 
 require_once '../config.php';
-require_once '../database_connector.php';
 
 header('Content-Type: application/json');
 
@@ -23,12 +22,17 @@ if ($discussion_id <= 0) {
 try {
     $conn = getDBConnection();
     
+    if (!$conn) {
+        echo json_encode(['success' => false, 'message' => 'Erro de conexão', 'replies' => []]);
+        exit;
+    }
+    
     // Buscar respostas ordenadas por data
     $stmt = $conn->prepare("
         SELECT 
             id,
             user_id,
-            username,
+            user_name,
             message,
             created_at
         FROM discussion_replies
@@ -37,18 +41,26 @@ try {
         LIMIT 50
     ");
     
-    $stmt->execute([$discussion_id]);
-    $replies = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt->bind_param("i", $discussion_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $replies = [];
+    while ($row = $result->fetch_assoc()) {
+        $replies[] = $row;
+    }
     
     echo json_encode([
         'success' => true,
-        'replies' => $replies
+        'replies' => $replies,
+        'total' => count($replies)
     ]);
     
-} catch (PDOException $e) {
+} catch (Exception $e) {
     echo json_encode([
         'success' => false,
         'message' => 'Erro ao carregar respostas: ' . $e->getMessage(),
         'replies' => []
     ]);
 }
+
