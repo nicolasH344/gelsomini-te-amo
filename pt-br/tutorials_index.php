@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'data/tutorials.php';
 
 $title = 'Tutoriais';
 
@@ -10,74 +11,40 @@ $search = sanitize($_GET['search'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 9;
 
-// Buscar tutoriais do banco
-$tutorials = [];
-$categories = [];
-$conn = getDBConnection();
+// Buscar todos os tutoriais
+$allTutorials = getTutorials();
 
-if ($conn) {
-    // Buscar categorias
-    $catResult = $conn->query("SELECT * FROM categories ORDER BY name");
-    if ($catResult) {
-        while ($row = $catResult->fetch_assoc()) {
-            $categories[] = [
-                'name' => $row['name'],
-                'slug' => strtolower($row['name']),
-                'color' => 'primary',
-                'icon' => 'fas fa-code'
-            ];
-        }
-    }
-    
-    // Buscar tutoriais
-    $where = [];
-    $params = [];
-    $types = '';
-    
-    if ($category) {
-        $where[] = "c.name = ?";
-        $params[] = $category;
-        $types .= 's';
-    }
-    
-    if ($level) {
-        $where[] = "t.difficulty = ?";
-        $params[] = $level;
-        $types .= 's';
-    }
-    
-    if ($search) {
-        $where[] = "(t.title LIKE ? OR t.description LIKE ?)";
-        $params[] = "%$search%";
-        $params[] = "%$search%";
-        $types .= 'ss';
-    }
-    
-    $whereClause = $where ? 'WHERE ' . implode(' AND ', $where) : '';
-    
-    $sql = "SELECT t.*, c.name as category, 'primary' as category_color, 0 as views, '15 min' as duration
-            FROM tutorials t 
-            LEFT JOIN categories c ON t.category_id = c.id 
-            $whereClause 
-            ORDER BY t.created_at DESC 
-            LIMIT ? OFFSET ?";
-    
-    $params[] = $perPage;
-    $params[] = ($page - 1) * $perPage;
-    $types .= 'ii';
-    
-    $stmt = $conn->prepare($sql);
-    if ($stmt && $types) {
-        $stmt->bind_param($types, ...$params);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $tutorials = $result->fetch_all(MYSQLI_ASSOC);
-    } elseif ($stmt) {
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $tutorials = $result->fetch_all(MYSQLI_ASSOC);
-    }
+// Aplicar filtros
+$tutorials = $allTutorials;
+
+if ($category) {
+    $tutorials = array_filter($tutorials, fn($t) => strtolower($t['category']) === strtolower($category));
 }
+
+if ($level) {
+    $tutorials = array_filter($tutorials, fn($t) => strtolower($t['difficulty']) === strtolower($level));
+}
+
+if ($search) {
+    $tutorials = array_filter($tutorials, function($t) use ($search) {
+        return stripos($t['title'], $search) !== false || 
+               stripos($t['description'], $search) !== false;
+    });
+}
+
+// Paginação
+$totalTutorials = count($tutorials);
+$totalPages = ceil($totalTutorials / $perPage);
+$offset = ($page - 1) * $perPage;
+$tutorials = array_slice($tutorials, $offset, $perPage);
+
+// Definir categorias disponíveis
+$categories = [
+    ['name' => 'HTML', 'slug' => 'html', 'color' => 'danger', 'icon' => 'fab fa-html5'],
+    ['name' => 'CSS', 'slug' => 'css', 'color' => 'primary', 'icon' => 'fab fa-css3-alt'],
+    ['name' => 'JavaScript', 'slug' => 'javascript', 'color' => 'warning', 'icon' => 'fab fa-js-square'],
+    ['name' => 'PHP', 'slug' => 'php', 'color' => 'info', 'icon' => 'fab fa-php']
+];
 
 include 'header.php';
 ?>
@@ -156,15 +123,17 @@ include 'header.php';
                 <div class="col-md-6 col-lg-4 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <span class="badge bg-<?php echo $tutorial['category_color']; ?>">
+                            <span class="badge bg-<?php 
+                                $catColors = ['HTML' => 'danger', 'CSS' => 'primary', 'JavaScript' => 'warning', 'PHP' => 'info'];
+                                echo $catColors[$tutorial['category']] ?? 'secondary';
+                            ?>">
                                 <?php echo sanitize($tutorial['category']); ?>
                             </span>
                             <span class="badge bg-<?php 
-                                $level = $tutorial['difficulty'] ?? 'beginner';
-                                echo $level === 'beginner' ? 'success' : 
-                                    ($level === 'intermediate' ? 'warning' : 'danger'); 
+                                $levelMap = ['Iniciante' => 'success', 'Intermediário' => 'warning', 'Avançado' => 'danger'];
+                                echo $levelMap[$tutorial['difficulty']] ?? 'secondary'; 
                             ?>">
-                                <?php echo ucfirst($level ?? 'beginner'); ?>
+                                <?php echo sanitize($tutorial['difficulty']); ?>
                             </span>
                         </div>
                         
@@ -175,16 +144,14 @@ include 'header.php';
                             <div class="d-flex justify-content-between text-muted small">
                                 <span>
                                     <i class="fas fa-clock me-1" aria-hidden="true"></i>
-                                    <?php echo sanitize($tutorial['duration']); ?>
+                                    <?php echo sanitize($tutorial['duration'] ?? '30 min'); ?>
                                 </span>
                                 <span>
                                     <i class="fas fa-eye me-1" aria-hidden="true"></i>
-                                    <?php echo number_format($tutorial['views']); ?> visualizações
+                                    <?php echo number_format($tutorial['views'] ?? 0); ?> visualizações
                                 </span>
                             </div>
-                        </div>
-                        
-                        <div class="card-footer bg-transparent">
+                        </div>                        <div class="card-footer bg-transparent">
                             <div class="d-flex gap-2">
                                 <a href="show.php?type=tutorial&id=<?php echo $tutorial['id']; ?>" 
                                    class="btn btn-primary btn-sm flex-fill">

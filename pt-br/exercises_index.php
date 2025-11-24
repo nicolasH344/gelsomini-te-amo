@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'exercise_functions.php';
 
 $title = 'Exercícios';
 
@@ -10,74 +11,9 @@ $search = sanitize($_GET['search'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 9;
 
-// Buscar dados do banco
-$exercises = [];
-$totalResults = 0;
-$conn = getDBConnection();
-
-if ($conn) {
-    $where = [];
-    $params = [];
-    $types = '';
-    
-    if ($category) {
-        $where[] = "c.name = ?";
-        $params[] = $category;
-        $types .= 's';
-    }
-    
-    if ($difficulty) {
-        $where[] = "e.difficulty = ?";
-        $params[] = $difficulty;
-        $types .= 's';
-    }
-    
-    if ($search) {
-        $where[] = "(e.title LIKE ? OR e.description LIKE ?)";
-        $params[] = "%$search%";
-        $params[] = "%$search%";
-        $types .= 'ss';
-    }
-    
-    $whereClause = $where ? 'WHERE ' . implode(' AND ', $where) : '';
-    
-    $sql = "SELECT e.*, c.name as category_name 
-            FROM exercises e 
-            LEFT JOIN categories c ON e.category_id = c.id 
-            $whereClause 
-            ORDER BY e.created_at DESC 
-            LIMIT ? OFFSET ?";
-    
-    $params[] = $perPage;
-    $params[] = ($page - 1) * $perPage;
-    $types .= 'ii';
-    
-    $stmt = $conn->prepare($sql);
-    if ($stmt && $types) {
-        $stmt->bind_param($types, ...$params);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $exercises = $result->fetch_all(MYSQLI_ASSOC);
-    } elseif ($stmt) {
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $exercises = $result->fetch_all(MYSQLI_ASSOC);
-    }
-    
-    // Contar total
-    $countSql = "SELECT COUNT(*) FROM exercises e LEFT JOIN categories c ON e.category_id = c.id $whereClause";
-    if ($where) {
-        $countParams = array_slice($params, 0, -2);
-        $countTypes = substr($types, 0, -2);
-        $countStmt = $conn->prepare($countSql);
-        $countStmt->bind_param($countTypes, ...$countParams);
-        $countStmt->execute();
-        $totalResults = $countStmt->get_result()->fetch_row()[0];
-    } else {
-        $totalResults = $conn->query($countSql)->fetch_row()[0];
-    }
-}
-
+// Buscar exercícios
+$exercises = getExercises($category, $difficulty, $search, $page, $perPage);
+$totalResults = countExercises($category, $difficulty, $search);
 $totalPages = $totalResults > 0 ? ceil($totalResults / $perPage) : 1;
 
 include 'header.php';
@@ -164,13 +100,8 @@ include 'header.php';
             </div>
         <?php else: ?>
             <?php foreach ($exercises as $exercise): 
-                // Mapear dificuldade do banco para exibição
-                $difficulty_map_display = [
-                    'beginner' => 'Iniciante', 
-                    'intermediate' => 'Intermediário', 
-                    'advanced' => 'Avançado'
-                ];
-                $display_difficulty = $difficulty_map_display[$exercise['difficulty'] ?? 'beginner'] ?? 'Iniciante';
+                // Exibir dificuldade
+                $display_difficulty = $exercise['difficulty'] ?? 'Iniciante';
                 
                 // Verificar progresso do usuário
                 $completed = false;
@@ -190,6 +121,19 @@ include 'header.php';
                 <div class="col-md-6 col-lg-4 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-header d-flex justify-content-between align-items-center">
+                            <span class="badge bg-<?php 
+                                $catColors = ['HTML' => 'danger', 'CSS' => 'primary', 'JavaScript' => 'warning', 'PHP' => 'info'];
+                                echo $catColors[$exercise['category']] ?? 'secondary';
+                            ?>">
+                                <?php echo htmlspecialchars($exercise['category']); ?>
+                            </span>
+                            <span class="badge bg-<?php 
+                                $levelMap = ['Iniciante' => 'success', 'Intermediário' => 'warning', 'Avançado' => 'danger'];
+                                echo $levelMap[$display_difficulty] ?? 'secondary'; 
+                            ?>">
+                                <?php echo htmlspecialchars($display_difficulty); ?>
+                            </span>
+                        </div>
                             <span class="badge bg-<?php 
                                 $cat_name = $exercise['category_name'] ?? 'Geral';
                                 echo ($cat_name === 'HTML') ? 'danger' : 
