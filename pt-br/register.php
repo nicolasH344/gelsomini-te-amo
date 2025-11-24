@@ -57,7 +57,7 @@ include 'header.php';
                             <legend class="visually-hidden">Informação Pessoal</legend>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="mb-3">
+                                    <div class="mb-0">
                                         <label for="first_name" class="form-label required">Nome</label>
                                         <input type="text" 
                                                class="form-control" 
@@ -73,7 +73,7 @@ include 'header.php';
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-3">
+                                    <div class="mb-0">
                                         <label for="last_name" class="form-label required">Sobrenome</label>
                                         <input type="text" 
                                                class="form-control" 
@@ -93,7 +93,7 @@ include 'header.php';
                         
                         <fieldset>
                             <legend class="visually-hidden">Informação de Acesso</legend>
-                            <div class="mb-3">
+                            <div class="mb-0">
                                 <label for="username" class="form-label required">Nome de Usuário</label>
                                 <input type="text" 
                                        class="form-control" 
@@ -119,7 +119,7 @@ include 'header.php';
                                        autocomplete="email"
                                        aria-describedby="email-help"
                                        value="<?php echo isset($_POST['email']) ? sanitize($_POST['email']) : ''; ?>">
-                                <div id="email-help" class="form-text">
+                                <div id="email-help" class="form-text mb-0">
                                     Digite um endereço de email válido
                                 </div>
                             </div>
@@ -129,7 +129,7 @@ include 'header.php';
                             <legend class="visually-hidden">Definir Senha</legend>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="mb-3">
+                                    <div class="mb-0">
                                         <label for="password" class="form-label required">Senha</label>
                                         <div class="input-group">
                                             <input type="password" 
@@ -153,7 +153,7 @@ include 'header.php';
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-3">
+                                    <div class="mb-0">
                                         <label for="confirm_password" class="form-label required">Confirmar Senha</label>
                                         <div class="input-group">
                                             <input type="password" 
@@ -178,7 +178,7 @@ include 'header.php';
                             </div>
                         </fieldset>
                         
-                        <div class="mb-3 form-check">
+                        <div class="mb-0 form-check">
                             <input type="checkbox" 
                                    class="form-check-input" 
                                    id="terms" 
@@ -194,7 +194,7 @@ include 'header.php';
                             </div>
                         </div>
                         
-                        <div class="mb-3 form-check">
+                        <div class="mb-0' form-check">
                             <input type="checkbox" 
                                    class="form-check-input" 
                                    id="lgpd_consent" 
