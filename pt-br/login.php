@@ -87,10 +87,10 @@ include 'header.php';
     }
 }
 
-.theme-purple .bubble { background: rgba(138, 43, 226, 0.3); }
-.theme-blue .bubble { background: rgba(74, 144, 226, 0.3); }
-.theme-green .bubble { background: rgba(40, 167, 69, 0.3); }
-.theme-dark .bubble { background: rgba(255, 255, 255, 0.15); }
+.theme-purple .bubble { background: rgba(141, 28, 247, 0.31); }
+.theme-blue .bubble { background: rgba(76, 152, 238, 0.33); }
+.theme-green .bubble { background: rgba(42, 182, 75, 0.54); }
+.theme-dark .bubble { background: rgba(212, 159, 255, 0.54); }
 </style>
 
 <div class="bubbles-container">
@@ -170,7 +170,7 @@ include 'header.php';
                             </div>
                         </div>
                         
-                        <div class="mb-4 form-check" style="color: #fff;">
+                        <div class="mb-4 form-check" style="color: #ffffffd8;">
                             <input type="checkbox" 
                                    class="form-check-input" 
                                    id="remember" 
@@ -190,11 +190,15 @@ include 'header.php';
                     <hr>
                     
                     <div class="text-center">
+<<<<<<< Updated upstream
                         <p2 class="mb-0" >
+=======
+                        <p2 class="" style="color: #181818ff;">
+>>>>>>> Stashed changes
                             Não tem uma conta? 
                             <a href="register.php" class="text-decoration-none">Registre-se aqui</a>
                         </p2>
-                        <p class="" style="color: #fff;">
+                        <p class="" style="color: #000000ff;">
                             <a href="esqueci-senha.php" class="text-decoration-none">Esqueceu sua senha?</a>
                         </p>
                     </div>
@@ -204,6 +208,7 @@ include 'header.php';
                         Admin: <code>admin</code> / <code>admin123</code><br>
                         Usuário: <code>usuario</code> / <code>123456</code>
                     </div>
+                    
                 </div>
             </div>
         </div>
