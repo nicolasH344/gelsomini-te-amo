@@ -38,15 +38,17 @@ class FeedbackSystem {
         
         // Tabela de badges (conquistas disponíveis no sistema)
         $this->conn->query("CREATE TABLE IF NOT EXISTS badges (
-            id INT AUTO_INCREMENT PRIMARY KEY,              -- ID único do badge
-            name VARCHAR(100) NOT NULL,                     -- Nome do badge (ex: 'Iniciante')
-            description TEXT NOT NULL,                      -- Descrição do que é necessário
-            icon VARCHAR(50) NOT NULL,                      -- Classe do ícone (Font Awesome)
-            color VARCHAR(7) DEFAULT '#ffc107',             -- Cor em hexadecimal
-            criteria TEXT NOT NULL,                         -- JSON com critérios (tipo e valor)
-            points INT DEFAULT 0,                           -- Pontos ganhos ao conquistar
-            is_active BOOLEAN DEFAULT TRUE,                 -- Se o badge está ativo
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Data de criação
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            description TEXT NOT NULL,
+            icon VARCHAR(50) NOT NULL DEFAULT 'fas fa-trophy',
+            color VARCHAR(7) NOT NULL DEFAULT '#ffc107',
+            condition_type ENUM('exercises_completed', 'tutorials_completed', 'points_earned', 'streak_days', 'category_master') NOT NULL,
+            condition_value INT NOT NULL,
+            condition_category_id INT NULL DEFAULT NULL,
+            points_reward INT NOT NULL DEFAULT 0,
+            is_active TINYINT(1) NOT NULL DEFAULT 1,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         )");
         
         // Tabela de badges dos usuários (relaciona usuários com badges conquistados)
@@ -78,31 +80,17 @@ class FeedbackSystem {
      */
     private function insertDefaultBadges() {
         // Array com os badges padrão do sistema
-        // Formato: [nome, descrição, ícone Font Awesome, cor hexadecimal, critérios JSON, pontos]
         $badges = [
-            // Badge de primeiro exercício (fácil de conquistar)
-            ['Primeiro Passo', 'Completou o primeiro exercício', 'fas fa-baby', '#28a745', '{"type": "exercise_count", "value": 1}', 10],
-            // Badge de 5 exercícios (dedicação inicial)
-            ['Dedicado', 'Completou 5 exercícios', 'fas fa-medal', '#ffc107', '{"type": "exercise_count", "value": 5}', 50],
-            // Badge de 10 exercícios (nível intermediário)
-            ['Especialista', 'Completou 10 exercícios', 'fas fa-trophy', '#dc3545', '{"type": "exercise_count", "value": 10}', 100],
-            // Badge de 20 exercícios (mestre)
-            ['Mestre', 'Completou 20 exercícios', 'fas fa-crown', '#6f42c1', '{"type": "exercise_count", "value": 20}', 200],
-            // Badge de sequência (estudar vários dias seguidos)
-            ['Sequência de Fogo', 'Estudou por 3 dias consecutivos', 'fas fa-fire', '#fd7e14', '{"type": "streak_days", "value": 3}', 75],
-            // Badge de feedback (avaliar exercícios)
-            ['Avaliador', 'Avaliou 5 exercícios', 'fas fa-star', '#17a2b8', '{"type": "feedback_count", "value": 5}', 30],
-            // Badge de perfeccionismo (notas máximas)
-            ['Perfeccionista', 'Obteve nota máxima em 5 exercícios', 'fas fa-gem', '#e83e8c', '{"type": "perfect_scores", "value": 5}', 150]
+            ['Primeiro Passo', 'Completou o primeiro exercício', 'fas fa-baby', '#28a745', 'exercises_completed', 1, 10],
+            ['Dedicado', 'Completou 5 exercícios', 'fas fa-medal', '#ffc107', 'exercises_completed', 5, 50],
+            ['Especialista', 'Completou 10 exercícios', 'fas fa-trophy', '#dc3545', 'exercises_completed', 10, 100],
+            ['Mestre', 'Completou 20 exercícios', 'fas fa-crown', '#6f42c1', 'exercises_completed', 20, 200],
+            ['Sequência de Fogo', 'Estudou por 3 dias consecutivos', 'fas fa-fire', '#fd7e14', 'streak_days', 3, 75]
         ];
         
-        // Percorre cada badge e insere no banco (IGNORE evita duplicatas)
         foreach ($badges as $badge) {
-            // Prepara a query de inserção
-            $stmt = $this->conn->prepare("INSERT IGNORE INTO badges (name, description, icon, color, criteria, points) VALUES (?, ?, ?, ?, ?, ?)");
-            // Vincula os parâmetros (s=string, i=integer)
-            $stmt->bind_param("sssssi", $badge[0], $badge[1], $badge[2], $badge[3], $badge[4], $badge[5]);
-            // Executa a inserção
+            $stmt = $this->conn->prepare("INSERT IGNORE INTO badges (name, description, icon, color, condition_type, condition_value, points_reward) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssssii", $badge[0], $badge[1], $badge[2], $badge[3], $badge[4], $badge[5], $badge[6]);
             $stmt->execute();
         }
     }
@@ -172,70 +160,33 @@ class FeedbackSystem {
         // Verifica se há conexão com o banco
         if (!$this->conn) return;
         
-        // Busca todos os badges ativos que o usuário AINDA NÃO conquistou
-        // Usando subquery para excluir os badges que o usuário já tem
         $stmt = $this->conn->prepare("
             SELECT b.* FROM badges b 
             WHERE b.is_active = 1 
             AND b.id NOT IN (SELECT badge_id FROM user_badges WHERE user_id = ?)
         ");
-        $stmt->bind_param("i", $user_id); // Vincula o ID do usuário
-        $stmt->execute(); // Executa a query
-        $result = $stmt->get_result(); // Obtém o resultado
-        $badges = $result->fetch_all(MYSQLI_ASSOC); // Converte para array associativo
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $badges = $result->fetch_all(MYSQLI_ASSOC);
         
-        // Percorre cada badge não conquistado
         foreach ($badges as $badge) {
-            // Decodifica o JSON de critérios para array PHP
-            $criteria = json_decode($badge['criteria'], true);
-            
-            // Verifica se o usuário atende aos critérios deste badge
-            if ($this->checkCriteria($user_id, $criteria)) {
-                // Se atende, concede o badge ao usuário
+            if ($this->checkCriteria($user_id, $badge['condition_type'], $badge['condition_value'])) {
                 $this->awardBadge($user_id, $badge['id']);
             }
         }
     }
     
-    /**
-     * Verifica se o usuário atende aos critérios de um badge
-     * @param int $user_id ID do usuário
-     * @param array $criteria Critérios do badge (tipo e valor necessário)
-     * @return bool true se atende, false caso contrário
-     */
-    private function checkCriteria($user_id, $criteria) {
-        // Switch baseado no tipo de critério
-        switch ($criteria['type']) {
-            
-            // Critério: Número de exercícios completados
-            case 'exercise_count':
+    private function checkCriteria($user_id, $condition_type, $condition_value) {
+        switch ($condition_type) {
+            case 'exercises_completed':
                 $stmt = $this->conn->prepare("SELECT COUNT(*) as count FROM user_progress WHERE user_id = ? AND status = 'completed'");
                 $stmt->bind_param("i", $user_id);
                 $stmt->execute();
                 $result = $stmt->get_result()->fetch_assoc();
-                // Retorna true se contagem >= valor necessário
-                return $result['count'] >= $criteria['value'];
+                return $result['count'] >= $condition_value;
                 
-            // Critério: Número de feedbacks/avaliações feitas
-            case 'feedback_count':
-                $stmt = $this->conn->prepare("SELECT COUNT(*) as count FROM exercise_feedback WHERE user_id = ?");
-                $stmt->bind_param("i", $user_id);
-                $stmt->execute();
-                $result = $stmt->get_result()->fetch_assoc();
-                return $result['count'] >= $criteria['value'];
-                
-            // Critério: Número de notas perfeitas (score >= 100)
-            case 'perfect_scores':
-                $stmt = $this->conn->prepare("SELECT COUNT(*) as count FROM user_progress WHERE user_id = ? AND score >= 100");
-                $stmt->bind_param("i", $user_id);
-                $stmt->execute();
-                $result = $stmt->get_result()->fetch_assoc();
-                return $result['count'] >= $criteria['value'];
-                
-            // Critério: Dias consecutivos de estudo (streak)
             case 'streak_days':
-                // Conta quantos dias DISTINTOS o usuário completou exercícios
-                // nos últimos 7 dias
                 $stmt = $this->conn->prepare("
                     SELECT COUNT(DISTINCT DATE(completed_at)) as count
                     FROM user_progress 
@@ -244,10 +195,9 @@ class FeedbackSystem {
                 $stmt->bind_param("i", $user_id);
                 $stmt->execute();
                 $result = $stmt->get_result()->fetch_assoc();
-                return $result['count'] >= $criteria['value'];
+                return $result['count'] >= $condition_value;
         }
         
-        // Se o tipo não foi reconhecido, retorna false
         return false;
     }
     

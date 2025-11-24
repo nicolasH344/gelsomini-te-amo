@@ -121,71 +121,11 @@ function getStats() {
     }
 }
 
-function getForumPosts($category = '', $search = '', $page = 1) {
-    try {
-        $forumModel = new Forum();
-        $limit = 20;
-        $offset = ($page - 1) * $limit;
-        
-        return $forumModel->getPosts($category, $search, $limit, $offset);
-    } catch (Exception $e) {
-        return [];
-    }
-}
+// Funções do fórum movidas para forum_functions.php para evitar duplicação
 
-function getForumCategories() {
-    try {
-        $forumModel = new Forum();
-        return $forumModel->getCategories();
-    } catch (Exception $e) {
-        return [
-            ['id' => 1, 'name' => 'Geral', 'color' => 'primary'],
-            ['id' => 2, 'name' => 'HTML/CSS', 'color' => 'success'],
-            ['id' => 3, 'name' => 'JavaScript', 'color' => 'warning'],
-            ['id' => 4, 'name' => 'Backend', 'color' => 'info']
-        ];
-    }
-}
+// Função getExercises movida para exercise_functions.php para evitar duplicação
 
-function createForumPost($title, $content, $categoryId, $userId) {
-    try {
-        $forumModel = new Forum();
-        return $forumModel->createPost([
-            'title' => $title,
-            'content' => $content,
-            'category_id' => $categoryId,
-            'user_id' => $userId
-        ]);
-    } catch (Exception $e) {
-        return false;
-    }
-}
-
-function getExercises($category = null, $difficulty = null) {
-    try {
-        $exerciseModel = new Exercise();
-        if (isset($_SESSION['user_id'])) {
-            return $exerciseModel->getWithProgress($_SESSION['user_id'], $category, $difficulty);
-        } else {
-            return $exerciseModel->getByCategory($category, $difficulty);
-        }
-    } catch (Exception $e) {
-        return [];
-    }
-}
-
-function getTutorials($category = null, $difficulty = null) {
-    try {
-        $tutorialModel = new Tutorial();
-        if (isset($_SESSION['user_id'])) {
-            return $tutorialModel->getWithProgress($_SESSION['user_id'], $category, $difficulty);
-        } else {
-            return $tutorialModel->getByCategory($category, $difficulty);
-        }
-    } catch (Exception $e) {
-        return [];
-    }
-}
+// Função getTutorials movida para tutorial_functions.php para evitar duplicação
 
 function getUserProgress($userId) {
     try {

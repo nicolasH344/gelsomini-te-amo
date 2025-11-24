@@ -131,8 +131,10 @@ function getForumPost($id) {
                            LEFT JOIN users u ON fp.user_id = u.id
                            LEFT JOIN forum_categories fc ON fp.category_id = fc.id
                            WHERE fp.id = ?");
-    $stmt->execute([$id]);
-    return $stmt->fetch();
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
 }
 
 function getForumComments($post_id) {
@@ -144,7 +146,14 @@ function getForumComments($post_id) {
                            LEFT JOIN users u ON fc.user_id = u.id
                            WHERE fc.post_id = ? 
                            ORDER BY fc.created_at ASC");
-    $stmt->execute([$post_id]);
-    return $stmt->fetchAll();
+    $stmt->bind_param("i", $post_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $comments = [];
+    while ($row = $result->fetch_assoc()) {
+        $comments[] = $row;
+    }
+    return $comments;
 }
 ?>
