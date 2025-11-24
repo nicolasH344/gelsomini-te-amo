@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solução de Problemas - Banco de Dados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #e74c3c;
+            border-bottom: 3px solid #e74c3c;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #3498db;
+            margin-top: 30px;
+        }
+        .step {
+            background: #ecf0f1;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 5px;
+        }
+        .error-box {
+            background: #ffe6e6;
+            border: 2px solid #e74c3c;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .success-box {
+            background: #e8f8f5;
+            border: 2px solid #27ae60;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px 5px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        code {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        ul {
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Solução de Problemas - Banco de Dados</h1>
+        
+        <div class="error-box">
+            <strong>❌ Erro Comum:</strong> "Column not found" ou "Table doesn't exist"
+        </div>
+
+        <h2>📋 Passo a Passo para Resolver</h2>
+
+        <div class="step">
+            <h3>Passo 1: Testar Conexão</h3>
+            <p>Execute o script de diagnóstico para identificar o problema:</p>
+            <a href="test_db.php" class="btn btn-primary">🔍 Executar Diagnóstico</a>
+            <p class="mt-2">Este script irá verificar:</p>
+            <ul>
+                <li>✓ Conexão com o banco de dados</li>
+                <li>✓ Existência da tabela <code>users</code></li>
+                <li>✓ Colunas necessárias (<code>avatar</code>, <code>bio</code>, <code>website</code>)</li>
+                <li>✓ Outras tabelas (user_progress, badges, etc)</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>Passo 2: Executar Setup</h3>
+            <p>Se o diagnóstico mostrar tabelas ou colunas faltando, execute o setup:</p>
+            <a href="setup_profile_tables.php" class="btn btn-success">⚙️ Executar Setup Completo</a>
+            <p class="mt-2">O setup irá:</p>
+            <ul>
+                <li>✓ Adicionar colunas em <code>users</code></li>
+                <li>✓ Criar tabela <code>tutorial_progress</code></li>
+                <li>✓ Criar tabela <code>badges</code></li>
+                <li>✓ Criar tabela <code>user_badges</code></li>
+                <li>✓ Inserir badges padrão</li>
+                <li>✓ Criar diretório de uploads</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>Passo 3: Testar Perfil</h3>
+            <p>Após executar o setup, teste a página de perfil:</p>
+            <a href="profile.php" class="btn btn-primary">👤 Abrir Meu Perfil</a>
+        </div>
+
+        <h2>⚠️ Erros Específicos e Soluções</h2>
+
+        <div class="error-box">
+            <h4>Erro: "Unknown column 'avatar' in field list"</h4>
+            <p><strong>Causa:</strong> Coluna <code>avatar</code> não existe na tabela <code>users</code></p>
+            <p><strong>Solução:</strong> Execute o setup ou adicione manualmente:</p>
+            <div class="code-block">ALTER TABLE users ADD COLUMN avatar VARCHAR(255) NULL;</div>
+        </div>
+
+        <div class="error-box">
+            <h4>Erro: "Table 'cursinho.tutorial_progress' doesn't exist"</h4>
+            <p><strong>Causa:</strong> Tabela <code>tutorial_progress</code> não foi criada</p>
+            <p><strong>Solução:</strong> Execute o setup ou crie manualmente:</p>
+            <div class="code-block">CREATE TABLE tutorial_progress (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    tutorial_id INT NOT NULL,
+    progress INT DEFAULT 0,
+    completed_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY (user_id, tutorial_id)
+);</div>
+        </div>
+
+        <div class="error-box">
+            <h4>Erro: "Access denied for user"</h4>
+            <p><strong>Causa:</strong> Credenciais do banco incorretas</p>
+            <p><strong>Solução:</strong> Verifique em <code>config.php</code>:</p>
+            <div class="code-block">define('DB_HOST', 'localhost');
+define('DB_NAME', 'cursinho');
+define('DB_USER', 'root');
+define('DB_PASS', ''); // Normalmente vazio no XAMPP</div>
+        </div>
+
+        <div class="error-box">
+            <h4>Erro: "Syntax error... IF NOT EXISTS"</h4>
+            <p><strong>Causa:</strong> MySQL 5.x não suporta <code>IF NOT EXISTS</code> em <code>ALTER TABLE</code></p>
+            <p><strong>Solução:</strong> ✅ JÁ CORRIGIDO! Os scripts agora verificam antes de adicionar colunas</p>
+        </div>
+
+        <h2>🛠️ Correções Aplicadas</h2>
+
+        <div class="success-box">
+            <h4>✅ Compatibilidade MySQL 5.x e 8.x</h4>
+            <ul>
+                <li>Removido <code>ALTER TABLE IF NOT EXISTS</code></li>
+                <li>Adicionada verificação com <code>SHOW COLUMNS</code></li>
+                <li>Verificação de existência de tabelas antes de queries</li>
+                <li>Melhor tratamento de erros</li>
+            </ul>
+        </div>
+
+        <div class="success-box">
+            <h4>✅ Verificações de Segurança</h4>
+            <ul>
+                <li>Tabelas verificadas antes de SELECT</li>
+                <li>Fallback para valores padrão se tabelas não existirem</li>
+                <li>Logs de erro detalhados</li>
+                <li>Página não quebra se banco estiver incompleto</li>
+            </ul>
+        </div>
+
+        <h2>📞 Ainda com Problemas?</h2>
+
+        <div class="step">
+            <h3>Execute nesta ordem:</h3>
+            <ol>
+                <li><a href="test_db.php" class="btn btn-primary">1. Diagnóstico</a> - Veja o que está faltando</li>
+                <li><a href="setup_profile_tables.php" class="btn btn-success">2. Setup</a> - Crie as tabelas</li>
+                <li><a href="test_db.php" class="btn btn-primary">3. Diagnóstico Novamente</a> - Confirme que funcionou</li>
+                <li><a href="profile.php" class="btn btn-danger">4. Teste o Perfil</a> - Use normalmente</li>
+            </ol>
+        </div>
+
+        <h2>📊 Comandos SQL Úteis</h2>
+
+        <div class="code-block">-- Ver todas as tabelas
+SHOW TABLES;
+
+-- Ver estrutura da tabela users
+DESCRIBE users;
+
+-- Ver colunas da tabela users
+SHOW COLUMNS FROM users;
+
+-- Contar usuários
+SELECT COUNT(*) FROM users;
+
+-- Ver seu usuário
+SELECT * FROM users WHERE id = 1;</div>
+
+        <div class="step">
+            <h3>🎯 Links Rápidos</h3>
+            <a href="test_db.php" class="btn btn-primary">Diagnóstico</a>
+            <a href="setup_profile_tables.php" class="btn btn-success">Setup</a>
+            <a href="profile.php" class="btn btn-danger">Perfil</a>
+            <a href="guia_perfil.html" class="btn btn-primary">Guia Visual</a>
+        </div>
+    </div>
+</body>
+</html>
