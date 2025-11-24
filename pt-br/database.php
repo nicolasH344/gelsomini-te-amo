@@ -11,18 +11,23 @@ class Database {
     public $conn;
 
     public function __construct() {
-        $this->conn = new mysqli(
-            $this->host,
-            $this->user,
-            $this->password,
-            $this->database
-        );
+        try {
+            $this->conn = new mysqli(
+                $this->host,
+                $this->user,
+                $this->password,
+                $this->database
+            );
 
-        if ($this->conn->connect_error) {
-            die("❌ Falha na conexão com o banco de dados: " . $this->conn->connect_error);
+            if ($this->conn->connect_error) {
+                throw new Exception("Erro de conexão: " . $this->conn->connect_error);
+            }
+
+            $this->conn->set_charset("utf8");
+            
+        } catch (Exception $e) {
+            die("❌ Falha na conexão: " . $e->getMessage() . "\n");
         }
-
-        $this->conn->set_charset("utf8");
     }
 
     public function closeConnection() {
@@ -32,7 +37,4 @@ class Database {
     }
 }
 
-// Testando a conexão
-$db = new Database();
-echo "✅ Conexão realizada com sucesso!";
-$db->closeConnection();
+// Classe Database pronta para uso

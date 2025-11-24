@@ -1,8 +1,6 @@
 <?php
 require_once 'config.php';
-require_once '../src/autoload.php';
-
-use App\Models\Badge;
+require_once 'database_connector.php';
 
 if (!isLoggedIn()) {
     redirect('login.php');
@@ -10,14 +8,14 @@ if (!isLoggedIn()) {
 
 $title = 'Conquistas e Badges';
 $user = getCurrentUser();
-$badgeModel = new Badge();
 
 // Verificar e conceder badges
-$badgeModel->checkAndAwardBadges($user['id']);
+global $feedbackSystem;
+$feedbackSystem->checkBadges($user['id']);
 
 // Buscar badges do usuário
-$userBadges = $badgeModel->getUserBadges($user['id']);
-$allBadges = $badgeModel->findAll();
+$userBadges = $dbConnector->getUserBadges($user['id']);
+$allBadges = $dbConnector->getAllBadges();
 
 include 'header.php';
 ?>
@@ -32,8 +30,8 @@ include 'header.php';
                 <div class="card-body">
                     <?php if (empty($userBadges)): ?>
                         <div class="text-center py-4">
-                            <i class="fas fa-medal fa-3x text-muted mb-3"></i>
-                            <h6>Nenhuma conquista ainda</h6>
+                            <i class="fas fa-medal fa-3x text-muted "></i>
+                            <h6 class="mb-0">Nenhuma conquista ainda</h6>
                             <p class="text-muted">Complete exercícios e participe da comunidade para ganhar badges!</p>
                         </div>
                     <?php else: ?>

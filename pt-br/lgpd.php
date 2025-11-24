@@ -12,7 +12,7 @@ include 'header.php';
                     <h1 class="h3 mb-0">Política de Privacidade e Proteção de Dados</h1>
                     <small class="text-muted">Conforme Lei Geral de Proteção de Dados (LGPD)</small>
                 </div>
-                <div class="card-body">
+                <div class="card-body mb-0">
                     <h4>1. Dados Coletados</h4>
                     <p>Coletamos apenas os dados necessários para o funcionamento da plataforma:</p>
                     <ul>

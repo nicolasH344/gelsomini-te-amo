@@ -61,7 +61,7 @@ if (!isset($_SESSION['language'])) { $_SESSION['language'] = 'pt-br'; }
 if (!isset($_SESSION['accessibility_mode'])) { $_SESSION['accessibility_mode'] = false; }
 
 // Detectar idioma pela URL
-$current_path = $_SERVER['REQUEST_URI'];
+$current_path = $_SERVER['REQUEST_URI'] ?? '';
 if (strpos($current_path, '/en/') !== false) {
     $_SESSION['language'] = 'en';
 } elseif (strpos($current_path, '/es/') !== false) {
@@ -75,39 +75,19 @@ if (strpos($current_path, '/en/') !== false) {
 // =================================================================
 
 /**
- * Conexão com o Banco de Dados
+ * Conexão com o Banco de Dados usando mysqli
  */
 if (!function_exists('getDBConnection')) {
     function getDBConnection() {
         try {
-            $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
-            $pdo = new PDO($dsn, DB_USER, DB_PASS);
-            
-            // Configurar PDO para lançar exceções
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-            
-            return $pdo;
-            
-        } catch (PDOException $e) {
-            // Tentar conexão sem senha como fallback
-            try {
-                $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
-                $pdo = new PDO($dsn, DB_USER, '');
-                
-                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-                $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-                
-                return $pdo;
-                
-            } catch (PDOException $e2) {
-                if (DEBUG_MODE) {
-                    error_log("Erro de conexão com o banco: " . $e->getMessage());
-                }
-                return null;
+            require_once 'database.php';
+            $db = new Database();
+            return $db->conn;
+        } catch (Exception $e) {
+            if (DEBUG_MODE) {
+                error_log("Erro de conexão com o banco: " . $e->getMessage());
             }
+            return null;
         }
     }
 }
@@ -116,6 +96,7 @@ if (!function_exists('getDBConnection')) {
  * Função para sanitizar dados
  */
 require_once __DIR__ . '/../src/SecurityHelper.php';
+require_once 'database_functions.php';
 
 if (!function_exists('sanitize')) {
     function sanitize($data) {
@@ -443,15 +424,42 @@ if (!function_exists('getCurrentUser')) {
 // Demais funções do sistema
 if (!function_exists('processLogin')) {
     function processLogin($username, $password) {
-        if (($username === 'admin' && $password === 'admin123') || ($username === 'usuario' && $password === '123456')) {
-            $_SESSION['user_id'] = ($username === 'admin') ? 1 : 2;
-            $_SESSION['username'] = $username;
-            $_SESSION['first_name'] = ($username === 'admin') ? 'Administrador' : 'Usuário';
-            $_SESSION['last_name'] = ($username === 'admin') ? 'Sistema' : 'Teste';
-            $_SESSION['is_admin'] = ($username === 'admin');
-            return ['success' => true, 'message' => 'Login realizado com sucesso!'];
+        try {
+            require_once 'database.php';
+            $db = new Database();
+            $conn = $db->conn;
+            
+            // Buscar usuário no banco
+            $stmt = $conn->prepare("SELECT id, first_name, last_name, username, password_hash, is_admin FROM users WHERE username = ? OR email = ?");
+            $stmt->bind_param("ss", $username, $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows === 1) {
+                $user = $result->fetch_assoc();
+                
+                // Verificar senha
+                if (password_verify($password, $user['password_hash'])) {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['username'] = $user['username'];
+                    $_SESSION['first_name'] = $user['first_name'];
+                    $_SESSION['last_name'] = $user['last_name'];
+                    $_SESSION['is_admin'] = (bool)$user['is_admin'];
+                    
+                    $db->closeConnection();
+                    return ['success' => true, 'message' => 'Login realizado com sucesso!'];
+                } else {
+                    $db->closeConnection();
+                    return ['success' => false, 'message' => 'Senha incorreta.'];
+                }
+            } else {
+                $db->closeConnection();
+                return ['success' => false, 'message' => 'Usuário não encontrado.'];
+            }
+            
+        } catch(Exception $e) {
+            return ['success' => false, 'message' => 'Erro no banco de dados: ' . $e->getMessage()];
         }
-        return ['success' => false, 'message' => 'Usuário ou senha incorretos.'];
     }
 }
 if (!function_exists('processLogout')) {
@@ -505,45 +513,47 @@ if (!function_exists('processRegister')) {
             return ['success' => false, 'message' => 'Você deve aceitar os termos de uso'];
         }
         
-        // Tentar conectar com banco de dados
-        $conn = getDBConnection();
-        
-        if ($conn) {
-            // MODO REAL: Com banco de dados
-            try {
-                // Verificar se username já existe
-                $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
-                $stmt->execute([$data['username']]);
-                if ($stmt->fetch()) {
-                    return ['success' => false, 'message' => 'Nome de usuário já está em uso'];
-                }
-                
-                // Verificar se email já existe
-                $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-                $stmt->execute([$data['email']]);
-                if ($stmt->fetch()) {
-                    return ['success' => false, 'message' => 'Email já está cadastrado'];
-                }
-                
-                // Inserir novo usuário
-                $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, username, email, password_hash, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
-                $password_hash = password_hash($data['password'], PASSWORD_DEFAULT);
-                $stmt->execute([
-                    $data['first_name'],
-                    $data['last_name'],
-                    $data['username'],
-                    $data['email'],
-                    $password_hash
-                ]);
-                
-                return ['success' => true, 'message' => 'Conta criada com sucesso! Faça login para continuar.'];
-                
-            } catch(PDOException $e) {
-                return ['success' => false, 'message' => 'Erro no banco de dados: ' . $e->getMessage()];
+        // Tentar conectar com banco de dados usando mysqli
+        try {
+            require_once 'database.php';
+            $db = new Database();
+            $conn = $db->conn;
+            
+            // Verificar se username já existe
+            $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+            $stmt->bind_param("s", $data['username']);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $db->closeConnection();
+                return ['success' => false, 'message' => 'Nome de usuário já está em uso'];
             }
-        } else {
-            // Modo simulação (para desenvolvimento)
-            return ['success' => true, 'message' => 'Conta criada com sucesso! (Modo simulação)'];
+            
+            // Verificar se email já existe
+            $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+            $stmt->bind_param("s", $data['email']);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $db->closeConnection();
+                return ['success' => false, 'message' => 'Email já está cadastrado'];
+            }
+            
+            // Inserir novo usuário
+            $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, username, email, password_hash) VALUES (?, ?, ?, ?, ?)");
+            $password_hash = password_hash($data['password'], PASSWORD_DEFAULT);
+            $stmt->bind_param("sssss", $data['first_name'], $data['last_name'], $data['username'], $data['email'], $password_hash);
+            
+            if ($stmt->execute()) {
+                $db->closeConnection();
+                return ['success' => true, 'message' => 'Conta criada com sucesso! Faça login para continuar.'];
+            } else {
+                $db->closeConnection();
+                return ['success' => false, 'message' => 'Erro ao criar conta: ' . $conn->error];
+            }
+            
+        } catch(Exception $e) {
+            return ['success' => false, 'message' => 'Erro no banco de dados: ' . $e->getMessage()];
         }
     }
 }
@@ -553,7 +563,7 @@ if (!function_exists('processRegister')) {
 // =================================================================
 
 // >> CORREÇÃO: Processar mudanças de configuração com redirecionamento (Padrão Post-Redirect-Get)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $configChanged = false;
 
     if (isset($_POST['change_theme']) && isset($_POST['theme'])) {

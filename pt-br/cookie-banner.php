@@ -1,4 +1,19 @@
-<?php if (!isset($_COOKIE['lgpd_consent'])): ?>
+<?php 
+// Verificar se deve mostrar o banner
+$show_banner = false;
+
+// Mostrar se não há consentimento
+if (!isset($_COOKIE['lgpd_consent'])) {
+    $show_banner = true;
+}
+
+// Mostrar se mudou de idioma (verificar se há parâmetro de idioma na sessão diferente do cookie)
+if (isset($_SESSION['language_changed']) || 
+    (isset($_COOKIE['lgpd_language']) && $_COOKIE['lgpd_language'] !== ($_SESSION['language'] ?? 'pt-br'))) {
+    $show_banner = true;
+}
+
+if ($show_banner): ?>
 <div id="cookieBanner" class="cookie-banner">
     <div class="container">
         <div class="row align-items-center">
@@ -7,10 +22,10 @@
                     <i class="fas fa-cookie-bite fa-2x text-warning me-3"></i>
                     <div>
                         <h6 class="mb-1">Uso de Cookies e Dados</h6>
-                        <p class="mb-0 small">
+                        <p2 class=" small" style="color: #fff:">
                             Utilizamos cookies essenciais para o funcionamento da plataforma e dados pessoais conforme nossa 
                             <a href="lgpd.php" class="text-decoration-underline">Política de Privacidade</a>.
-                        </p>
+                        </p2>
                     </div>
                 </div>
             </div>
@@ -63,11 +78,26 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: var(--bg-dark);
-    color: var(--text-light);
+    background: rgba(0, 0, 0, 0.95);
+    color: #ffffff;
     padding: 1rem 0;
     z-index: 1000;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+    font-weight: 500;
+}
+
+.cookie-banner h6 {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.cookie-banner p {
+    color: #f8f9fa;
+}
+
+.cookie-banner a {
+    color: #ffc107;
+    font-weight: 600;
 }
 
 .cookie-settings {
@@ -83,9 +113,18 @@
 
 <script>
 function acceptCookies() {
-    document.cookie = "lgpd_consent=accepted; path=/; max-age=" + (365*24*60*60);
-    document.cookie = "analytics_consent=true; path=/; max-age=" + (365*24*60*60);
+    const currentLang = getCurrentLanguage();
+    document.cookie = "lgpd_consent=accepted; path=/; max-age=" + (30*60); // 30 minutos
+    document.cookie = "analytics_consent=true; path=/; max-age=" + (30*60);
+    document.cookie = "lgpd_language=" + currentLang + "; path=/; max-age=" + (30*60);
     document.getElementById('cookieBanner').style.display = 'none';
+}
+
+function getCurrentLanguage() {
+    const path = window.location.pathname;
+    if (path.includes('/en/')) return 'en';
+    if (path.includes('/es/')) return 'es';
+    return 'pt-br';
 }
 
 function showCookieSettings() {
@@ -94,8 +133,10 @@ function showCookieSettings() {
 
 function saveCookieSettings() {
     const analytics = document.getElementById('analyticsCookies').checked;
-    document.cookie = "lgpd_consent=configured; path=/; max-age=" + (365*24*60*60);
-    document.cookie = "analytics_consent=" + analytics + "; path=/; max-age=" + (365*24*60*60);
+    const currentLang = getCurrentLanguage();
+    document.cookie = "lgpd_consent=configured; path=/; max-age=" + (30*60);
+    document.cookie = "analytics_consent=" + analytics + "; path=/; max-age=" + (30*60);
+    document.cookie = "lgpd_language=" + currentLang + "; path=/; max-age=" + (30*60);
     document.getElementById('cookieBanner').style.display = 'none';
     document.getElementById('cookieSettings').style.display = 'none';
 }

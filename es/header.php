@@ -6,6 +6,7 @@
     <meta name="description" content="<?php echo t('site_description', 'Plataforma interativa para aprender desenvolvimento web com exercícios práticos e feedback em tempo real.'); ?>">
     <meta name="keywords" content="desenvolvimento web, HTML, CSS, JavaScript, PHP, exercícios, tutoriais, programação">
     <meta name="author" content="WebLearn">
+    <meta name="google" content="notranslate">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -26,6 +27,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
+    <link rel="stylesheet" href="../themes.css">
+    <link rel="stylesheet" href="../components.css">
+    <link rel="stylesheet" href="../theme-text.css">
     <link rel="stylesheet" href="../style.css">
     
     <!-- Preload critical resources -->
@@ -90,29 +94,13 @@
                             <?php echo t('forum'); ?>
                         </a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="communityDropdown" role="button" 
-                           data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-users me-1" aria-hidden="true"></i>
-                            Comunidade
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'badges.php' ? 'active' : ''; ?>" 
+                           href="badges.php"
+                           <?php echo basename($_SERVER['PHP_SELF']) === 'badges.php' ? 'aria-current="page"' : ''; ?>>
+                            <i class="fas fa-trophy me-1" aria-hidden="true"></i>
+                            Conquistas
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="communityDropdown">
-                            <li><a class="dropdown-item" href="chat.php">
-                                <i class="fas fa-comments me-2"></i>Chat
-                            </a></li>
-                            <li><a class="dropdown-item" href="collaborative_exercise.php?id=1">
-                                <i class="fas fa-users-cog me-2"></i>Exercícios Colaborativos
-                            </a></li>
-                            <li><a class="dropdown-item" href="mentorship.php">
-                                <i class="fas fa-user-graduate me-2"></i>Mentoria
-                            </a></li>
-                            <li><a class="dropdown-item" href="github_integration.php">
-                                <i class="fab fa-github me-2"></i>GitHub
-                            </a></li>
-                            <li><a class="dropdown-item" href="badges.php">
-                                <i class="fas fa-trophy me-2"></i>Conquistas
-                            </a></li>
-                        </ul>
                     </li>
                 </ul>
                 
@@ -131,6 +119,12 @@
                                     <a class="dropdown-item" href="profile.php">
                                         <i class="fas fa-user me-2" aria-hidden="true"></i>
                                         <?php echo t('profile'); ?>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="data-management.php">
+                                        <i class="fas fa-shield-alt me-2" aria-hidden="true"></i>
+                                        Meus Dados (LGPD)
                                     </a>
                                 </li>
                                 <li>
@@ -189,7 +183,7 @@
         </button>
         
         <div class="p-3">
-            <h5 id="settingsTitle" class="mb-3">
+            <h5 id="settingsTitle" class="label">
                 <i class="fas fa-cog me-2" aria-hidden="true"></i>
                 <?php echo t('settings'); ?>
             </h5>
@@ -263,6 +257,8 @@
 
     <!-- Main Content -->
     <main id="main-content" role="main" style="padding-top: 80px;">
+        
+        <?php include 'cookie-banner.php'; ?>
         
         <!-- Mensagens de Feedback -->
         <?php if (isset($_SESSION['success'])): ?>
@@ -412,6 +408,10 @@
         }
 
         function changeLanguage(language) {
+            // Marcar que o idioma foi alterado para mostrar LGPD novamente
+            document.cookie = "lgpd_consent=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            document.cookie = "lgpd_language=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            
             // Redirecionar para a pasta do idioma correspondente
             const currentPath = window.location.pathname;
             const currentLang = getCurrentLanguage();

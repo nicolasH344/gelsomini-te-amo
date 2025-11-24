@@ -36,10 +36,10 @@ include 'header.php';
 
 <div class="container mt-4">
     <!-- Header do fórum -->
-    <div class="row mb-4">
+    <div class="row mb-0">
         <div class="col-md-8">
-            <h1><i class="fas fa-comments" aria-hidden="true"></i> Fórum da Comunidade</h1>
-            <p class="lead">Tire dúvidas, compartilhe conhecimento e conecte-se com outros desenvolvedores</p>
+            <h1><i class="fas fa-comments mb-0" aria-hidden="true"></i> Fórum da Comunidade</h1>
+            <p class="lead mb-0">Tire dúvidas, compartilhe conhecimento e conecte-se com outros desenvolvedores</p>
         </div>
         <div class="col-md-4 text-end">
             <?php if (isLoggedIn()): ?>
@@ -58,9 +58,9 @@ include 'header.php';
         <!-- Conteúdo principal -->
         <div class="col-lg-8">
             <!-- Filtros e busca -->
-            <div class="card mb-4">
+            <div class="card mb-2">
                 <div class="card-body">
-                    <h2 class="h5 card-title">Filtrar Posts</h2>
+                    <h2 class="h5  mb-0">Filtrar Posts</h2>
                     <form method="GET" action="forum_index.php" class="row g-3">
                         <div class="col-md-4">
                             <label for="category" class="form-label">Categoria</label>
@@ -92,7 +92,7 @@ include 'header.php';
             <!-- Lista de posts -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="h5 mb-0 ">Posts Recentes</h2>
+                    <h2 class="h5 mb-2 ">Posts Recentes</h2>
                 </div>
                 <div class="card-body p-0">
                     <?php foreach ($forum_posts as $index => $post): ?>
@@ -101,22 +101,20 @@ include 'header.php';
                                 <div class="col-md-8">
                                     <div class="d-flex align-items-center mb-2">
                                         <span class="badge bg-<?php 
-                              
-                              
-                              
-                              $categoryColor = 'secondary';
+                                            $categoryColor = 'secondary';
+                                            $postCategory = $post['category'] ?? 'Geral';
                                             foreach ($categories as $cat) {
-                                                if (strtolower($cat['name']) === strtolower($post['category'])) {
-                                                    $categoryColor = $cat['color'];
+                                                if (strtolower($cat['name']) === strtolower($postCategory)) {
+                                                    $categoryColor = $cat['color'] ?? 'secondary';
                                                     break;
                                                 }
                                             }
                                             echo $categoryColor;
                                         ?> me-2">
-                                            <?php echo sanitize($post['category']); ?>
+                                            <?php echo sanitize($postCategory); ?>
                                         </span>
                                         
-                                        <?php if ($post['is_solved']): ?>
+                                        <?php if (isset($post['is_solved']) && $post['is_solved']): ?>
                                             <span class="badge bg-success me-2">
                                                 <i class="fas fa-check" aria-hidden="true"></i> Resolvido
                                             </span>
@@ -137,7 +135,7 @@ include 'header.php';
                                     <div class="d-flex align-items-center text-muted small">
                                         <span class="me-3">
                                             <i class="fas fa-user me-1" aria-hidden="true"></i>
-                                            <?php echo sanitize($post['author']); ?>
+                                            <?php echo sanitize($post['author'] ?? 'Usuário Anônimo'); ?>
                                         </span>
                                         <span class="me-3">
                                             <i class="fas fa-clock me-1" aria-hidden="true"></i>
@@ -200,9 +198,9 @@ include 'header.php';
         <!-- Sidebar -->
         <div class="col-lg-4">
             <!-- Estatísticas do fórum -->
-            <div class="card mb-4">
+            <div class="card mb-2">
                 <div class="card-header">
-                    <h2 class="h6 mb-0">
+                    <h2 class="h6 mb-2">
                         <i class="fas fa-chart-bar" aria-hidden="true"></i> Estatísticas
                     </h2>
                 </div>
@@ -221,9 +219,9 @@ include 'header.php';
             </div>
 
             <!-- Categorias -->
-            <div class="card mb-4">
+            <div class="card mb-2">
                 <div class="card-header">
-                    <h2 class="h6 mb-0">
+                    <h2 class="h6 mb-2">
                         <i class="fas fa-tags" aria-hidden="true"></i> Categorias
                     </h2>
                 </div>
@@ -237,7 +235,8 @@ include 'header.php';
                                 <?php 
                                 $count = 0;
                                 foreach ($forum_posts as $post) {
-                                    if (strtolower($post['category']) === strtolower($category['name'])) {
+                                    $postCat = $post['category'] ?? '';
+                                    if (strtolower($postCat) === strtolower($category['name'])) {
                                         $count++;
                                     }
                                 }
@@ -252,7 +251,7 @@ include 'header.php';
             <!-- Posts populares -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="h6 mb-0">
+                    <h2 class="h6 mb-2">
                         <i class="fas fa-fire" aria-hidden="true"></i> Posts Populares
                     </h2>
                 </div>
@@ -261,8 +260,8 @@ include 'header.php';
                     $popular_posts = array_slice($forum_posts, 0, 3);
                     foreach ($popular_posts as $post): 
                     ?>
-                        <div class="mb-3">
-                            <h3 class="h6 mb-1">
+                        <div class="mb-2">
+                            <h3 class="h6 mb-2">
                                 <a href="show.php?type=forum&id=<?php echo $post['id']; ?>" 
                                    class="text-decoration-none">
                                     <?php echo sanitize($post['title']); ?>
@@ -289,32 +288,32 @@ include 'header.php';
                     </h2>
                     <div class="row">
                         <div class="col-md-6">
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-2">
+                            <ul class="list-unstyled ">
+                                <li class="" style="color: #000;">
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                     Seja respeitoso com outros membros
                                 </li>
-                                <li class="mb-2">
+                                <li class="" color: #000;>
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                     Use títulos descritivos para seus posts
                                 </li>
-                                <li class="mb-0">
+                                <li class="" color: #000;>
                                     <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
                                     Pesquise antes de postar uma dúvida
                                 </li>
                             </ul>
                         </div>
                         <div class="col-md-6">
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-2">
+                            <ul class="list-unstyled ">
+                                <li class="" color: #000;>
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
                                     Não faça spam ou posts repetitivos
                                 </li>
-                                <li class="mb-2">
+                                <li class="" color: #000;>
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
                                     Evite linguagem ofensiva
                                 </li>
-                                <li class="mb-0">
+                                <li class="" color: #000;>
                                     <i class="fas fa-times text-danger me-2" aria-hidden="true"></i>
                                     Não compartilhe informações pessoais
                                 </li>

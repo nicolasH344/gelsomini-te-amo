@@ -11,6 +11,7 @@
     --primary-light: #8e5dd9;
     --secondary-color: #e83e8c;
     --accent-color: #fd7e14;
+    --btn-color: #;
     
     /* Gradientes: Combinações de cores para fundos e efeitos visuais. */
     --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 50%, var(--secondary-color) 100%);
@@ -18,28 +19,30 @@
     --gradient-hero: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 25%, var(--secondary-color) 50%, var(--accent-color) 75%, var(--primary-color) 100%);
     
     /* -- Cores de fundo: Define as cores para o corpo da página, cards, etc. */
-    --bg-primary: #ffffff;
+    --bg-primary2: #ffffff;
     --bg-secondary: #ffffff;
     --bg-dark: #212529;
     --bg-light: #ffffff;
     
     /* -- Cores de Texto Semânticas (Padrão: Roxo Moderno - Claro) -- */
-    --text-primary: #212529;      /* Cor principal para a maioria dos textos (preto quase total). */
-    --text-secondary: #495057;    /* Cor secundária para textos menos importantes (cinza escuro). */
-    --text-muted: #6c757d;        /* Cor para textos suaves, como metadados (cinza médio). */
+       /* -- Cores de Texto (Tema Azul - Claro) -- */
+    --text-card: #080808;
+    --bg-primary2: #ffffff;
+    --botao: #fff;
+    --text-primary: #000000;
+    --text-secondary: #343a40;
     --text-light: #f8f9fa;
-    
-    /* Cores para elementos específicos (baseadas nas cores acima). */
-    --text-heading: #343a40;      /* Cor para títulos (h1, h2, etc.). */
-    --text-body: var(--text-primary); /* Cor para parágrafos e texto principal. */
-    --text-link: var(--primary-color); /* Cor para links. */
-    
+    --text-muted: #000000; /* Ajustado para ser visível em fundo claro */
+    --text-heading: #ffffff;
+    --text-body: var(--text-primary2);
+    --text-link: var(--primary-color);
+
     /* -- Cores do Rodapé -- */
     --footer-bg: #f8f9fa;
-    --footer-text-body: #ffffff;      /* Cor para texto geral no rodapé. */
-    --footer-text-muted: #6c757d; /* Cor para texto suave no rodapé. */
-    --footer-link-color: var(--primary-color); /* Cor para links no rodapé. */
-    --footer-link-hover-color: var(--primary-dark); /* Cor para links no rodapé (hover). */
+    --footer-text-body: #ffffff;
+    --footer-text-muted: #000000; /* Ajustado para ser visível em fundo claro */
+    --footer-link-color: var(--primary-color);
+    --footer-link-hover-color: var(--primary-dark);
     
     /* -- Cores de estado: Usadas para alertas e feedback (sucesso, erro, aviso). */
     --success-color: #28a745;
@@ -48,9 +51,9 @@
     --info-color: #17a2b8;
     
     /* -- Sombras: Efeitos de sombra para dar profundidade aos elementos. */
-    --shadow-sm: 0 0.125rem 0.25rem rgba(111, 66, 193, 0.075);
-    --shadow: 0 0.5rem 1rem rgba(111, 66, 193, 0.15);
-    --shadow-lg: 0 1rem 3rem rgba(111, 66, 193, 0.175);
+    --shadow-sm: 0 0.125rem 0.25rem rgba(109, 30, 255, 0.953);
+    --shadow: 0 0.5rem 1rem rgba(76, 22, 175, 0.872);
+    --shadow-lg: 0 1rem 3rem rgba(82, 11, 213, 0.175);
     
     
     /* Bordas: Define o raio e a cor das bordas. */
@@ -76,18 +79,21 @@
     --gradient-hero: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 25%, var(--accent-color) 50%, var(--secondary-color) 75%, var(--primary-color) 100%);
     
     /* -- Cores de Texto (Tema Azul - Claro) -- */
-    --text-primary: #212529;
+    --text-card: #080808;
+    --bg-primary2: #ffffff;
+    --botao: #fff;
+    --text-primary: #000000;
     --text-secondary: #343a40;
     --text-light: #f8f9fa;
-    --text-muted: #6c757d; /* Ajustado para ser visível em fundo claro */
-    --text-heading: #212529;
-    --text-body: var(--text-primary);
+    --text-muted: #000000; /* Ajustado para ser visível em fundo claro */
+    --text-heading: #ffffff;
+    --text-body: var(--text-primary2);
     --text-link: var(--primary-color);
 
     /* -- Cores do Rodapé -- */
     --footer-bg: #f8f9fa;
-    --footer-text-body: #212529;
-    --footer-text-muted: #6c757d; /* Ajustado para ser visível em fundo claro */
+    --footer-text-body: #ffffff;
+    --footer-text-muted: #000000; /* Ajustado para ser visível em fundo claro */
     --footer-link-color: var(--primary-color);
     --footer-link-hover-color: var(--primary-dark);
 }
@@ -104,19 +110,23 @@
     --gradient-secondary: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
     --gradient-hero: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 25%, var(--secondary-color) 50%, var(--accent-color) 75%, var(--primary-color) 100%);
 
-    /* -- Cores de Texto (Tema Verde - Claro) -- */
-    --text-primary: #212529; /* Ajustado para ser visível em fundo claro */
+
+   /* -- Cores de Texto (Tema Verde - Claro) -- */
+    --text-card: #080808;
+    --bg-primary2: #ffffff;
+    --botao: #fff;
+    --text-primary: #000000; /* Ajustado para ser visível em fundo claro */
     --text-secondary: #343a40; /* Ajustado para ser visível em fundo claro */
     --text-light: #f8f9fa;
-    --text-muted: #6c757d; /* Ajustado para ser visível em fundo claro */ 
-    --text-heading: #212529;
-    --text-body: var(--text-primary);
+    --text-muted: #000000; /* Ajustado para ser visível em fundo claro */ 
+    --text-heading: #ffffff;
+    --text-body: var(--text-primary2);
     --text-link: var(--primary-color);
 
     /* -- Cores do Rodapé -- */
     --footer-bg: #f8f9fa;
-    --footer-text-body: #212529;
-    --footer-text-muted: #6c757d; /* Ajustado para ser visível em fundo claro */
+    --footer-text-body: #ffffff;
+    --footer-text-muted: #000000; /* Ajustado para ser visível em fundo claro */
     --footer-link-color: var(--primary-color);
     --footer-link-hover-color: var(--primary-dark);
 }
@@ -129,24 +139,28 @@
     --secondary-color: #03dac6;
     --accent-color: #cf6679;
     
-    --bg-primary: #121212;
+    --bg-primary2: #121212;
     --bg-secondary: #1e1e1e;
-    --bg-dark: #000000;
+    --bg-dark: #ffffff;
     --bg-light: #2d2d2d;
     
     /* -- Cores de Texto (Tema Escuro) -- */
-    --text-primary: #ffffff;
+
+    --text-card: #000000;
+    --text-card2: #e9ecef;
+    --botao: #000;
+    --text-primary: #000000;
     --text-secondary: #e9ecef;
     --text-light: #ffffff;
-    --text-muted: #adb5bd; /* Ajustado para um cinza mais suave em fundo escuro */
-    --text-heading: #f8f9fa; /* Cor para títulos (h1, h2, etc.). */
-    --text-body: var(--text-primary);
+    --text-muted: #ffffff; /* Ajustado para um cinza mais suave em fundo escuro */
+    --text-heading: #ffffff; /* Cor para títulos (h1, h2, etc.). */
+    --text-body: var(--text-secondary); /* Cor para parágrafos e texto principal. */
     --text-link: var(--primary-color);
     
     /* -- Cores do Rodapé -- */
     --footer-bg: #1e1e1e;
     --footer-text-body: #ffffff;
-    --footer-text-muted: #adb5bd; /* Ajustado para um cinza mais suave em fundo escuro */
+    --footer-text-muted: #ffffff; /* Ajustado para um cinza mais suave em fundo escuro */
     --footer-link-color: var(--primary-color);
     --footer-link-hover-color: var(--primary-light);
     
@@ -184,7 +198,7 @@
     --text-secondary: #1a1a1a;
     --text-muted: #333333;
     --text-heading: #000000;
-    --text-body: var(--text-primary);
+    --text-body: #ffffff;
     --text-link: var(--primary-color);
 
     /* -- Cores do Rodapé -- */
@@ -243,7 +257,7 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: var(--bg-primary);
+    background-color: var(--bg-primary2);
     color: var(--text-primary);
     transition: var(--transition);
     scroll-behavior: smooth;
@@ -261,6 +275,15 @@ body {
     position: relative;
     overflow: hidden;
 }
+
+.hero-section2 {
+    background: var(--gradient-hero);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    position: relative;
+    overflow: hidden;
+}
+
 
 /* Animação que move a posição do gradiente, criando um efeito de fluxo. */
 @keyframes gradientShift {
@@ -321,7 +344,7 @@ body {
 /* Estilo dos links na barra de navegação. */
 .navbar-nav .nav-link {
     font-weight: 500;
-    color: var(--text-primary) !important;
+    color: var(--primary-color) !important;
     transition: var(--transition);
     position: relative;
     margin: 0 0.5rem;
@@ -361,10 +384,11 @@ body {
 }
  
 /* Estilo dos links no rodapé. */
-.footer a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
+.footer
+    a {
+        color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
+        text-decoration: underline;
+    }
 
 /* =================================================================== */
 /* 5. COMPONENTES REUTILIZÁVEIS (BOTÕES, CARDS, FORMS)
@@ -459,8 +483,8 @@ body {
 
 .btn-light {
     background: var(--bg-light);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
+    color: var(--text-heading);
+    border: 1px solid ;
 }
 
 .btn-sm {
@@ -520,7 +544,13 @@ body {
 
 .card-title {
     margin-bottom: var(--bs-card-title-spacer-y);
-    color: var(--text-body);
+    color: var(--text-card);
+}
+
+
+.card-title2 {
+    margin-bottom: var(--bs-card-title-spacer-y);
+    color: var(--text-heading) !important;
 }
 
 /* =================================================================== */
@@ -546,7 +576,7 @@ body {
 .form-label {
     font-weight: 600;
     margin-bottom: 0.5rem;
-    
+    color: var(--text-body);
 }
 
 /* Estilo para checkboxes quando marcados. */
@@ -558,7 +588,7 @@ body {
 .form-text {
     margin-top: .25rem;
     font-size: .875em;
-    color: var(--text-muted);
+    color: var(--text-body);
 }
 
 /* Estilo para badges (pequenas etiquetas coloridas). */
@@ -593,7 +623,8 @@ body {
 }
 
 .alert-info {
-    background: linear-gradient(135deg, var(--info-color), var(--primary-light));
+    background: linear-gradient(
+        142deg, #5a00ff, #a30497);
     color: white;
 }
 
@@ -605,7 +636,7 @@ body {
 .text-body { color: var(--text-body) !important; }
 .text-link { color: var(--text-link) !important; text-decoration: none; }
 .text-link:hover { color: var(--primary-dark) !important; text-decoration: underline; }
-.text-muted { color: var(--text-muted) !important; }
+.text-muted { color: var(--footer-text-muted)!important; }
 /* Garante que o texto 'muted' no rodapé use a cor correta do rodapé. */
 .footer .text-muted {
     color: var(--footer-text-muted) !important;
@@ -614,29 +645,50 @@ body {
 
 .mb-0 {
     margin-bottom: 0 !important;
+    color: var(--text-muted);
 }
 
 .mb-2 {
     margin-bottom: .5rem !important;
-    color: var(--text-body) !important;
 }
 
-.mb-3{ /*titulo do rodapé*/
+.mb-3 {
     margin-bottom: 1rem !important;
-    color: var(--text-heading);
+    color: var(--text-heading)
 }
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+    color: #000;
+}
+
+.mb-5 {
+    margin-bottom: 1rem !important;
+    color: var(--text-primary);
+}
+
+/* Removido - usando classes específicas agora */
 
 /* Estilos padrão para parágrafos e labels. */
 p, .text-body {
     margin-top: 0px;
     margin-bottom: 1rem;
-    color: var(--text-body);
+    color: var(--text-body) !important;
 }
+
+.p2, .text-body {
+    margin-top: 0px;
+    margin-bottom: 1rem;
+    color: var(--text-primary) !important;
+}
+
 
 label {
     display: inline-block;
-    color: var(--text-secondary);
+    color: #010101;;
 }
+
+/* Removido - usando classes específicas agora */
 
 /* -- Classes utilitárias para alinhamento e cores de texto. -- */
 .text-center { text-align: center !important; }
@@ -757,7 +809,7 @@ label {
     background: var(--gradient-primary);
     border: none;
     border-radius: var(--border-radius-lg);
-    color: var(--text-light);
+    color: var(--botao);
     font-size: 1.5rem;
     cursor: pointer;
     transition: var(--transition);
@@ -1135,10 +1187,8 @@ label {
 }
 
 /* =================================================================== */
-/* 10. CLASSES SEMÂNTICAS PARA BADGES
+/* 10. CLASSES SEMÂNTICAS PARA BADGES - ADAPTÁVEIS POR TEMA
 /* =================================================================== */
-/* Estas classes usam variáveis CSS para que as cores dos badges
-   se adaptem automaticamente ao tema selecionado. */
 
 /* -- Badges de Dificuldade -- */
 .badge-difficulty-beginner {
@@ -1158,16 +1208,96 @@ label {
     color: var(--text-light);
 }
 
-/* -- Badges de Categoria -- */
-.badge-category-html { background-color: var(--danger-color); color: var(--text-light); }
-.badge-category-css { background-color: var(--primary-color); color: var(--text-light); }
-.badge-category-javascript { background-color: var(--warning-color); color: var(--text-primary); }
-.badge-category-php { background-color: var(--info-color); color: var(--text-light); }
-.badge-category-python { background-color: var(--success-color); color: var(--text-light); }
-.badge-category-java { background-color: var(--accent-color); color: var(--text-light); }
-.badge-category-cpp { background-color: var(--primary-dark); color: var(--text-light); }
-.badge-category-go { background-color: #00ADD8; color: var(--text-light); }
-.badge-category-scala { background-color: #DC322F; color: var(--text-light); }
-.badge-category-solidity { background-color: #363636; color: var(--text-light); }
-.badge-category-devops { background-color: #f3f3f3; color: var(--text-primary); border: 1px solid var(--border-color); }
-.badge-category-default { background-color: var(--secondary-color); color: var(--text-light); }
+/* -- Badges de Categoria - Tema Padrão/Roxo -- */
+:root .badge-category-html,
+.theme-purple .badge-category-html { background-color: #e34c26; color: var(--text-light); }
+:root .badge-category-css,
+.theme-purple .badge-category-css { background-color: #1572b6; color: var(--text-light); }
+:root .badge-category-javascript,
+.theme-purple .badge-category-javascript { background-color: #f7df1e; color: #000; }
+:root .badge-category-php,
+.theme-purple .badge-category-php { background-color: #777bb4; color: var(--text-light); }
+:root .badge-category-python,
+.theme-purple .badge-category-python { background-color: #3776ab; color: var(--text-light); }
+:root .badge-category-java,
+.theme-purple .badge-category-java { background-color: #ed8b00; color: var(--text-light); }
+:root .badge-category-cpp,
+.theme-purple .badge-category-cpp { background-color: #00599c; color: var(--text-light); }
+:root .badge-category-go,
+.theme-purple .badge-category-go { background-color: #00add8; color: var(--text-light); }
+:root .badge-category-scala,
+.theme-purple .badge-category-scala { background-color: #dc322f; color: var(--text-light); }
+:root .badge-category-solidity,
+.theme-purple .badge-category-solidity { background-color: #363636; color: var(--text-light); }
+:root .badge-category-devops,
+.theme-purple .badge-category-devops { background-color: var(--primary-color); color: var(--text-light); }
+:root .badge-category-default,
+.theme-purple .badge-category-default { background-color: var(--secondary-color); color: var(--text-light); }
+
+/* -- Badges de Categoria - Tema Azul -- */
+.theme-blue .badge-category-html { background-color: #0d6efd; color: var(--text-light); }
+.theme-blue .badge-category-css { background-color: #0dcaf0; color: var(--text-primary); }
+.theme-blue .badge-category-javascript { background-color: #ffc107; color: var(--text-primary); }
+.theme-blue .badge-category-php { background-color: #6610f2; color: var(--text-light); }
+.theme-blue .badge-category-python { background-color: #198754; color: var(--text-light); }
+.theme-blue .badge-category-java { background-color: #fd7e14; color: var(--text-light); }
+.theme-blue .badge-category-cpp { background-color: #495057; color: var(--text-light); }
+.theme-blue .badge-category-go { background-color: #20c997; color: var(--text-light); }
+.theme-blue .badge-category-scala { background-color: #dc3545; color: var(--text-light); }
+.theme-blue .badge-category-solidity { background-color: #212529; color: var(--text-light); }
+.theme-blue .badge-category-devops { background-color: var(--accent-color); color: var(--text-light); }
+.theme-blue .badge-category-default { background-color: #6c757d; color: var(--text-light); }
+
+/* -- Badges de Categoria - Tema Verde -- */
+.theme-green .badge-category-html { background-color: #dc3545; color: var(--text-light); }
+.theme-green .badge-category-css { background-color: #0dcaf0; color: var(--text-primary); }
+.theme-green .badge-category-javascript { background-color: #ffc107; color: var(--text-primary); }
+.theme-green .badge-category-php { background-color: #6f42c1; color: var(--text-light); }
+.theme-green .badge-category-python { background-color: var(--primary-color); color: var(--text-light); }
+.theme-green .badge-category-java { background-color: #fd7e14; color: var(--text-light); }
+.theme-green .badge-category-cpp { background-color: #495057; color: var(--text-light); }
+.theme-green .badge-category-go { background-color: #20c997; color: var(--text-light); }
+.theme-green .badge-category-scala { background-color: #e83e8c; color: var(--text-light); }
+.theme-green .badge-category-solidity { background-color: #212529; color: var(--text-light); }
+.theme-green .badge-category-devops { background-color: var(--accent-color); color: var(--text-light); }
+.theme-green .badge-category-default { background-color: var(--secondary-color); color: var(--text-light); }
+
+/* -- Badges de Categoria - Tema Escuro -- */
+.theme-dark .badge-category-html { background-color: #ff6b6b; color: var(--text-primary); }
+.theme-dark .badge-category-css { background-color: #4ecdc4; color: var(--text-primary); }
+.theme-dark .badge-category-javascript { background-color: #ffe66d; color: var(--text-primary); }
+.theme-dark .badge-category-php { background-color: var(--primary-color); color: var(--text-primary); }
+.theme-dark .badge-category-python { background-color: #a8e6cf; color: var(--text-primary); }
+.theme-dark .badge-category-java { background-color: #ffb347; color: var(--text-primary); }
+.theme-dark .badge-category-cpp { background-color: #b19cd9; color: var(--text-primary); }
+.theme-dark .badge-category-go { background-color: var(--secondary-color); color: var(--text-primary); }
+.theme-dark .badge-category-scala { background-color: var(--accent-color); color: var(--text-primary); }
+.theme-dark .badge-category-solidity { background-color: #f8f9fa; color: var(--text-primary); }
+.theme-dark .badge-category-devops { background-color: #dee2e6; color: var(--text-primary); }
+.theme-dark .badge-category-default { background-color: var(--bg-light); color: var(--text-primary); }
+
+/* -- Badges de Categoria - Modo Acessibilidade -- */
+.accessibility-mode .badge-category-html { background-color: #000080; color: #ffffff; border: 2px solid #ffffff; }
+.accessibility-mode .badge-category-css { background-color: #008000; color: #ffffff; border: 2px solid #ffffff; }
+.accessibility-mode .badge-category-javascript { background-color: #800080; color: #ffffff; border: 2px solid #ffffff; }
+.accessibility-mode .badge-category-php { background-color: #ff0000; color: #ffffff; border: 2px solid #ffffff; }
+.accessibility-mode .badge-category-python { background-color: #0000ff; color: #ffffff; border: 2px solid #ffffff; }
+.accessibility-mode .badge-category-java { background-color: #ff8000; color: #000000; border: 2px solid #000000; }
+.accessibility-mode .badge-category-cpp { background-color: #800000; color: #ffffff; border: 2px solid #ffffff; }
+.accessibility-mode .badge-category-go { background-color: #008080; color: #ffffff; border: 2px solid #ffffff; }
+.accessibility-mode .badge-category-scala { background-color: #ff0080; color: #ffffff; border: 2px solid #ffffff; }
+.accessibility-mode .badge-category-solidity { background-color: #000000; color: #ffffff; border: 2px solid #ffffff; }
+.accessibility-mode .badge-category-devops { background-color: #808080; color: #ffffff; border: 2px solid #ffffff; }
+.accessibility-mode .badge-category-default { background-color: #404040; color: #ffffff; border: 2px solid #ffffff; }
+
+
+
+.row2{
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: calc(-1 * var(--bs-gutter-y));
+    margin-right: calc(-.5 * var(--bs-gutter-x));
+    margin-left: calc(-.5 * var(--bs-gutter-x));
+}

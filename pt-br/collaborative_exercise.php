@@ -122,7 +122,7 @@ include 'header.php';
     background-color: #28a745;
 }
 
-.code-editor {
+#htmlEditor, #cssEditor, #jsEditor {
     font-family: 'Courier New', monospace;
     font-size: 14px;
 }

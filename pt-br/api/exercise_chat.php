@@ -1,62 +1,68 @@
 <?php
-header('Content-Type: application/json');
 require_once '../config.php';
 
+header('Content-Type: application/json');
+
 if (!isLoggedIn()) {
+    http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Não autorizado']);
     exit;
 }
 
-$conn = getDBConnection();
-if (!$conn) {
-    echo json_encode(['success' => false, 'message' => 'Erro de conexão']);
-    exit;
-}
-
-// Criar tabela se não existir
-$conn->exec("CREATE TABLE IF NOT EXISTS exercise_chat (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    exercise_id INT NOT NULL,
-    user_id INT NOT NULL,
-    content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-)");
+$user = getCurrentUser();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
     $exerciseId = (int)($input['exercise_id'] ?? 0);
-    $message = sanitize($input['message'] ?? '');
-    $userId = getCurrentUser()['id'];
+    $message = trim($input['message'] ?? '');
     
-    if ($exerciseId && $message) {
-        $stmt = $conn->prepare("INSERT INTO exercise_chat (exercise_id, user_id, content) VALUES (?, ?, ?)");
-        if ($stmt->execute([$exerciseId, $userId, $message])) {
-            echo json_encode(['success' => true]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao enviar mensagem']);
-        }
-    } else {
+    if (!$exerciseId || !$message) {
         echo json_encode(['success' => false, 'message' => 'Dados inválidos']);
+        exit;
     }
-} else {
+    
+    try {
+        $stmt = $pdo->prepare("
+            INSERT INTO exercise_chat (exercise_id, user_id, message, created_at)
+            VALUES (?, ?, ?, NOW())
+        ");
+        
+        $stmt->execute([$exerciseId, $user['id'], $message]);
+        
+        echo json_encode(['success' => true, 'message' => 'Mensagem enviada']);
+    } catch (PDOException $e) {
+        error_log("Erro ao enviar mensagem do chat: " . $e->getMessage());
+        echo json_encode(['success' => false, 'message' => 'Erro interno do servidor']);
+    }
+    
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $exerciseId = (int)($_GET['exercise_id'] ?? 0);
     
-    if ($exerciseId) {
-        $stmt = $conn->prepare("
-            SELECT ec.*, u.username, u.first_name 
-            FROM exercise_chat ec 
-            JOIN users u ON ec.user_id = u.id 
-            WHERE ec.exercise_id = ? 
-            ORDER BY ec.created_at ASC 
+    if (!$exerciseId) {
+        echo json_encode([]);
+        exit;
+    }
+    
+    try {
+        $stmt = $pdo->prepare("
+            SELECT ec.message as content, ec.created_at, u.first_name as username
+            FROM exercise_chat ec
+            JOIN users u ON ec.user_id = u.id
+            WHERE ec.exercise_id = ?
+            ORDER BY ec.created_at ASC
             LIMIT 50
         ");
+        
         $stmt->execute([$exerciseId]);
-        $messages = $stmt->fetchAll();
+        $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         echo json_encode($messages);
-    } else {
+    } catch (PDOException $e) {
+        error_log("Erro ao carregar chat do exercício: " . $e->getMessage());
         echo json_encode([]);
     }
+} else {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Método não permitido']);
 }
 ?>
