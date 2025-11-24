@@ -9,8 +9,10 @@
 // Inclui arquivo de configuração com funções auxiliares (sanitize, redirect, etc)
 require_once 'config.php';
 
-// Inclui conexão com banco de dados para buscar exercícios
-require_once 'database_connector.php';
+// Inclui funções de tutorial se necessário
+if (file_exists('tutorial_functions.php')) {
+    require_once 'tutorial_functions.php';
+}
 
 // Captura e sanitiza o tipo de conteúdo da URL (tutorial ou exercise)
 $type = sanitize($_GET['type'] ?? '');
@@ -58,13 +60,22 @@ if ($type === 'tutorial') {
     }
     
 } elseif ($type === 'exercise') {
-    // EXERCÍCIOS: Busca do banco de dados MySQL via PDO
-    // Parâmetros: categoria='', dificuldade='', busca='', página=1, limite=100
-    $exercises = $dbConnector->getExercises('', '', '', 1, 100);
+    // EXERCÍCIOS: Busca do banco de dados
+    $conn = getDBConnection();
+    $item = null;
     
-    // Filtra exercício específico pelo ID
-    $item = array_filter($exercises, fn($e) => $e['id'] === $id);
-    $item = $item ? array_values($item)[0] : null;
+    if ($conn) {
+        $stmt = $conn->prepare("SELECT e.*, c.name as category_name FROM exercises e LEFT JOIN categories c ON e.category_id = c.id WHERE e.id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $item = $result->fetch_assoc();
+        
+        if ($item) {
+            $item['category'] = $item['category_name'] ?? 'Geral';
+        }
+    }
+    
     $title = $item ? $item['title'] : 'Exercício não encontrado';
     
     // ENRIQUECIMENTO: Adiciona campos padrão para exercícios
@@ -1439,12 +1450,18 @@ console.log("Tutorial em desenvolvimento");';
                             endforeach;
                         } else {
                             // Exercícios relacionados
-                            $allExercises = $dbConnector->getExercises('', '', '', 1, 50);
-                            $relatedItems = array_filter($allExercises, function($e) use ($item) {
-                                return $e['id'] !== $item['id'] && 
-                                       ($e['category'] === $item['category'] || $e['difficulty'] === $item['difficulty']);
-                            });
-                            $relatedItems = array_slice($relatedItems, 0, 4);
+                            $relatedItems = [];
+                            $conn = getDBConnection();
+                            if ($conn) {
+                                $stmt = $conn->prepare("SELECT e.*, c.name as category_name FROM exercises e LEFT JOIN categories c ON e.category_id = c.id WHERE e.id != ? AND (c.name = ? OR e.difficulty = ?) LIMIT 4");
+                                $stmt->bind_param("iss", $item['id'], $item['category'], $item['difficulty']);
+                                $stmt->execute();
+                                $result = $stmt->get_result();
+                                while ($row = $result->fetch_assoc()) {
+                                    $row['category'] = $row['category_name'] ?? 'Geral';
+                                    $relatedItems[] = $row;
+                                }
+                            }
                             
                             foreach ($relatedItems as $related):
                                 $iconClass = match($related['category']) {
