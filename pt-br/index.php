@@ -30,9 +30,9 @@ include 'header.php';
                                 <i class="fas fa-play me-2" aria-hidden="true"></i>
                                 <?php echo t('continue_learning', 'Continuar Aprendendo'); ?>
                             </a>
-                            <a href="progress.php" class="btn btn-outline-light btn-lg">
-                                <i class="fas fa-chart-line me-2" aria-hidden="true"></i>
-                                <?php echo t('view_progress', 'Ver Progresso'); ?>
+                            <a href="badges.php" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-trophy me-2" aria-hidden="true"></i>
+                                Conquistas
                             </a>
                         <?php else: ?>
                             <a href="register.php" class="btn btn-primary btn-lg">
