@@ -9,8 +9,10 @@
 // Inclui arquivo de configuração com funções auxiliares (sanitize, redirect, etc)
 require_once 'config.php';
 
-// Inclui conexão com banco de dados para buscar exercícios
-require_once 'database_connector.php';
+// Inclui funções de tutorial se necessário
+if (file_exists('tutorial_functions.php')) {
+    require_once 'tutorial_functions.php';
+}
 
 // Captura e sanitiza o tipo de conteúdo da URL (tutorial ou exercise)
 $type = sanitize($_GET['type'] ?? '');
@@ -58,13 +60,22 @@ if ($type === 'tutorial') {
     }
     
 } elseif ($type === 'exercise') {
-    // EXERCÍCIOS: Busca do banco de dados MySQL via PDO
-    // Parâmetros: categoria='', dificuldade='', busca='', página=1, limite=100
-    $exercises = $dbConnector->getExercises('', '', '', 1, 100);
+    // EXERCÍCIOS: Busca do banco de dados
+    $conn = getDBConnection();
+    $item = null;
     
-    // Filtra exercício específico pelo ID
-    $item = array_filter($exercises, fn($e) => $e['id'] === $id);
-    $item = $item ? array_values($item)[0] : null;
+    if ($conn) {
+        $stmt = $conn->prepare("SELECT e.*, c.name as category_name FROM exercises e LEFT JOIN categories c ON e.category_id = c.id WHERE e.id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $item = $result->fetch_assoc();
+        
+        if ($item) {
+            $item['category'] = $item['category_name'] ?? 'Geral';
+        }
+    }
+    
     $title = $item ? $item['title'] : 'Exercício não encontrado';
     
     // ENRIQUECIMENTO: Adiciona campos padrão para exercícios
@@ -117,21 +128,30 @@ $time_remaining = 'Não iniciado'; // Status em texto
 
 // Verifica se usuário está autenticado (função do config.php)
 if (isLoggedIn()) {
-    // Obtém conexão PDO com banco de dados
+    // Obtém conexão com banco de dados
     $conn = getDBConnection();
     
     // Se tem conexão E é tutorial (exercícios tem sistema próprio)
     if ($conn && $type === 'tutorial') {
         try {
-            // QUERY PREPARADA: Previne SQL Injection
-            // ? são placeholders que serão substituídos com segurança
-            $stmt = $conn->prepare("SELECT progress FROM tutorial_progress WHERE user_id = ? AND tutorial_id = ?");
-            
-            // Executa query substituindo os ? pelos valores
-            $stmt->execute([getCurrentUser()['id'], $id]);
-            
-            // Busca resultado (retorna array ou false)
-            $progress_data = $stmt->fetch();
+            // Verifica se a tabela existe antes de consultar
+            if ($conn instanceof PDO) {
+                // Conexão PDO
+                $stmt = $conn->prepare("SELECT progress FROM tutorial_progress WHERE user_id = ? AND tutorial_id = ?");
+                $stmt->execute([getCurrentUser()['id'], $id]);
+                $progress_data = $stmt->fetch();
+            } else {
+                // Conexão MySQLi
+                $stmt = $conn->prepare("SELECT progress FROM tutorial_progress WHERE user_id = ? AND tutorial_id = ?");
+                if ($stmt) {
+                    $stmt->bind_param("ii", getCurrentUser()['id'], $id);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $progress_data = $result->fetch_assoc();
+                } else {
+                    $progress_data = false;
+                }
+            }
             
             if ($progress_data) {
                 // Converte progresso para inteiro
@@ -141,9 +161,10 @@ if (isLoggedIn()) {
                 $time_remaining = $user_progress >= 100 ? 'Concluído' : 'Em andamento';
             }
             
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             // TRATAMENTO DE ERRO: Silencia erro se tabela não existir
             // Não exibe erro para não quebrar a página
+            // Mantém valores padrão: $user_progress = 0, $time_remaining = 'Não iniciado'
         }
     }
 }
@@ -1169,88 +1190,167 @@ console.log("Tutorial em desenvolvimento");';
                         <!-- Nova Aba de Comunidade -->
                         <div class="tab-pane fade" id="community" role="tabpanel">
                             <div class="community-section">
-                                <div class="discussion-forum mb-4">
-                                    <h4 class="section-title">💬 Discussões</h4>
-                                    
-                                    <!-- Container de Discussões (preenchido via AJAX) -->
-                                    <div id="discussionsList">
-                                        <div class="text-center py-4 text-muted">
-                                            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
-                                            <p>Carregando discussões...</p>
+                                <!-- Cabeçalho da Comunidade -->
+                                <div class="community-header mb-4">
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                        <div>
+                                            <h3 class="mb-1"><i class="fas fa-users text-primary me-2"></i>Comunidade</h3>
+                                            <p class="text-muted mb-0 small">Compartilhe conhecimento e tire dúvidas</p>
+                                        </div>
+                                        <div class="community-stats d-flex gap-2">
+                                            <span class="badge bg-primary"><i class="fas fa-comments me-1"></i><span id="totalDiscussions">0</span> discussões</span>
+                                            <span class="badge bg-success"><i class="fas fa-code me-1"></i><span id="totalSolutions">0</span> soluções</span>
                                         </div>
                                     </div>
-                                    
-                                    <!-- Botão para adicionar discussão -->
-                                    <?php if (isLoggedIn()): ?>
-                                    <div class="mt-3">
-                                        <button class="btn btn-outline-primary btn-sm" onclick="toggleAddDiscussion()">
-                                            <i class="fas fa-plus"></i> Nova Discussão
+                                </div>
+
+                                <div class="discussion-forum mb-5">
+                                    <div class="section-header-community mb-3">
+                                        <h4 class="mb-0"><i class="fas fa-comments me-2 text-primary"></i>Discussões</h4>
+                                        <?php if (isLoggedIn()): ?>
+                                        <button class="btn btn-primary btn-sm" onclick="toggleAddDiscussion()">
+                                            <i class="fas fa-plus me-2"></i>Nova Discussão
                                         </button>
+                                        <?php endif; ?>
                                     </div>
                                     
-                                    <!-- Formulário de Nova Discussão -->
-                                    <div id="addDiscussionForm" class="add-discussion-form" style="display: none;">
-                                        <textarea class="form-control mb-2" id="discussionMessage" 
-                                                  placeholder="Digite sua pergunta ou comentário..." rows="3"></textarea>
-                                        <div class="d-flex justify-content-end gap-2">
-                                            <button class="btn btn-sm btn-secondary" onclick="toggleAddDiscussion()">
-                                                Cancelar
-                                            </button>
-                                            <button class="btn btn-sm btn-primary" onclick="submitDiscussion()">
-                                                <i class="fas fa-paper-plane"></i> Publicar
-                                            </button>
+                                    <?php if (isLoggedIn()): ?>
+                                    <div id="addDiscussionForm" style="display: none;" class="add-discussion-form mb-3">
+                                        <div class="form-card">
+                                            <label for="discussionMessage" class="form-label fw-bold">
+                                                <i class="fas fa-edit me-2"></i>Sua mensagem
+                                            </label>
+                                            <textarea id="discussionMessage" class="form-control" rows="4" 
+                                                placeholder="Compartilhe suas dúvidas, experiências ou insights sobre este conteúdo..."></textarea>
+                                            <div class="form-help mt-2">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Seja claro e respeitoso. Mínimo de 10 caracteres.
+                                            </div>
+                                            <div class="d-flex gap-2 mt-3">
+                                                <button class="btn btn-primary" onclick="submitDiscussion()">
+                                                    <i class="fas fa-paper-plane me-2"></i>Publicar
+                                                </button>
+                                                <button class="btn btn-outline-secondary" onclick="toggleAddDiscussion()">
+                                                    <i class="fas fa-times me-2"></i>Cancelar
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                     <?php else: ?>
-                                    <div class="alert alert-info mt-3">
+                                    <div class="alert alert-info">
                                         <i class="fas fa-info-circle me-2"></i>
-                                        <a href="login.php">Faça login</a> para participar das discussões
+                                        <a href="login.php" class="alert-link">Faça login</a> para participar das discussões
                                     </div>
                                     <?php endif; ?>
+                                    
+                                    <!-- Container de Discussões (preenchido via AJAX) -->
+                                    <div id="discussionsList">
+                                        <div class="loading-state">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Carregando...</span>
+                                            </div>
+                                            <p class="mt-3 text-muted">Carregando discussões...</p>
+                                        </div>
+                                    </div>
                                 </div>
                                 
                                 <div class="user-solutions">
-                                    <h4 class="section-title">💡 Soluções da Comunidade</h4>
+                                    <div class="section-header-community mb-3">
+                                        <h4 class="mb-0"><i class="fas fa-code me-2 text-success"></i>Soluções da Comunidade</h4>
+                                        <?php if (isLoggedIn()): ?>
+                                        <button class="btn btn-success btn-sm" onclick="toggleAddSolution()">
+                                            <i class="fas fa-plus me-2"></i>Compartilhar Solução
+                                        </button>
+                                        <?php endif; ?>
+                                    </div>
+                                    
+                                    <?php if (isLoggedIn()): ?>
+                                    <div id="addSolutionForm" style="display: none;" class="add-solution-form mb-3">
+                                        <div class="form-card">
+                                            <div class="mb-3">
+                                                <label for="solutionTitle" class="form-label fw-bold">
+                                                    <i class="fas fa-heading me-2"></i>Título da Solução
+                                                </label>
+                                                <input type="text" id="solutionTitle" class="form-control" 
+                                                    placeholder="Ex: Solução usando Grid Layout">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="solutionLanguage" class="form-label fw-bold">
+                                                    <i class="fas fa-code me-2"></i>Linguagem
+                                                </label>
+                                                <select id="solutionLanguage" class="form-select">
+                                                    <option value="html">HTML</option>
+                                                    <option value="css">CSS</option>
+                                                    <option value="javascript">JavaScript</option>
+                                                    <option value="php">PHP</option>
+                                                    <option value="python">Python</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="solutionCode" class="form-label fw-bold">
+                                                    <i class="fas fa-file-code me-2"></i>Código
+                                                </label>
+                                                <textarea id="solutionCode" class="form-control code-textarea" rows="8" 
+                                                    placeholder="Cole seu código aqui..."></textarea>
+                                                <div class="form-help mt-2">
+                                                    <i class="fas fa-lightbulb me-1"></i>
+                                                    Adicione comentários para facilitar o entendimento.
+                                                </div>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-success" onclick="submitSolution()">
+                                                    <i class="fas fa-share-alt me-2"></i>Compartilhar
+                                                </button>
+                                                <button class="btn btn-outline-secondary" onclick="toggleAddSolution()">
+                                                    <i class="fas fa-times me-2"></i>Cancelar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php else: ?>
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <a href="login.php" class="alert-link">Faça login</a> para compartilhar soluções
+                                    </div>
+                                    <?php endif; ?>
                                     
                                     <!-- Container de Soluções (preenchido via AJAX) -->
                                     <div id="solutionsList" class="solutions-grid">
-                                        <div class="text-center py-4 text-muted">
-                                            <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
-                                            <p>Carregando soluções...</p>
+                                        <div class="loading-state">
+                                            <div class="spinner-border text-success" role="status">
+                                                <span class="visually-hidden">Carregando...</span>
+                                            </div>
+                                            <p class="mt-3 text-muted">Carregando soluções...</p>
                                         </div>
                                     </div>
-                                    
-                                    <!-- Botão para compartilhar solução -->
-                                    <?php if (isLoggedIn()): ?>
-                                    <div class="mt-3">
-                                        <button class="btn btn-outline-success btn-sm" onclick="toggleAddSolution()">
-                                            <i class="fas fa-code"></i> Compartilhar Solução
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- Formulário de Nova Solução -->
-                                    <div id="addSolutionForm" class="add-solution-form" style="display: none;">
-                                        <input type="text" class="form-control mb-2" id="solutionTitle" 
-                                               placeholder="Título da solução">
-                                        <select class="form-select mb-2" id="solutionLanguage">
-                                            <option value="html">HTML</option>
-                                            <option value="css">CSS</option>
-                                            <option value="javascript">JavaScript</option>
-                                            <option value="php">PHP</option>
-                                            <option value="python">Python</option>
-                                        </select>
-                                        <textarea class="form-control mb-2" id="solutionCode" 
-                                                  placeholder="Cole seu código aqui..." rows="8"></textarea>
-                                        <div class="d-flex justify-content-end gap-2">
-                                            <button class="btn btn-sm btn-secondary" onclick="toggleAddSolution()">
-                                                Cancelar
-                                            </button>
-                                            <button class="btn btn-sm btn-success" onclick="submitSolution()">
-                                                <i class="fas fa-share"></i> Compartilhar
-                                            </button>
+                                </div>
+
+                                <!-- Dicas de Uso -->
+                                <div class="community-tips mt-5">
+                                    <h5 class="mb-3"><i class="fas fa-lightbulb text-warning me-2"></i>Dicas para melhor participação</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <div class="tip-card">
+                                                <i class="fas fa-question-circle fa-2x text-primary mb-2"></i>
+                                                <h6>Seja específico</h6>
+                                                <p class="small mb-0">Descreva claramente sua dúvida ou contribuição</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="tip-card">
+                                                <i class="fas fa-heart fa-2x text-danger mb-2"></i>
+                                                <h6>Seja respeitoso</h6>
+                                                <p class="small mb-0">Trate todos com cordialidade e profissionalismo</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="tip-card">
+                                                <i class="fas fa-share-nodes fa-2x text-success mb-2"></i>
+                                                <h6>Compartilhe conhecimento</h6>
+                                                <p class="small mb-0">Ajude outros e aprenda com a comunidade</p>
+                                            </div>
                                         </div>
                                     </div>
-                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -1298,73 +1398,164 @@ console.log("Tutorial em desenvolvimento");';
 
             <!-- Card de Informações -->
             <div class="info-card mb-4">
-                <div class="card-header">
-                    <h6 class="mb-0">
+                <div class="card-header bg-gradient-primary">
+                    <h6 class="mb-0 text-white">
                         <i class="fas fa-info-circle me-2"></i>
                         Informações Detalhadas
                     </h6>
                 </div>
-                <div class="card-body">
-                    <div class="info-item">
-                        <span class="info-label">Categoria:</span>
-                        <span class="info-value"><?php echo sanitize($item['category']); ?></span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Dificuldade:</span>
-                        <span class="info-value"><?php echo sanitize($item['difficulty']); ?></span>
+                <div class="card-body p-0">
+                    <!-- Categoria -->
+                    <div class="info-item-modern">
+                        <div class="info-icon">
+                            <?php
+                            $categoryIcon = match($item['category']) {
+                                'HTML' => 'fab fa-html5',
+                                'CSS' => 'fab fa-css3-alt',
+                                'JavaScript' => 'fab fa-js-square',
+                                'PHP' => 'fab fa-php',
+                                default => 'fas fa-code'
+                            };
+                            $categoryColor = match($item['category']) {
+                                'HTML' => 'danger',
+                                'CSS' => 'primary',
+                                'JavaScript' => 'warning',
+                                'PHP' => 'info',
+                                default => 'secondary'
+                            };
+                            ?>
+                            <i class="<?php echo $categoryIcon; ?> text-<?php echo $categoryColor; ?>"></i>
+                        </div>
+                        <div class="info-content">
+                            <span class="info-label">Categoria</span>
+                            <span class="info-value fw-bold text-<?php echo $categoryColor; ?>">
+                                <?php echo sanitize($item['category']); ?>
+                            </span>
+                        </div>
                     </div>
                     
-                    <?php if ($type === 'tutorial'): ?>
-                    <div class="info-item">
-                        <span class="info-label">Duração:</span>
-                        <span class="info-value"><?php echo sanitize($item['duration']); ?></span>
+                    <!-- Dificuldade -->
+                    <div class="info-item-modern">
+                        <div class="info-icon">
+                            <?php
+                            $difficultyIcon = 'fas fa-signal';
+                            $difficultyColor = match(strtolower($item['difficulty'])) {
+                                'iniciante', 'beginner', 'fácil' => 'success',
+                                'intermediário', 'intermediate', 'médio' => 'warning',
+                                'avançado', 'advanced', 'difícil' => 'danger',
+                                default => 'info'
+                            };
+                            ?>
+                            <i class="<?php echo $difficultyIcon; ?> text-<?php echo $difficultyColor; ?>"></i>
+                        </div>
+                        <div class="info-content">
+                            <span class="info-label">Dificuldade</span>
+                            <span class="info-value">
+                                <span class="badge bg-<?php echo $difficultyColor; ?>">
+                                    <?php echo ucfirst(sanitize($item['difficulty'])); ?>
+                                </span>
+                            </span>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <span class="info-label">Status:</span>
-                        <span class="info-value status-<?php echo strtolower($item['status']); ?>">
-                            <?php echo sanitize($item['status']); ?>
-                        </span>
+                    
+                    <!-- Duração / Tempo Estimado -->
+                    <div class="info-item-modern">
+                        <div class="info-icon">
+                            <i class="fas fa-clock text-primary"></i>
+                        </div>
+                        <div class="info-content">
+                            <span class="info-label">
+                                <?php echo $type === 'tutorial' ? 'Duração' : 'Tempo Estimado'; ?>
+                            </span>
+                            <span class="info-value fw-bold">
+                                <?php 
+                                echo $type === 'tutorial' 
+                                    ? sanitize($item['duration']) 
+                                    : $item['estimated_time']; 
+                                ?>
+                            </span>
+                        </div>
                     </div>
-                    <?php else: ?>
-                    <div class="info-item">
-                        <span class="info-label">Tempo Estimado:</span>
-                        <span class="info-value"><?php echo $item['estimated_time']; ?></span>
+                    
+                    <?php if ($type === 'tutorial' && isset($item['status'])): ?>
+                    <!-- Status -->
+                    <div class="info-item-modern">
+                        <div class="info-icon">
+                            <i class="fas fa-circle text-<?php echo strtolower($item['status']) === 'publicado' ? 'success' : 'warning'; ?>"></i>
+                        </div>
+                        <div class="info-content">
+                            <span class="info-label">Status</span>
+                            <span class="info-value">
+                                <span class="badge bg-<?php echo strtolower($item['status']) === 'publicado' ? 'success' : 'warning'; ?>">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    <?php echo sanitize($item['status']); ?>
+                                </span>
+                            </span>
+                        </div>
                     </div>
                     <?php endif; ?>
                     
-                    <div class="info-item">
-                        <span class="info-label">Avaliação:</span>
-                        <span class="info-value">
-                            <?php
-                            $rating = isset($item['rating']) ? $item['rating'] : 4.5;
-                            $fullStars = floor($rating);
-                            $hasHalfStar = $rating - $fullStars >= 0.5;
-                            
-                            for ($i = 0; $i < $fullStars; $i++) {
-                                echo '<i class="fas fa-star text-warning"></i>';
-                            }
-                            if ($hasHalfStar) {
-                                echo '<i class="fas fa-star-half-alt text-warning"></i>';
-                            }
-                            $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
-                            for ($i = 0; $i < $emptyStars; $i++) {
-                                echo '<i class="far fa-star text-warning"></i>';
-                            }
-                            ?>
-                            (<?php echo $rating; ?>)
-                        </span>
+                    <!-- Avaliação -->
+                    <div class="info-item-modern">
+                        <div class="info-icon">
+                            <i class="fas fa-star text-warning"></i>
+                        </div>
+                        <div class="info-content">
+                            <span class="info-label">Avaliação</span>
+                            <span class="info-value">
+                                <div class="rating-stars">
+                                    <?php
+                                    $rating = isset($item['rating']) ? $item['rating'] : 4.5;
+                                    $fullStars = floor($rating);
+                                    $hasHalfStar = $rating - $fullStars >= 0.5;
+                                    
+                                    for ($i = 0; $i < $fullStars; $i++) {
+                                        echo '<i class="fas fa-star"></i>';
+                                    }
+                                    if ($hasHalfStar) {
+                                        echo '<i class="fas fa-star-half-alt"></i>';
+                                    }
+                                    $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+                                    for ($i = 0; $i < $emptyStars; $i++) {
+                                        echo '<i class="far fa-star"></i>';
+                                    }
+                                    ?>
+                                    <strong class="ms-2"><?php echo number_format($rating, 1); ?></strong>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                     
                     <?php if (isset($item['author'])): ?>
-                    <div class="info-item">
-                        <span class="info-label">Autor:</span>
-                        <span class="info-value"><?php echo $item['author']; ?></span>
+                    <!-- Autor -->
+                    <div class="info-item-modern">
+                        <div class="info-icon">
+                            <i class="fas fa-user-circle text-secondary"></i>
+                        </div>
+                        <div class="info-content">
+                            <span class="info-label">Autor</span>
+                            <span class="info-value">
+                                <strong><?php echo $item['author']; ?></strong>
+                            </span>
+                        </div>
                     </div>
                     <?php endif; ?>
                     
-                    <div class="info-item">
-                        <span class="info-label">Atualizado:</span>
-                        <span class="info-value"><?php echo isset($item['last_updated']) ? date('d/m/Y', strtotime($item['last_updated'])) : 'Recentemente'; ?></span>
+                    <!-- Data de Atualização -->
+                    <div class="info-item-modern border-0">
+                        <div class="info-icon">
+                            <i class="fas fa-calendar-alt text-muted"></i>
+                        </div>
+                        <div class="info-content">
+                            <span class="info-label">Última Atualização</span>
+                            <span class="info-value text-muted">
+                                <?php 
+                                echo isset($item['last_updated']) 
+                                    ? date('d/m/Y', strtotime($item['last_updated'])) 
+                                    : date('d/m/Y'); 
+                                ?>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1409,67 +1600,77 @@ console.log("Tutorial em desenvolvimento");';
                     <div class="related-list">
                         <?php
                         // Buscar conteúdo relacionado
+                        $relatedItems = [];
+                        
                         if ($type === 'tutorial') {
+                            // Buscar tutoriais relacionados da mesma categoria
                             $allTutorials = getTutorials();
                             $relatedItems = array_filter($allTutorials, function($t) use ($item) {
-                                return $t['id'] !== $item['id'] && 
-                                       ($t['category'] === $item['category'] || $t['level'] === $item['level']);
+                                return $t['id'] !== $item['id'] && $t['category'] === $item['category'];
                             });
-                            $relatedItems = array_slice($relatedItems, 0, 4);
                             
-                            foreach ($relatedItems as $related):
-                                $iconClass = match($related['category']) {
-                                    'HTML' => 'fab fa-html5 text-danger',
-                                    'CSS' => 'fab fa-css3-alt text-primary',
-                                    'JavaScript' => 'fab fa-js-square text-warning',
-                                    'PHP' => 'fab fa-php text-info',
-                                    default => 'fas fa-book text-secondary'
-                                };
-                        ?>
-                            <a href="show.php?type=tutorial&id=<?php echo $related['id']; ?>" class="related-item">
-                                <div class="related-icon">
-                                    <i class="<?php echo $iconClass; ?>"></i>
-                                </div>
-                                <div class="related-content">
-                                    <h6><?php echo htmlspecialchars($related['title']); ?></h6>
-                                    <span class="text-muted">Tutorial • <?php echo $related['duration']; ?></span>
-                                </div>
-                            </a>
-                        <?php
-                            endforeach;
+                            // Se não encontrar da mesma categoria, busca do mesmo nível
+                            if (empty($relatedItems)) {
+                                $relatedItems = array_filter($allTutorials, function($t) use ($item) {
+                                    return $t['id'] !== $item['id'] && $t['level'] === $item['level'];
+                                });
+                            }
+                            
+                            // Limita a 4 itens
+                            $relatedItems = array_slice(array_values($relatedItems), 0, 4);
+                            
                         } else {
-                            // Exercícios relacionados
-                            $allExercises = $dbConnector->getExercises('', '', '', 1, 50);
-                            $relatedItems = array_filter($allExercises, function($e) use ($item) {
-                                return $e['id'] !== $item['id'] && 
-                                       ($e['category'] === $item['category'] || $e['difficulty'] === $item['difficulty']);
-                            });
-                            $relatedItems = array_slice($relatedItems, 0, 4);
+                            // Buscar exercícios relacionados
+                            if (file_exists('data/exercises.php')) {
+                                require_once 'data/exercises.php';
+                                $allExercises = getExercisesData();
+                                
+                                // Filtra exercícios da mesma categoria
+                                $relatedItems = array_filter($allExercises, function($e) use ($item) {
+                                    return $e['id'] !== $item['id'] && $e['category'] === $item['category'];
+                                });
+                                
+                                // Se não encontrar da mesma categoria, busca da mesma dificuldade
+                                if (empty($relatedItems)) {
+                                    $relatedItems = array_filter($allExercises, function($e) use ($item) {
+                                        return $e['id'] !== $item['id'] && $e['difficulty'] === $item['difficulty'];
+                                    });
+                                }
+                                
+                                // Limita a 4 itens
+                                $relatedItems = array_slice(array_values($relatedItems), 0, 4);
+                            }
+                        }
+                        
+                        // Exibir itens relacionados
+                        foreach ($relatedItems as $related):
+                            $iconClass = match($related['category']) {
+                                'HTML' => 'fab fa-html5 text-danger',
+                                'CSS' => 'fab fa-css3-alt text-primary',
+                                'JavaScript' => 'fab fa-js-square text-warning',
+                                'PHP' => 'fab fa-php text-info',
+                                default => 'fas fa-book text-secondary'
+                            };
                             
-                            foreach ($relatedItems as $related):
-                                $iconClass = match($related['category']) {
-                                    'HTML' => 'fab fa-html5 text-danger',
-                                    'CSS' => 'fab fa-css3-alt text-primary',
-                                    'JavaScript' => 'fab fa-js-square text-warning',
-                                    'PHP' => 'fab fa-php text-info',
-                                    default => 'fas fa-dumbbell text-secondary'
-                                };
+                            $relatedType = $type; // Mantém o mesmo tipo
+                            $relatedLabel = $type === 'tutorial' ? 'Tutorial' : 'Exercício';
+                            $relatedInfo = $type === 'tutorial' 
+                                ? ($related['duration'] ?? '30 min')
+                                : ($related['difficulty'] ?? 'Intermediário');
                         ?>
-                            <a href="show.php?type=exercise&id=<?php echo $related['id']; ?>" class="related-item">
+                            <a href="show.php?type=<?php echo $relatedType; ?>&id=<?php echo $related['id']; ?>" class="related-item">
                                 <div class="related-icon">
                                     <i class="<?php echo $iconClass; ?>"></i>
                                 </div>
                                 <div class="related-content">
                                     <h6><?php echo htmlspecialchars($related['title']); ?></h6>
-                                    <span class="text-muted">Exercício • <?php echo $related['difficulty']; ?></span>
+                                    <span class="text-muted"><?php echo $relatedLabel; ?> • <?php echo $relatedInfo; ?></span>
                                 </div>
                             </a>
                         <?php
-                            endforeach;
-                        }
-                        ?>
+                        endforeach;
                         
-                        <?php if (empty($relatedItems)): ?>
+                        if (empty($relatedItems)): ?>
                             <div class="text-muted text-center py-3">
                                 <i class="fas fa-info-circle me-1"></i>
                                 Nenhum conteúdo relacionado disponível no momento.
@@ -2080,23 +2281,286 @@ console.log("Tutorial em desenvolvimento");';
 
 /* Estilos da Comunidade */
 .community-section {
-    padding: 0 1rem;
+    padding: 1.5rem;
+}
+
+.community-header {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.community-stats .badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+}
+
+.section-header-community {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 1.5rem;
+}
+
+.section-header-community h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-heading);
 }
 
 .add-discussion-form,
-.add-solution-form,
-.reply-form {
+.add-solution-form {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.1);
+}
+
+.form-card .form-label {
+    color: var(--text-heading);
+    margin-bottom: 0.5rem;
+}
+
+.form-card .form-control,
+.form-card .form-select {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.form-card .form-control:focus,
+.form-card .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+}
+
+.code-textarea {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    background: #f8f9fa;
+}
+
+.form-help {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.loading-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.loading-state .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+.discussion-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.discussion-item:hover {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+.discussion-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.user-info {
+    flex-grow: 1;
+}
+
+.user-info h6 {
+    margin: 0;
+    color: var(--text-heading);
+    font-weight: 600;
+}
+
+.discussion-date {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.discussion-content {
+    margin-bottom: 1rem;
+}
+
+.discussion-content p {
+    margin: 0;
+    color: var(--text-body);
+    line-height: 1.6;
+}
+
+.discussion-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.discussion-actions .btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+}
+
+.discussion-replies {
+    margin-top: 1rem;
+    padding-left: 2.5rem;
+    border-left: 3px solid var(--primary-color);
+}
+
+.reply-item {
     background: #f8f9fa;
     padding: 1rem;
-    border-radius: 10px;
-    border: 2px dashed var(--primary-color);
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.reply-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.reply-header .user-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+}
+
+.reply-header strong {
+    font-size: 0.9rem;
+    color: var(--text-heading);
+}
+
+.reply-content {
+    color: var(--text-body);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.reply-form {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 2px dashed #dee2e6;
     margin-top: 1rem;
+}
+
+.solutions-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.solution-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.solution-card:hover {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+.solution-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.solution-preview {
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.solution-preview pre {
+    margin: 0;
+    color: #d4d4d4;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.solution-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rating i {
+    color: #ffc107;
 }
 
 .modal-code-container {
     background: #1e1e1e;
     border-radius: 8px;
-    padding: 1rem;
+    padding: 1.5rem;
     max-height: 400px;
     overflow-y: auto;
 }
@@ -2107,76 +2571,66 @@ console.log("Tutorial em desenvolvimento");';
     font-family: 'Courier New', monospace;
     font-size: 0.9rem;
     white-space: pre-wrap;
+    line-height: 1.6;
 }
 
-.discussion-replies {
-    margin-top: 1rem;
-    padding-left: 2rem;
-    border-left: 3px solid #e9ecef;
-}
-
-.reply-item {
-    background: white;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 0.5rem;
-    border: 1px solid #e9ecef;
-}
-
-.reply-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.reply-header .user-avatar {
-    width: 30px;
-    height: 30px;
-}
-
-.reply-header strong {
-    font-size: 0.9rem;
-}
-
-.reply-content {
-    color: var(--text-body);
-    font-size: 0.9rem;
-}
-
-.discussion-item {
+/* Dicas da Comunidade */
+.community-tips {
+    background: linear-gradient(135deg, #fff3cd, #fff8e1);
     padding: 1.5rem;
-    background: #f8f9fa;
-    border-radius: 10px;
-    margin-bottom: 1rem;
+    border-radius: 12px;
+    border-left: 4px solid #ffc107;
 }
 
-.discussion-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-
-.user-info h6 {
-    margin: 0;
+.community-tips h5 {
+    font-weight: 600;
     color: var(--text-heading);
 }
 
-.discussion-date {
-    font-size: 0.8rem;
+.tip-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    text-align: center;
+    height: 100%;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.tip-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.tip-card h6 {
+    font-weight: 600;
+    color: var(--text-heading);
+    margin: 0.75rem 0 0.5rem;
+}
+
+.tip-card p {
     color: #6c757d;
 }
 
-.discussion-content p {
-    margin: 0;
-    color: var(--text-body);
+/* Estado vazio */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state h5 {
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    margin-bottom: 1.5rem;
 }
 
 .discussion-actions {
@@ -2249,6 +2703,88 @@ console.log("Tutorial em desenvolvimento");';
     overflow: hidden;
 }
 
+/* Estilo moderno para card de informações */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+.info-item-modern {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #f1f3f4;
+    transition: all 0.3s ease;
+}
+
+.info-item-modern:last-child {
+    border-bottom: none;
+}
+
+.info-item-modern:hover {
+    background: #f8f9fa;
+    padding-left: 1.75rem;
+}
+
+.info-icon {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 10px;
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.info-item-modern:hover .info-icon {
+    transform: scale(1.1);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.info-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.info-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #495057;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.info-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-heading);
+    display: flex;
+    align-items: center;
+}
+
+.rating-stars {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+}
+
+.rating-stars i {
+    color: #ffc107;
+    font-size: 0.9rem;
+}
+
+.info-value .badge {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.75rem;
+    font-weight: 600;
+}
+
+/* Old styles - mantidos para compatibilidade */
 .info-item {
     display: flex;
     justify-content: space-between;
@@ -2259,17 +2795,6 @@ console.log("Tutorial em desenvolvimento");';
 
 .info-item:last-child {
     border-bottom: none;
-}
-
-.info-label {
-    font-weight: 600;
-    color: #6c757d;
-    flex: 1;
-}
-
-.info-value {
-    font-weight: 500;
-    color: var(--text-heading);
 }
 
 .status-publicado { color: #28a745; }
@@ -2708,25 +3233,34 @@ function toggleAddSolution() {
 function loadDiscussions() {
     console.log('🔄 Carregando discussões...');
     
+    const container = document.getElementById('discussionsList');
+    if (!container) {
+        console.error('❌ Container discussionsList não encontrado');
+        return;
+    }
+    
     fetch(`api/get_discussions.php?content_type=${contentType}&content_id=${contentId}`)
         .then(response => {
             console.log('📥 Resposta recebida:', response.status);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return response.json();
         })
         .then(data => {
             console.log('📊 Dados das discussões:', data);
-            const container = document.getElementById('discussionsList');
             
-            if (!container) {
-                console.error('❌ Container discussionsList não encontrado!');
-                return;
+            // Atualizar contador
+            const totalElement = document.getElementById('totalDiscussions');
+            if (totalElement) {
+                totalElement.textContent = data.discussions ? data.discussions.length : 0;
             }
             
-            if (!data.success || data.discussions.length === 0) {
+            if (!data.success || !data.discussions || data.discussions.length === 0) {
                 container.innerHTML = `
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Nenhuma discussão ainda. Seja o primeiro a participar!
+                    <div class="empty-state">
+                        <i class="fas fa-comments"></i>
+                        <h5>Nenhuma discussão ainda</h5>
+                        <p>Seja o primeiro a iniciar uma conversa sobre este conteúdo!</p>
+                        ${isLoggedIn ? '<button class="btn btn-primary" onclick="toggleAddDiscussion()"><i class="fas fa-plus me-2"></i>Iniciar Discussão</button>' : '<a href="login.php" class="btn btn-primary">Fazer login para participar</a>'}
                     </div>
                 `;
                 return;
@@ -2737,11 +3271,10 @@ function loadDiscussions() {
             container.innerHTML = data.discussions.map(d => `
                 <div class="discussion-item">
                     <div class="discussion-header">
-                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(d.username)}&background=random" 
-                             class="user-avatar" alt="${d.username}">
-                        <div class="flex-grow-1">
-                            <h6>${d.username}</h6>
-                            <small class="discussion-date">${timeAgo(d.created_at)}</small>
+                        <div class="user-avatar">${d.user_name ? d.user_name.charAt(0).toUpperCase() : 'U'}</div>
+                        <div class="user-info">
+                            <h6>${escapeHtml(d.user_name || 'Usuário')}</h6>
+                            <span class="discussion-date">${timeAgo(d.created_at)}</span>
                         </div>
                     </div>
                     <div class="discussion-content">
@@ -2749,34 +3282,35 @@ function loadDiscussions() {
                     </div>
                     <div class="discussion-actions">
                         <button class="btn btn-sm btn-outline-primary" onclick="likeDiscussion(${d.id}, this)">
-                            <i class="fas fa-thumbs-up"></i> <span>${d.likes}</span>
+                            <i class="fas fa-thumbs-up me-1"></i><span>${d.likes || 0}</span>
                         </button>
                         <button class="btn btn-sm btn-outline-secondary" onclick="toggleReplyForm(${d.id})">
-                            <i class="fas fa-reply"></i> Responder (${d.replies})
-                        </button>
-                    </div>
-                    <div id="replyForm${d.id}" class="reply-form" style="display: none;">
-                        <textarea class="form-control mb-2" id="replyText${d.id}" 
-                                  placeholder="Digite sua resposta..." rows="2"></textarea>
-                        <button class="btn btn-sm btn-primary" onclick="submitReply(${d.id})">
-                            Enviar Resposta
+                            <i class="fas fa-reply me-1"></i>Responder <span class="badge bg-secondary ms-1">${d.replies_count || 0}</span>
                         </button>
                     </div>
                     <div id="replies${d.id}" class="discussion-replies"></div>
+                    <div id="replyForm${d.id}" class="reply-form" style="display: none;">
+                        <textarea id="replyText${d.id}" class="form-control mb-2" rows="2" placeholder="Escreva sua resposta..."></textarea>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button class="btn btn-sm btn-secondary" onclick="toggleReplyForm(${d.id})">Cancelar</button>
+                            <button class="btn btn-sm btn-primary" onclick="submitReply(${d.id})">Enviar</button>
+                        </div>
+                    </div>
                 </div>
             `).join('');
         })
         .catch(err => {
             console.error('❌ Erro ao carregar discussões:', err);
-            const container = document.getElementById('discussionsList');
-            if (container) {
-                container.innerHTML = `
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Erro ao carregar discussões. Verifique o console.
-                    </div>
-                `;
-            }
+            container.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Não foi possível carregar as discussões.</strong>
+                    <p class="mb-2 small">A funcionalidade de comunidade requer configuração da API.</p>
+                    <button class="btn btn-sm btn-outline-warning" onclick="loadDiscussions()">
+                        <i class="fas fa-sync me-2"></i>Tentar novamente
+                    </button>
+                </div>
+            `;
         });
 }
 

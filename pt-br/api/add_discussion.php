@@ -35,35 +35,39 @@ try {
     $conn = getDBConnection();
     $user = getCurrentUser();
     
+    if (!$conn || !$user) {
+        echo json_encode(['success' => false, 'message' => 'Erro de conexão ou sessão']);
+        exit;
+    }
+    
+    $user_id = $user['id'];
+    $user_name = $user['username'] ?? $user['name'] ?? 'Usuário';
+    
     // Insere discussão
     $stmt = $conn->prepare("
-        INSERT INTO discussions (content_type, content_id, user_id, username, message, created_at) 
+        INSERT INTO discussions (content_type, content_id, user_id, user_name, message, created_at) 
         VALUES (?, ?, ?, ?, ?, NOW())
     ");
     
-    $stmt->execute([
-        $content_type,
-        $content_id,
-        $user['id'],
-        $user['username'],
-        $message
-    ]);
+    $stmt->bind_param("siiss", $content_type, $content_id, $user_id, $user_name, $message);
+    $stmt->execute();
     
-    $discussion_id = $conn->lastInsertId();
+    $discussion_id = $stmt->insert_id;
     
     echo json_encode([
         'success' => true,
         'message' => 'Discussão publicada com sucesso!',
         'discussion' => [
             'id' => $discussion_id,
-            'username' => $user['username'],
+            'user_name' => $user_name,
             'message' => $message,
             'created_at' => date('Y-m-d H:i:s'),
             'likes' => 0,
-            'replies' => 0
+            'replies_count' => 0
         ]
     ]);
     
-} catch (PDOException $e) {
+} catch (Exception $e) {
     echo json_encode(['success' => false, 'message' => 'Erro ao salvar discussão: ' . $e->getMessage()]);
 }
+

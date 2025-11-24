@@ -1,6 +1,6 @@
 <?php
 require_once 'config.php';
-require_once 'tutorial_functions.php';
+require_once 'data/tutorials.php';
 
 $title = 'Tutoriais';
 
@@ -9,10 +9,42 @@ $category = sanitize($_GET['category'] ?? '');
 $level = sanitize($_GET['level'] ?? '');
 $search = sanitize($_GET['search'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
+$perPage = 9;
 
-// Buscar tutoriais
-$tutorials = getTutorials($category, $level, $search, $page);
-$categories = getTutorialCategories();
+// Buscar todos os tutoriais
+$allTutorials = getTutorials();
+
+// Aplicar filtros
+$tutorials = $allTutorials;
+
+if ($category) {
+    $tutorials = array_filter($tutorials, fn($t) => strtolower($t['category']) === strtolower($category));
+}
+
+if ($level) {
+    $tutorials = array_filter($tutorials, fn($t) => strtolower($t['difficulty']) === strtolower($level));
+}
+
+if ($search) {
+    $tutorials = array_filter($tutorials, function($t) use ($search) {
+        return stripos($t['title'], $search) !== false || 
+               stripos($t['description'], $search) !== false;
+    });
+}
+
+// Paginação
+$totalTutorials = count($tutorials);
+$totalPages = ceil($totalTutorials / $perPage);
+$offset = ($page - 1) * $perPage;
+$tutorials = array_slice($tutorials, $offset, $perPage);
+
+// Definir categorias disponíveis
+$categories = [
+    ['name' => 'HTML', 'slug' => 'html', 'color' => 'danger', 'icon' => 'fab fa-html5'],
+    ['name' => 'CSS', 'slug' => 'css', 'color' => 'primary', 'icon' => 'fab fa-css3-alt'],
+    ['name' => 'JavaScript', 'slug' => 'javascript', 'color' => 'warning', 'icon' => 'fab fa-js-square'],
+    ['name' => 'PHP', 'slug' => 'php', 'color' => 'info', 'icon' => 'fab fa-php']
+];
 
 include 'header.php';
 ?>
@@ -91,14 +123,17 @@ include 'header.php';
                 <div class="col-md-6 col-lg-4 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <span class="badge bg-<?php echo $tutorial['category_color']; ?>">
+                            <span class="badge bg-<?php 
+                                $catColors = ['HTML' => 'danger', 'CSS' => 'primary', 'JavaScript' => 'warning', 'PHP' => 'info'];
+                                echo $catColors[$tutorial['category']] ?? 'secondary';
+                            ?>">
                                 <?php echo sanitize($tutorial['category']); ?>
                             </span>
                             <span class="badge bg-<?php 
-                                echo $tutorial['level'] === 'beginner' ? 'success' : 
-                                    ($tutorial['level'] === 'intermediate' ? 'warning' : 'danger'); 
+                                $levelMap = ['Iniciante' => 'success', 'Intermediário' => 'warning', 'Avançado' => 'danger'];
+                                echo $levelMap[$tutorial['difficulty']] ?? 'secondary'; 
                             ?>">
-                                <?php echo ucfirst($tutorial['level']); ?>
+                                <?php echo sanitize($tutorial['difficulty']); ?>
                             </span>
                         </div>
                         
@@ -109,16 +144,14 @@ include 'header.php';
                             <div class="d-flex justify-content-between text-muted small">
                                 <span>
                                     <i class="fas fa-clock me-1" aria-hidden="true"></i>
-                                    <?php echo sanitize($tutorial['duration']); ?>
+                                    <?php echo sanitize($tutorial['duration'] ?? '30 min'); ?>
                                 </span>
                                 <span>
                                     <i class="fas fa-eye me-1" aria-hidden="true"></i>
-                                    <?php echo number_format($tutorial['views']); ?> visualizações
+                                    <?php echo number_format($tutorial['views'] ?? 0); ?> visualizações
                                 </span>
                             </div>
-                        </div>
-                        
-                        <div class="card-footer bg-transparent">
+                        </div>                        <div class="card-footer bg-transparent">
                             <div class="d-flex gap-2">
                                 <a href="show.php?type=tutorial&id=<?php echo $tutorial['id']; ?>" 
                                    class="btn btn-primary btn-sm flex-fill">

@@ -1,6 +1,6 @@
 <?php
 require_once 'config.php';
-require_once 'database_connector.php';
+require_once 'exercise_functions.php';
 
 $title = 'Exercícios';
 
@@ -11,9 +11,9 @@ $search = sanitize($_GET['search'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 9;
 
-// Buscar dados
-$exercises = $dbConnector->getExercises($category, $difficulty, $search, $page, $perPage);
-$totalResults = count($exercises) > 0 ? 50 : 0; // Simplificado
+// Buscar exercícios
+$exercises = getExercises($category, $difficulty, $search, $page, $perPage);
+$totalResults = countExercises($category, $difficulty, $search);
 $totalPages = $totalResults > 0 ? ceil($totalResults / $perPage) : 1;
 
 include 'header.php';
@@ -100,13 +100,8 @@ include 'header.php';
             </div>
         <?php else: ?>
             <?php foreach ($exercises as $exercise): 
-                // Mapear dificuldade do banco para exibição
-                $difficulty_map_display = [
-                    'beginner' => 'Iniciante', 
-                    'intermediate' => 'Intermediário', 
-                    'advanced' => 'Avançado'
-                ];
-                $display_difficulty = $difficulty_map_display[$exercise['difficulty'] ?? 'beginner'] ?? 'Iniciante';
+                // Exibir dificuldade
+                $display_difficulty = $exercise['difficulty'] ?? 'Iniciante';
                 
                 // Verificar progresso do usuário
                 $completed = false;
@@ -115,15 +110,30 @@ include 'header.php';
                     $conn = getDBConnection();
                     if ($conn) {
                         $stmt = $conn->prepare("SELECT status FROM user_progress WHERE user_id = ? AND exercise_id = ?");
-                        $stmt->execute([$user_id, $exercise['id']]);
-                        $result = $stmt->fetch();
-                        $completed = $result && $result['status'] === 'completed';
+                        $stmt->bind_param("ii", $user_id, $exercise['id']);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        $row = $result->fetch_assoc();
+                        $completed = $row && $row['status'] === 'completed';
                     }
                 }
             ?>
                 <div class="col-md-6 col-lg-4 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-header d-flex justify-content-between align-items-center">
+                            <span class="badge bg-<?php 
+                                $catColors = ['HTML' => 'danger', 'CSS' => 'primary', 'JavaScript' => 'warning', 'PHP' => 'info'];
+                                echo $catColors[$exercise['category']] ?? 'secondary';
+                            ?>">
+                                <?php echo htmlspecialchars($exercise['category']); ?>
+                            </span>
+                            <span class="badge bg-<?php 
+                                $levelMap = ['Iniciante' => 'success', 'Intermediário' => 'warning', 'Avançado' => 'danger'];
+                                echo $levelMap[$display_difficulty] ?? 'secondary'; 
+                            ?>">
+                                <?php echo htmlspecialchars($display_difficulty); ?>
+                            </span>
+                        </div>
                             <span class="badge bg-<?php 
                                 $cat_name = $exercise['category_name'] ?? 'Geral';
                                 echo ($cat_name === 'HTML') ? 'danger' : 
@@ -154,7 +164,7 @@ include 'header.php';
                         
                         <div class="card-footer bg-transparent">
                             <div class="d-flex gap-2">
-                                <a href="exercise_detail.php?id=<?php echo $exercise['id'] ?? 1; ?>" 
+                                <a href="show.php?type=exercise&id=<?php echo $exercise['id'] ?? 1; ?>" 
                                    class="btn btn-primary btn-sm flex-fill">
                                     <i class="fas fa-play" aria-hidden="true"></i> 
                                     <?php echo $completed ? 'Revisar' : 'Começar'; ?>
@@ -272,15 +282,17 @@ include 'header.php';
                         $conn = getDBConnection();
                         if ($conn) {
                             $stmt = $conn->prepare("SELECT COUNT(*) FROM user_progress WHERE user_id = ? AND status = 'completed'");
-                            $stmt->execute([$user_id]);
-                            $user_completed = $stmt->fetchColumn();
+                            $stmt->bind_param("i", $user_id);
+                            $stmt->execute();
+                            $result = $stmt->get_result();
+                            $user_completed = $result->fetch_row()[0];
                         }
                     }
                     
                     $progress_percent = $total_available > 0 ? round(($user_completed / $total_available) * 100) : 0;
                     ?>
-                    <li class="mb-2">Exercícios disponíveis: <strong><?php echo $total_available; ?></strong></li>
-                    <li accesskey="mb-2" class="mb-2" style="color: #000;">Exercícios concluídos: <strong><?php echo $user_completed; ?></strong></li>
+                    <p class="mb-2">Exercícios disponíveis: <strong><?php echo $total_available; ?></strong></p>
+                    <p class="mb-2">Exercícios concluídos: <strong><?php echo $user_completed; ?></strong></p>
                     <div class="progress mb-3">
                         <div class="progress-bar" role="progressbar" style="width: <?php echo $progress_percent; ?>%" 
                              aria-valuenow="<?php echo $progress_percent; ?>" aria-valuemin="0" aria-valuemax="100" 
@@ -301,7 +313,7 @@ include 'header.php';
 function completeExercise(exerciseId) {
     if (!confirm('Marcar este exercício como concluído?')) return;
     
-    fetch('complete_exercise.php', {
+    fetch('api/mark_complete.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',

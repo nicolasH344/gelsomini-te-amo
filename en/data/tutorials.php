@@ -1,5 +1,5 @@
 <?php
-// Arquivo de dados dos tutoriais
+// Arquivo de dados dos tutoriais (English version)
 $tutorialsFile = __DIR__ . '/tutorials.json';
 
 // Função para obter tutoriais
@@ -11,75 +11,51 @@ function getTutorials() {
         $defaultData = [
             [
                 'id' => 1,
-                'title' => 'Introdução ao HTML5',
-                'description' => 'Aprenda os fundamentos do HTML5 e suas principais tags',
+                'title' => '🏗️ HTML Structure: From Zero to Professional',
+                'description' => 'Master the foundation of the web! Learn HTML5 with practical examples, modern semantics and accessibility.',
                 'category' => 'HTML',
-                'duration' => '15 min',
-                'level' => 'Iniciante',
-                'difficulty' => 'Iniciante',
-                'views' => 1250,
-                'status' => 'Publicado',
-                'created_at' => '2024-01-15'
+                'duration' => '25 min',
+                'level' => 'Beginner',
+                'difficulty' => 'Beginner',
+                'views' => 3250,
+                'status' => 'Published',
+                'created_at' => '2024-01-15',
+                'topics' => ['Basic tags', 'Semantics', 'Forms', 'Accessibility'],
+                'visual_elements' => ['DOM diagrams', 'Flowcharts', 'Visual examples'],
+                'prerequisites' => [],
+                'learning_outcomes' => ['Create valid HTML pages', 'Use semantic tags', 'Implement forms']
             ],
             [
                 'id' => 2,
-                'title' => 'CSS Grid Layout',
-                'description' => 'Domine o sistema de grid do CSS para layouts modernos',
+                'title' => '🎨 CSS Grid: Modern and Responsive Layouts',
+                'description' => 'Revolutionize your layouts! Learn CSS Grid with visual examples and interactive diagrams.',
                 'category' => 'CSS',
-                'duration' => '25 min',
-                'level' => 'Intermediário',
-                'difficulty' => 'Intermediário',
-                'views' => 890,
-                'status' => 'Publicado',
-                'created_at' => '2024-01-20'
+                'duration' => '35 min',
+                'level' => 'Intermediate',
+                'difficulty' => 'Intermediate',
+                'views' => 2890,
+                'status' => 'Published',
+                'created_at' => '2024-01-20',
+                'topics' => ['Grid Container', 'Grid Items', 'Areas', 'Responsiveness'],
+                'visual_elements' => ['Grid diagrams', 'CSS animations', 'Visual comparisons'],
+                'prerequisites' => ['Basic HTML', 'Basic CSS'],
+                'learning_outcomes' => ['Create complex layouts', 'Master grid areas', 'Responsive layouts']
             ],
             [
                 'id' => 3,
-                'title' => 'JavaScript ES6+',
-                'description' => 'Conheça as funcionalidades modernas do JavaScript',
+                'title' => '⚡ Modern JavaScript: ES6+ in Practice',
+                'description' => 'Elevate your JavaScript! Explore arrow functions, destructuring, async/await and more.',
                 'category' => 'JavaScript',
-                'duration' => '30 min',
-                'level' => 'Intermediário',
-                'difficulty' => 'Intermediário',
-                'views' => 2100,
-                'status' => 'Publicado',
-                'created_at' => '2024-01-25'
-            ],
-            [
-                'id' => 4,
-                'title' => 'Formulários Acessíveis',
-                'description' => 'Crie formulários que funcionam para todos os usuários',
-                'category' => 'HTML',
-                'duration' => '20 min',
-                'level' => 'Intermediário',
-                'difficulty' => 'Intermediário',
-                'views' => 650,
-                'status' => 'Rascunho',
-                'created_at' => '2024-02-01'
-            ],
-            [
-                'id' => 5,
-                'title' => 'Flexbox na Prática',
-                'description' => 'Aprenda a usar Flexbox para layouts flexíveis',
-                'category' => 'CSS',
-                'duration' => '18 min',
-                'level' => 'Iniciante',
-                'difficulty' => 'Iniciante',
-                'views' => 1800,
-                'status' => 'Publicado',
-                'created_at' => '2024-02-05'
-            ],
-            [
-                'id' => 6,
-                'title' => 'PHP Básico',
-                'description' => 'Primeiros passos com PHP para desenvolvimento web',
-                'category' => 'PHP',
-                'duration' => '35 min',
-                'level' => 'Iniciante',
-                'difficulty' => 'Iniciante',
-                'views' => 980,
-                'status' => 'Publicado',
-                'created_at' => '2024-02-10'
+                'duration' => '45 min',
+                'level' => 'Intermediate',
+                'difficulty' => 'Intermediate',
+                'views' => 4100,
+                'status' => 'Published',
+                'created_at' => '2024-01-25',
+                'topics' => ['Arrow Functions', 'Destructuring', 'Promises', 'Async/Await'],
+                'visual_elements' => ['Execution flowcharts', 'Promise diagrams', 'Syntax comparisons'],
+                'prerequisites' => ['Basic JavaScript', 'Basic DOM'],
+                'learning_outcomes' => ['Use modern syntax', 'Asynchronous programming', 'Cleaner code']
             ]
         ];
         saveTutorials($defaultData);
@@ -111,7 +87,11 @@ function addTutorial($data) {
         'difficulty' => $data['difficulty'],
         'views' => 0,
         'status' => $data['status'],
-        'created_at' => date('Y-m-d')
+        'created_at' => date('Y-m-d'),
+        'topics' => $data['topics'] ?? [],
+        'visual_elements' => $data['visual_elements'] ?? [],
+        'prerequisites' => $data['prerequisites'] ?? [],
+        'learning_outcomes' => $data['learning_outcomes'] ?? []
     ];
     
     $tutorials[] = $tutorial;
@@ -132,6 +112,10 @@ function updateTutorial($id, $data) {
             $tutorial['level'] = $data['difficulty'];
             $tutorial['difficulty'] = $data['difficulty'];
             $tutorial['status'] = $data['status'];
+            $tutorial['topics'] = $data['topics'] ?? $tutorial['topics'] ?? [];
+            $tutorial['visual_elements'] = $data['visual_elements'] ?? $tutorial['visual_elements'] ?? [];
+            $tutorial['prerequisites'] = $data['prerequisites'] ?? $tutorial['prerequisites'] ?? [];
+            $tutorial['learning_outcomes'] = $data['learning_outcomes'] ?? $tutorial['learning_outcomes'] ?? [];
             break;
         }
     }
@@ -152,7 +136,7 @@ function toggleTutorialStatus($id) {
     
     foreach ($tutorials as &$tutorial) {
         if ($tutorial['id'] == $id) {
-            $tutorial['status'] = $tutorial['status'] === 'Publicado' ? 'Rascunho' : 'Publicado';
+            $tutorial['status'] = $tutorial['status'] === 'Published' ? 'Draft' : 'Published';
             break;
         }
     }
