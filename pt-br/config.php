@@ -1,9 +1,8 @@
 <?php
-// config.php - Configurações Completas do Sistema WebLearn
-
-// =================================================================
-// CONFIGURAÇÕES DO SISTEMA
-// =================================================================
+// Iniciar sessão PRIMEIRO para evitar headers already sent
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Configurações do Site
 if (!defined('SITE_NAME')) {
@@ -18,26 +17,12 @@ if (!defined('BASE_PATH')) {
     define('BASE_PATH', '');
 }
 
-// Carregar configurações do ambiente
-require_once __DIR__ . '/../src/Config/Environment.php';
-Environment::load();
-
 // Configurações do Banco de Dados
-define('DB_HOST', Environment::get('DB_HOST', 'localhost'));
-define('DB_NAME', Environment::get('DB_NAME', 'cursinho'));
-define('DB_USER', Environment::get('DB_USER', 'root'));
-define('DB_PASS', Environment::get('DB_PASS', 'Home@spSENAI2025!'));
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'cursinho');
+define('DB_USER', 'root');
+define('DB_PASS', 'Home@spSENAI2025!');
 define('DB_CHARSET', 'utf8mb4');
-
-// Configurações de erro (desabilitar em produção)
-// Para depuração, você pode mudar display_errors para 1
-error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
-ini_set('display_errors', 0); 
-
-// Timezone
-if (function_exists('date_default_timezone_set')) {
-    date_default_timezone_set('America/Sao_Paulo');
-}
 
 // Configurações de debug
 define('DEBUG_MODE', true);
@@ -50,9 +35,9 @@ if (DEBUG_MODE) {
     ini_set('display_errors', 0);
 }
 
-// Iniciar sessão se não estiver iniciada
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
+// Timezone
+if (function_exists('date_default_timezone_set')) {
+    date_default_timezone_set('America/Sao_Paulo');
 }
 
 // Configurações padrão de sessão
@@ -83,9 +68,16 @@ if (!function_exists('getDBConnection')) {
         
         if ($connection === null) {
             try {
-                require_once 'database.php';
-                $db = new Database();
-                $connection = $db->conn;
+                $connection = new mysqli("localhost", "root", "Home@spSENAI2025!", "cursinho");
+                
+                if ($connection->connect_error) {
+                    if (DEBUG_MODE) {
+                        error_log("Erro de conexão: " . $connection->connect_error);
+                    }
+                    return null;
+                }
+                
+                $connection->set_charset("utf8mb4");
             } catch (Exception $e) {
                 if (DEBUG_MODE) {
                     error_log("Erro de conexão com o banco: " . $e->getMessage());
@@ -101,24 +93,24 @@ if (!function_exists('getDBConnection')) {
 /**
  * Função para sanitizar dados
  */
-require_once __DIR__ . '/../src/SecurityHelper.php';
-require_once 'database_functions.php';
-
 if (!function_exists('sanitize')) {
     function sanitize($data) {
-        return SecurityHelper::sanitizeOutput($data);
+        return htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
     }
 }
 
 if (!function_exists('generateCSRFToken')) {
     function generateCSRFToken() {
-        return SecurityHelper::generateCSRFToken();
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
     }
 }
 
 if (!function_exists('validateCSRFToken')) {
     function validateCSRFToken($token) {
-        return SecurityHelper::validateCSRFToken($token);
+        return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
     }
 }
 
@@ -431,12 +423,19 @@ if (!function_exists('getCurrentUser')) {
 if (!function_exists('processLogin')) {
     function processLogin($username, $password) {
         try {
-            require_once 'database.php';
-            $db = new Database();
-            $conn = $db->conn;
+            // Conexão direta para evitar problemas
+            $conn = new mysqli("localhost", "root", "Home@spSENAI2025!", "cursinho");
+            
+            if ($conn->connect_error) {
+                return ['success' => false, 'message' => 'Erro de conexão: ' . $conn->connect_error];
+            }
             
             // Buscar usuário no banco
             $stmt = $conn->prepare("SELECT id, first_name, last_name, username, password_hash, is_admin FROM users WHERE username = ? OR email = ?");
+            if (!$stmt) {
+                return ['success' => false, 'message' => 'Erro na preparação da query: ' . $conn->error];
+            }
+            
             $stmt->bind_param("ss", $username, $username);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -452,14 +451,14 @@ if (!function_exists('processLogin')) {
                     $_SESSION['last_name'] = $user['last_name'];
                     $_SESSION['is_admin'] = (bool)$user['is_admin'];
                     
-                    $db->closeConnection();
+                    $conn->close();
                     return ['success' => true, 'message' => 'Login realizado com sucesso!'];
                 } else {
-                    $db->closeConnection();
+                    $conn->close();
                     return ['success' => false, 'message' => 'Senha incorreta.'];
                 }
             } else {
-                $db->closeConnection();
+                $conn->close();
                 return ['success' => false, 'message' => 'Usuário não encontrado.'];
             }
             
