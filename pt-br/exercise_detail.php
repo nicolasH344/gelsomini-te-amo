@@ -1,486 +1,969 @@
-<?php
-require_once 'config.php';
-require_once 'exercise_functions.php';
+<?php<?php
 
-$id = (int)($_GET['id'] ?? 0);
+/**require_once 'config.php';
+
+ * Exercise Detail Page with Integrated Code Editorrequire_once 'exercise_functions.php';
+
+ * Página Detalhada de Exercício com Editor de Código Integrado
+
+ */$id = (int)($_GET['id'] ?? 0);
+
 if (!$id) redirect('exercises_index.php');
 
-$exercise = getExercise($id);
+require_once 'config.php';
+
+require_once 'exercise_functions.php';$exercise = getExercise($id);
+
 if (!$exercise) redirect('exercises_index.php');
 
-$title = $exercise['title'];
+// Validações iniciais
+
+$id = (int)($_GET['id'] ?? 0);$title = $exercise['title'];
+
+if (!$id) redirect('exercises_index.php');
 
 // Processar submissão de código
-$execution_result = null;
-$test_results = [];
-$user_code = $exercise['initial_code'] ?? '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Buscar exercício$execution_result = null;
+
+$exercise = getExercise($id);$test_results = [];
+
+if (!$exercise) redirect('exercises_index.php');$user_code = $exercise['initial_code'] ?? '';
+
+
+
+$title = $exercise['title'] ?? 'Exercício';if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     if (isset($_POST['submit_code'])) {
-        $user_code = $_POST['user_code'] ?? '';
-        
-        // Simular execução e testes
-        $execution_result = [
+
+// Obter código salvo ou usar padrão        $user_code = $_POST['user_code'] ?? '';
+
+$user_code = isset($_SESSION['exercise_code_' . $id])         
+
+    ? $_SESSION['exercise_code_' . $id]         // Simular execução e testes
+
+    : ($exercise['initial_code'] ?? '// Comece aqui...\n');        $execution_result = [
+
             'success' => true,
-            'output' => "✓ Código executado com sucesso!\n✓ Todos os testes passaram!",
-            'execution_time' => '0.45s',
-            'memory_used' => '2.1MB'
-        ];
-        
-        $test_results = [
-            ['name' => 'Teste de Sintaxe', 'passed' => true, 'message' => 'Código compilou sem erros'],
-            ['name' => 'Teste de Saída', 'passed' => true, 'message' => 'Saída esperada encontrada'],
-            ['name' => 'Teste de Performance', 'passed' => true, 'message' => 'Dentro dos limites de tempo'],
-            ['name' => 'Teste de Casos Extremos', 'passed' => false, 'message' => 'Falha em caso de entrada vazia']
-        ];
-        
-        $_SESSION['success'] = 'Código executado com sucesso!';
-    }
-    
-    if (isset($_POST['reset_code'])) {
-        $user_code = $exercise['initial_code'] ?? '';
-    }
-    
-    if (isset($_POST['save_progress'])) {
-        $_SESSION['success'] = 'Progresso salvo com sucesso!';
-    }
-}
 
-// Dados simulados para estatísticas
-$exercise_stats = [
-    'attempts' => 1247,
-    'success_rate' => 68,
-    'avg_completion_time' => '15min',
-    'popularity' => 4.5,
-    'user_attempts' => 3,
-    'user_best_time' => '12min'
-];
+// Incluir header            'output' => "✓ Código executado com sucesso!\n✓ Todos os testes passaram!",
 
-// Configuração de linguagens
-$language_config = [
-    'javascript' => [
-        'icon' => 'fa-js-square',
-        'color' => '#f7df1e',
-        'name' => 'JavaScript'
-    ],
-    'html' => [
-        'icon' => 'fa-html5',
-        'color' => '#e34f26',
-        'name' => 'HTML5'
-    ],
-    'css' => [
+include 'header.php';            'execution_time' => '0.45s',
+
+?>            'memory_used' => '2.1MB'
+
+        ];
+
+<div class="container-fluid mt-4 mb-5">        
+
+    <div class="row">        $test_results = [
+
+        <!-- Main Content -->            ['name' => 'Teste de Sintaxe', 'passed' => true, 'message' => 'Código compilou sem erros'],
+
+        <div class="col-lg-8">            ['name' => 'Teste de Saída', 'passed' => true, 'message' => 'Saída esperada encontrada'],
+
+            <!-- Exercise Header -->            ['name' => 'Teste de Performance', 'passed' => true, 'message' => 'Dentro dos limites de tempo'],
+
+            <div class="exercise-header mb-4">            ['name' => 'Teste de Casos Extremos', 'passed' => false, 'message' => 'Falha em caso de entrada vazia']
+
+                <div class="d-flex gap-2 mb-3">        ];
+
+                    <span class="badge bg-primary">        
+
+                        <i class="fas fa-code me-1"></i>        $_SESSION['success'] = 'Código executado com sucesso!';
+
+                        <?php echo strtoupper($exercise['difficulty'] ?? 'Iniciante'); ?>    }
+
+                    </span>    
+
+                    <span class="badge bg-success">    if (isset($_POST['reset_code'])) {
+
+                        <i class="fas fa-graduation-cap me-1"></i>        $user_code = $exercise['initial_code'] ?? '';
+
+                        <?php echo $exercise['category'] ?? 'Programação'; ?>    }
+
+                    </span>    
+
+                </div>    if (isset($_POST['save_progress'])) {
+
+                <h1 class="exercise-title"><?php echo sanitize($title); ?></h1>        $_SESSION['success'] = 'Progresso salvo com sucesso!';
+
+                <p class="exercise-desc"><?php echo sanitize($exercise['description'] ?? ''); ?></p>    }
+
+            </div>}
+
+
+
+            <!-- Content Tabs -->// Dados simulados para estatísticas
+
+            <ul class="nav nav-tabs mb-4" role="tablist">$exercise_stats = [
+
+                <li class="nav-item">    'attempts' => 1247,
+
+                    <button class="nav-link active" id="instructions-tab" data-bs-toggle="tab" data-bs-target="#instructions" type="button">    'success_rate' => 68,
+
+                        <i class="fas fa-book me-2"></i>Instruções    'avg_completion_time' => '15min',
+
+                    </button>    'popularity' => 4.5,
+
+                </li>    'user_attempts' => 3,
+
+                <li class="nav-item">    'user_best_time' => '12min'
+
+                    <button class="nav-link" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor" type="button">];
+
+                        <i class="fas fa-code me-2"></i>Editor
+
+                    </button>// Configuração de linguagens
+
+                </li>$language_config = [
+
+                <li class="nav-item">    'javascript' => [
+
+                    <button class="nav-link" id="result-tab" data-bs-toggle="tab" data-bs-target="#result" type="button">        'icon' => 'fa-js-square',
+
+                        <i class="fas fa-terminal me-2"></i>Resultado        'color' => '#f7df1e',
+
+                    </button>        'name' => 'JavaScript'
+
+                </li>    ],
+
+                <li class="nav-item">    'html' => [
+
+                    <button class="nav-link" id="solution-tab" data-bs-toggle="tab" data-bs-target="#solution" type="button">        'icon' => 'fa-html5',
+
+                        <i class="fas fa-lightbulb me-2"></i>Solução        'color' => '#e34f26',
+
+                    </button>        'name' => 'HTML5'
+
+                </li>    ],
+
+            </ul>    'css' => [
+
         'icon' => 'fa-css3-alt',
-        'color' => '#1572b6',
-        'name' => 'CSS3'
-    ],
-    'php' => [
-        'icon' => 'fa-php',
-        'color' => '#777bb4',
-        'name' => 'PHP'
-    ]
+
+            <!-- Tab Content -->        'color' => '#1572b6',
+
+            <div class="tab-content">        'name' => 'CSS3'
+
+                <!-- Instructions Tab -->    ],
+
+                <div class="tab-pane fade show active" id="instructions">    'php' => [
+
+                    <div class="card shadow-sm border-0">        'icon' => 'fa-php',
+
+                        <div class="card-body p-4">        'color' => '#777bb4',
+
+                            <h5 class="mb-3"><i class="fas fa-target text-primary me-2"></i>O que fazer?</h5>        'name' => 'PHP'
+
+                            <p class="lead"><?php echo nl2br(sanitize($exercise['instructions'] ?? 'Implemente a solução conforme os requisitos.')); ?></p>    ]
+
 ];
 
-// Exercícios relacionados por linguagem
-$related_exercises_by_language = [
-    'javascript' => [
-        [
-            'id' => 2,
+                            <?php if (isset($exercise['hints'])): ?>
+
+                            <div class="alert alert-warning mt-4">// Exercícios relacionados por linguagem
+
+                                <h6 class="alert-heading"><i class="fas fa-lightbulb me-2"></i>Dicas</h6>$related_exercises_by_language = [
+
+                                <p class="mb-0"><?php echo nl2br(sanitize($exercise['hints'])); ?></p>    'javascript' => [
+
+                            </div>        [
+
+                            <?php endif; ?>            'id' => 2,
+
             'title' => 'Manipulação de Arrays',
-            'difficulty' => 'beginner',
-            'language' => 'javascript',
-            'completion_rate' => 72
-        ],
-        [
-            'id' => 3,
-            'title' => 'Funções Assíncronas',
-            'difficulty' => 'intermediate',
-            'language' => 'javascript',
-            'completion_rate' => 45
-        ],
-        [
-            'id' => 4,
+
+                            <div class="alert alert-info mt-4">            'difficulty' => 'beginner',
+
+                                <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Como Proceder</h6>            'language' => 'javascript',
+
+                                <ol class="mb-0">            'completion_rate' => 72
+
+                                    <li>Leia as instruções acima</li>        ],
+
+                                    <li>Acesse o "Editor" e escreva seu código</li>        [
+
+                                    <li>Clique "Executar Código" para testar</li>            'id' => 3,
+
+                                    <li>Verifique o resultado na aba "Resultado"</li>            'title' => 'Funções Assíncronas',
+
+                                    <li>Consulte "Solução" se precisar de ajuda</li>            'difficulty' => 'intermediate',
+
+                                </ol>            'language' => 'javascript',
+
+                            </div>            'completion_rate' => 45
+
+                        </div>        ],
+
+                    </div>        [
+
+                </div>            'id' => 4,
+
             'title' => 'Manipulação de DOM',
+
+                <!-- Editor Tab -->            'difficulty' => 'beginner',
+
+                <div class="tab-pane fade" id="editor">            'language' => 'javascript',
+
+                    <div class="card shadow-sm border-0">            'completion_rate' => 81
+
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">        ]
+
+                            <span class="fw-bold"><i class="fas fa-file-code me-2"></i>Editor de Código</span>    ],
+
+                            <div class="btn-group btn-group-sm">    'html' => [
+
+                                <button type="button" class="btn btn-outline-secondary" onclick="copyCode()" title="Copiar">        [
+
+                                    <i class="fas fa-copy"></i>            'id' => 5,
+
+                                </button>            'title' => 'Formulários Avançados',
+
+                                <button type="button" class="btn btn-outline-secondary" onclick="resetCode()" title="Resetar">            'difficulty' => 'intermediate',
+
+                                    <i class="fas fa-redo"></i>            'language' => 'html',
+
+                                </button>            'completion_rate' => 68
+
+                            </div>        ],
+
+                        </div>        [
+
+                        <div class="card-body p-0">            'id' => 6,
+
+                            <textarea id="codeEditor" class="code-editor" rows="20" spellcheck="false"><?php echo sanitize($user_code); ?></textarea>            'title' => 'Tabelas Responsivas',
+
+                        </div>            'difficulty' => 'beginner',
+
+                        <div class="card-footer bg-light">            'language' => 'html',
+
+                            <div class="d-flex gap-2 flex-wrap">            'completion_rate' => 82
+
+                                <button type="button" class="btn btn-success" onclick="runCode()">        ],
+
+                                    <i class="fas fa-play me-2"></i>Executar Código        [
+
+                                </button>            'id' => 7,
+
+                                <button type="button" class="btn btn-info" onclick="runTests()">            'title' => 'Estrutura Semântica',
+
+                                    <i class="fas fa-vial me-2"></i>Executar Testes            'difficulty' => 'intermediate',
+
+                                </button>            'language' => 'html',
+
+                                <button type="button" class="btn btn-outline-primary" onclick="saveCode()">            'completion_rate' => 59
+
+                                    <i class="fas fa-save me-2"></i>Salvar        ]
+
+                                </button>    ],
+
+                            </div>    'css' => [
+
+                        </div>        [
+
+                    </div>            'id' => 8,
+
+                </div>            'title' => 'Flexbox Layout',
+
             'difficulty' => 'beginner',
-            'language' => 'javascript',
-            'completion_rate' => 81
-        ]
-    ],
-    'html' => [
-        [
-            'id' => 5,
-            'title' => 'Formulários Avançados',
-            'difficulty' => 'intermediate',
-            'language' => 'html',
-            'completion_rate' => 68
-        ],
-        [
-            'id' => 6,
-            'title' => 'Tabelas Responsivas',
-            'difficulty' => 'beginner',
-            'language' => 'html',
-            'completion_rate' => 82
-        ],
-        [
-            'id' => 7,
-            'title' => 'Estrutura Semântica',
-            'difficulty' => 'intermediate',
-            'language' => 'html',
-            'completion_rate' => 59
-        ]
-    ],
-    'css' => [
-        [
-            'id' => 8,
-            'title' => 'Flexbox Layout',
-            'difficulty' => 'beginner',
-            'language' => 'css',
-            'completion_rate' => 76
-        ],
-        [
-            'id' => 9,
-            'title' => 'Grid System',
-            'difficulty' => 'intermediate',
-            'language' => 'css',
-            'completion_rate' => 54
-        ],
-        [
+
+                <!-- Result Tab -->            'language' => 'css',
+
+                <div class="tab-pane fade" id="result">            'completion_rate' => 76
+
+                    <div class="card shadow-sm border-0">        ],
+
+                        <div class="card-body p-4">        [
+
+                            <div id="resultContent" class="text-center text-muted py-5">            'id' => 9,
+
+                                <i class="fas fa-terminal fa-3x mb-3"></i>            'title' => 'Grid System',
+
+                                <p>Clique em "Executar Código" para ver os resultados</p>            'difficulty' => 'intermediate',
+
+                            </div>            'language' => 'css',
+
+                        </div>            'completion_rate' => 54
+
+                    </div>        ],
+
+                </div>        [
+
             'id' => 10,
-            'title' => 'Animações CSS',
-            'difficulty' => 'advanced',
-            'language' => 'css',
-            'completion_rate' => 41
-        ]
-    ],
-    'php' => [
-        [
+
+                <!-- Solution Tab -->            'title' => 'Animações CSS',
+
+                <div class="tab-pane fade" id="solution">            'difficulty' => 'advanced',
+
+                    <div class="card shadow-sm border-0">            'language' => 'css',
+
+                        <div class="card-body p-4">            'completion_rate' => 41
+
+                            <div class="alert alert-warning mb-4">        ]
+
+                                <h6 class="alert-heading"><i class="fas fa-lightbulb me-2"></i>Antes de Ver a Solução...</h6>    ],
+
+                                <p class="mb-0">Tente resolver o problema sozinho! É mais eficaz para aprender.</p>    'php' => [
+
+                            </div>        [
+
             'id' => 11,
-            'title' => 'Validação de Dados',
-            'difficulty' => 'beginner',
-            'language' => 'php',
+
+                            <button type="button" class="btn btn-primary btn-lg w-100 mb-4" onclick="toggleSolution()">            'title' => 'Validação de Dados',
+
+                                <i class="fas fa-eye me-2"></i>Mostrar Solução Completa            'difficulty' => 'beginner',
+
+                            </button>            'language' => 'php',
+
             'completion_rate' => 70
-        ],
-        [
-            'id' => 12,
-            'title' => 'Conexão com Banco',
-            'difficulty' => 'intermediate',
+
+                            <div id="solutionContent" style="display: none;">        ],
+
+                                <h5 class="mb-3"><i class="fas fa-code me-2"></i>Código de Solução</h5>        [
+
+                                <div class="bg-light p-3 rounded mb-4" style="border-left: 4px solid #28a745; max-height: 400px; overflow-y: auto;">            'id' => 12,
+
+                                    <pre id="solutionCode" class="mb-0"><code><?php echo sanitize($exercise['solution'] ?? '// Solução não disponível'); ?></code></pre>            'title' => 'Conexão com Banco',
+
+                                </div>            'difficulty' => 'intermediate',
+
             'language' => 'php',
-            'completion_rate' => 48
-        ],
-        [
-            'id' => 13,
+
+                                <h5 class="mb-3"><i class="fas fa-book me-2"></i>Explicação</h5>            'completion_rate' => 48
+
+                                <div class="alert alert-light">        ],
+
+                                    <p><?php echo sanitize($exercise['explanation'] ?? 'A solução segue as melhores práticas.'); ?></p>        [
+
+                                </div>            'id' => 13,
+
             'title' => 'Upload de Arquivos',
-            'difficulty' => 'advanced',
-            'language' => 'php',
-            'completion_rate' => 35
-        ]
-    ]
-];
 
-// Dicas por linguagem
-$hints_by_language = [
-    'javascript' => [
-        'Use console.log() para debugar seu código e ver os valores das variáveis',
-        'Lembre-se que arrays começam no índice 0',
-        'Funções podem retornar valores usando a palavra-chave return',
-        'Use let e const ao invés de var para declarar variáveis'
-    ],
-    'html' => [
-        'Use tags semânticas como <header>, <nav>, <main> e <footer>',
-        'Sempre adicione atributos alt em imagens para acessibilidade',
-        'Use IDs para elementos únicos e classes para estilos reutilizáveis',
-        'Organize seu código com indentação adequada'
-    ],
-    'css' => [
-        'Use Flexbox ou Grid para layouts responsivos modernos',
-        'Evite usar !important, organize melhor a especificidade',
-        'Use variáveis CSS (--nome-variavel) para cores e medidas',
-        'Mobile-first: comece com estilos mobile e use media queries para desktop'
-    ],
-    'php' => [
-        'Sempre valide e sanitize dados de entrada do usuário',
-        'Use prepared statements para prevenir SQL injection',
-        'Não exiba erros em produção, use logs ao invés',
-        'Use password_hash() e password_verify() para senhas'
-    ]
-];
+                                <button type="button" class="btn btn-outline-primary" onclick="copySolution()">            'difficulty' => 'advanced',
 
-// Detectar linguagem do exercício atual
-// Mapeamento direto por ID de exercício (enquanto o banco não tem o campo correto)
-$exercise_language_map = [
-    1 => 'html',      // Minha Primeira Página HTML
-    2 => 'html',      // Lista de Compras
-    3 => 'html',      // Formulário de Contato
-    4 => 'css',       // Estilizando Texto
-    5 => 'css',       // Layout com Flexbox
-    6 => 'javascript', // Olá Mundo JavaScript
-    7 => 'javascript', // Calculadora Simples
-    8 => 'javascript', // Manipulação de Array
-    9 => 'php',       // Olá Mundo PHP
-];
+                                    <i class="fas fa-copy me-2"></i>Copiar Solução            'language' => 'php',
 
-// Tentar detectar pela ID primeiro
-$exercise_id = (int)($exercise['id'] ?? 0);
-$current_language = $exercise_language_map[$exercise_id] ?? null;
+                                </button>            'completion_rate' => 35
 
-// Se não encontrou por ID, tentar por category_name
-if (!$current_language) {
-    $category_raw = strtolower(trim($exercise['category_name'] ?? ''));
-    
-    // Mapear variações de nomes para as chaves padrão
-    $language_mapping = [
-        'javascript' => 'javascript',
-        'js' => 'javascript',
-        'html' => 'html',
-        'html5' => 'html',
-        'css' => 'css',
-        'css3' => 'css',
-        'php' => 'php',
-        'php7' => 'php',
-        'php8' => 'php',
-        'python' => 'python',
-        'java' => 'java'
-    ];
-    
-    // Detectar por palavra-chave no nome da categoria
-    foreach ($language_mapping as $key => $value) {
-        if (strpos($category_raw, $key) !== false) {
-            $current_language = $value;
-            break;
-        }
-    }
-}
+                            </div>        ]
 
-// Se ainda não detectou, tentar pelo exercise_type (dados mockados)
-if (!$current_language && !empty($exercise['exercise_type'])) {
-    $exercise_type_raw = strtolower(trim($exercise['exercise_type']));
-    $language_mapping = [
-        'javascript' => 'javascript',
-        'js' => 'javascript',
-        'html' => 'html',
-        'html5' => 'html',
-        'css' => 'css',
-        'css3' => 'css',
-        'php' => 'php',
-        'python' => 'python',
-        'java' => 'java'
-    ];
-    
-    foreach ($language_mapping as $key => $value) {
-        if (strpos($exercise_type_raw, $key) !== false) {
-            $current_language = $value;
-            break;
-        }
-    }
-}
+                        </div>    ]
 
-// Fallback final para javascript
-$current_language = $current_language ?? 'javascript';
+                    </div>];
 
-// Selecionar exercícios e dicas da linguagem atual
-$related_exercises = $related_exercises_by_language[$current_language] ?? $related_exercises_by_language['javascript'];
-$current_hints = $hints_by_language[$current_language] ?? $hints_by_language['javascript'];
-$current_lang_config = $language_config[$current_language] ?? $language_config['javascript'];
-
-include 'header.php';
-?>
-
-<div class="container-fluid mt-4">
-    <!-- Alertas -->
-    <?php if (isset($_SESSION['success'])): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
-
-    <div class="row">
-        <!-- Conteúdo Principal -->
-        <div class="col-lg-8">
-            <!-- Cabeçalho do Exercício -->
-            <div class="exercise-header-card mb-4">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <div class="d-flex align-items-center mb-2">
-                            <span class="exercise-type-badge me-2">
-                                <i class="fas fa-code me-1"></i>
-                                <?php echo strtoupper($exercise['exercise_type'] ?? 'PRÁTICA'); ?>
-                            </span>
-                            <span class="difficulty-badge difficulty-<?php echo $exercise['difficulty_level'] ?? 'beginner'; ?>">
-                                <?php 
-                                $difficulty_map = [
-                                    'beginner' => 'Iniciante', 
-                                    'intermediate' => 'Intermediário', 
-                                    'advanced' => 'Avançado'
-                                ];
-                                $difficulty_level = $exercise['difficulty_level'] ?? 'beginner';
-                                echo $difficulty_map[$difficulty_level] ?? 'Iniciante';
-                                ?>
-                            </span>
-                        </div>
-                        <h1 class="display-5 fw-bold mb-3 exercise-title"><?php echo sanitize($exercise['title'] ?? 'Exercício'); ?></h1>
-                        <p class="lead exercise-description mb-3"><?php echo sanitize($exercise['description'] ?? 'Descrição do exercício'); ?></p>
-                        
-                        <!-- Metadados -->
-                        <div class="metadata-grid">
-                            <div class="metadata-card metadata-category">
-                                <div class="metadata-icon" style="color: <?php echo $current_lang_config['color']; ?>">
-                                    <i class="fab <?php echo $current_lang_config['icon']; ?>"></i>
-                                </div>
-                                <div class="metadata-info">
-                                    <span class="metadata-label">Linguagem</span>
-                                    <span class="metadata-value"><?php echo $current_lang_config['name']; ?></span>
-                                </div>
-                            </div>
-                            <div class="metadata-card metadata-time">
-                                <div class="metadata-icon">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                                <div class="metadata-info">
-                                    <span class="metadata-label">Tempo Médio</span>
-                                    <span class="metadata-value"><?php echo $exercise_stats['avg_completion_time']; ?></span>
-                                </div>
-                            </div>
-                            <div class="metadata-card metadata-success">
-                                <div class="metadata-icon">
-                                    <i class="fas fa-chart-line"></i>
-                                </div>
-                                <div class="metadata-info">
-                                    <span class="metadata-label">Taxa de Sucesso</span>
-                                    <span class="metadata-value"><?php echo $exercise_stats['success_rate']; ?>%</span>
-                                </div>
-                            </div>
-                            <div class="metadata-card metadata-attempts">
-                                <div class="metadata-icon">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <div class="metadata-info">
-                                    <span class="metadata-label">Tentativas</span>
-                                    <span class="metadata-value"><?php echo number_format($exercise_stats['attempts'], 0, ',', '.'); ?></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 text-end">
-                        <div class="progress-ring-container">
-                            <div class="progress-ring">
-                                <svg width="120" height="120" viewBox="0 0 120 120">
-                                    <circle class="progress-ring-bg" 
-                                            stroke="rgba(255,255,255,0.2)" 
-                                            stroke-width="8" 
-                                            fill="transparent" 
-                                            r="52" 
-                                            cx="60" 
-                                            cy="60">
-                                    </circle>
-                                    <circle class="progress-ring-circle" 
-                                            stroke="url(#gradient)" 
-                                            stroke-width="8" 
-                                            fill="transparent" 
-                                            r="52" 
-                                            cx="60" 
-                                            cy="60"
-                                            stroke-dasharray="326.56" 
-                                            stroke-dashoffset="<?php echo 326.56 * (1 - $exercise_stats['success_rate'] / 100); ?>"
-                                            stroke-linecap="round">
-                                    </circle>
-                                    <defs>
-                                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                            <stop offset="0%" style="stop-color:#06d6a0;stop-opacity:1" />
-                                            <stop offset="100%" style="stop-color:#1b9aaa;stop-opacity:1" />
-                                        </linearGradient>
-                                    </defs>
-                                </svg>
-                                <div class="progress-text">
-                                    <span class="progress-percentage"><?php echo $exercise_stats['success_rate']; ?>%</span>
-                                    <small class="progress-label">Taxa de Sucesso</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
+
+            </div>// Dicas por linguagem
+
+        </div>$hints_by_language = [
+
+    'javascript' => [
+
+        <!-- Sidebar -->        'Use console.log() para debugar seu código e ver os valores das variáveis',
+
+        <div class="col-lg-4">        'Lembre-se que arrays começam no índice 0',
+
+            <!-- Exercise Info -->        'Funções podem retornar valores usando a palavra-chave return',
+
+            <div class="card shadow-sm border-0 mb-4">        'Use let e const ao invés de var para declarar variáveis'
+
+                <div class="card-header bg-primary text-white">    ],
+
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informações</h6>    'html' => [
+
+                </div>        'Use tags semânticas como <header>, <nav>, <main> e <footer>',
+
+                <div class="card-body">        'Sempre adicione atributos alt em imagens para acessibilidade',
+
+                    <div class="info-row">        'Use IDs para elementos únicos e classes para estilos reutilizáveis',
+
+                        <span class="info-label">Dificuldade</span>        'Organize seu código com indentação adequada'
+
+                        <span class="info-value"><?php echo $exercise['difficulty'] ?? 'Iniciante'; ?></span>    ],
+
+                    </div>    'css' => [
+
+                    <div class="info-row">        'Use Flexbox ou Grid para layouts responsivos modernos',
+
+                        <span class="info-label">Categoria</span>        'Evite usar !important, organize melhor a especificidade',
+
+                        <span class="info-value"><?php echo $exercise['category'] ?? 'Geral'; ?></span>        'Use variáveis CSS (--nome-variavel) para cores e medidas',
+
+                    </div>        'Mobile-first: comece com estilos mobile e use media queries para desktop'
+
+                    <div class="info-row">    ],
+
+                        <span class="info-label">Taxa de Sucesso</span>    'php' => [
+
+                        <span class="info-value"><?php echo rand(50, 95); ?>%</span>        'Sempre valide e sanitize dados de entrada do usuário',
+
+                    </div>        'Use prepared statements para prevenir SQL injection',
+
+                    <div class="info-row">        'Não exiba erros em produção, use logs ao invés',
+
+                        <span class="info-label">Tempo Médio</span>        'Use password_hash() e password_verify() para senhas'
+
+                        <span class="info-value"><?php echo rand(10, 60); ?> min</span>    ]
+
+                    </div>];
+
+                </div>
+
+            </div>// Detectar linguagem do exercício atual
+
+// Mapeamento direto por ID de exercício (enquanto o banco não tem o campo correto)
+
+            <!-- Progress -->$exercise_language_map = [
+
+            <div class="card shadow-sm border-0 mb-4">    1 => 'html',      // Minha Primeira Página HTML
+
+                <div class="card-header bg-success text-white">    2 => 'html',      // Lista de Compras
+
+                    <h6 class="mb-0"><i class="fas fa-chart-line me-2"></i>Seu Progresso</h6>    3 => 'html',      // Formulário de Contato
+
+                </div>    4 => 'css',       // Estilizando Texto
+
+                <div class="card-body text-center">    5 => 'css',       // Layout com Flexbox
+
+                    <div class="progress mb-3">    6 => 'javascript', // Olá Mundo JavaScript
+
+                        <div class="progress-bar bg-success" style="width: 65%;">65%</div>    7 => 'javascript', // Calculadora Simples
+
+                    </div>    8 => 'javascript', // Manipulação de Array
+
+                    <p class="text-muted mb-0">2 de 3 objetivos concluídos</p>    9 => 'php',       // Olá Mundo PHP
+
+                </div>];
+
             </div>
 
-            <!-- Área de Trabalho -->
-            <div class="workspace-container">
+// Tentar detectar pela ID primeiro
+
+            <!-- Quick Actions -->$exercise_id = (int)($exercise['id'] ?? 0);
+
+            <div class="card shadow-sm border-0">$current_language = $exercise_language_map[$exercise_id] ?? null;
+
+                <div class="card-header bg-info text-white">
+
+                    <h6 class="mb-0"><i class="fas fa-bolt me-2"></i>Ações Rápidas</h6>// Se não encontrou por ID, tentar por category_name
+
+                </div>if (!$current_language) {
+
+                <div class="card-body">    $category_raw = strtolower(trim($exercise['category_name'] ?? ''));
+
+                    <a href="exercises_index.php" class="btn btn-outline-primary w-100 mb-2">    
+
+                        <i class="fas fa-arrow-left me-2"></i>Voltar    // Mapear variações de nomes para as chaves padrão
+
+                    </a>    $language_mapping = [
+
+                    <button type="button" class="btn btn-outline-secondary w-100 mb-2" onclick="shareExercise()">        'javascript' => 'javascript',
+
+                        <i class="fas fa-share me-2"></i>Compartilhar        'js' => 'javascript',
+
+                    </button>        'html' => 'html',
+
+                    <button type="button" class="btn btn-outline-warning w-100">        'html5' => 'html',
+
+                        <i class="fas fa-star me-2"></i>Favoritar        'css' => 'css',
+
+                    </button>        'css3' => 'css',
+
+                </div>        'php' => 'php',
+
+            </div>        'php7' => 'php',
+
+        </div>        'php8' => 'php',
+
+    </div>        'python' => 'python',
+
+</div>        'java' => 'java'
+
+    ];
+
+<style>    
+
+.exercise-header {    // Detectar por palavra-chave no nome da categoria
+
+    background: linear-gradient(135deg, #6f42c1 0%, #8e5dd9 100%);    foreach ($language_mapping as $key => $value) {
+
+    color: white;        if (strpos($category_raw, $key) !== false) {
+
+    padding: 2rem;            $current_language = $value;
+
+    border-radius: 15px;            break;
+
+    box-shadow: 0 8px 24px rgba(111, 66, 193, 0.25);        }
+
+}    }
+
+}
+
+.exercise-title {
+
+    font-size: 2rem;// Se ainda não detectou, tentar pelo exercise_type (dados mockados)
+
+    font-weight: 700;if (!$current_language && !empty($exercise['exercise_type'])) {
+
+    margin-bottom: 1rem;    $exercise_type_raw = strtolower(trim($exercise['exercise_type']));
+
+    color: white;    $language_mapping = [
+
+}        'javascript' => 'javascript',
+
+        'js' => 'javascript',
+
+.exercise-desc {        'html' => 'html',
+
+    font-size: 1.1rem;        'html5' => 'html',
+
+    opacity: 0.95;        'css' => 'css',
+
+    line-height: 1.6;        'css3' => 'css',
+
+    color: rgba(255, 255, 255, 0.9);        'php' => 'php',
+
+}        'python' => 'python',
+
+        'java' => 'java'
+
+.code-editor {    ];
+
+    width: 100%;    
+
+    min-height: 400px;    foreach ($language_mapping as $key => $value) {
+
+    padding: 1rem;        if (strpos($exercise_type_raw, $key) !== false) {
+
+    border: none;            $current_language = $value;
+
+    border-radius: 0;            break;
+
+    font-family: 'Courier New', Courier, monospace;        }
+
+    font-size: 14px;    }
+
+    line-height: 1.6;}
+
+    background: #1e1e1e;
+
+    color: #d4d4d4;// Fallback final para javascript
+
+    resize: vertical;$current_language = $current_language ?? 'javascript';
+
+    outline: none;
+
+    tab-size: 2;// Selecionar exercícios e dicas da linguagem atual
+
+}$related_exercises = $related_exercises_by_language[$current_language] ?? $related_exercises_by_language['javascript'];
+
+$current_hints = $hints_by_language[$current_language] ?? $hints_by_language['javascript'];
+
+.code-editor::selection {$current_lang_config = $language_config[$current_language] ?? $language_config['javascript'];
+
+    background: rgba(111, 66, 193, 0.3);
+
+    color: #d4d4d4;include 'header.php';
+
+}?>
+
+
+
+.info-row {<div class="container-fluid mt-4">
+
+    display: flex;    <!-- Alertas -->
+
+    flex-direction: column;    <?php if (isset($_SESSION['success'])): ?>
+
+    padding: 0.75rem 0;        <div class="alert alert-success alert-dismissible fade show" role="alert">
+
+    border-bottom: 1px solid #f0f0f0;            <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
+
+}            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+
+        </div>
+
+.info-row:last-child {    <?php endif; ?>
+
+    border-bottom: none;
+
+}    <div class="row">
+
+        <!-- Conteúdo Principal -->
+
+.info-label {        <div class="col-lg-8">
+
+    font-size: 0.75rem;            <!-- Cabeçalho do Exercício -->
+
+    font-weight: 600;            <div class="exercise-header-card mb-4">
+
+    color: #6c757d;                <div class="row align-items-center">
+
+    text-transform: uppercase;                    <div class="col-md-8">
+
+    letter-spacing: 0.5px;                        <div class="d-flex align-items-center mb-2">
+
+}                            <span class="exercise-type-badge me-2">
+
+                                <i class="fas fa-code me-1"></i>
+
+.info-value {                                <?php echo strtoupper($exercise['exercise_type'] ?? 'PRÁTICA'); ?>
+
+    font-size: 1rem;                            </span>
+
+    font-weight: 700;                            <span class="difficulty-badge difficulty-<?php echo $exercise['difficulty_level'] ?? 'beginner'; ?>">
+
+    color: #1a1a1a;                                <?php 
+
+}                                $difficulty_map = [
+
+                                    'beginner' => 'Iniciante', 
+
+.nav-tabs .nav-link {                                    'intermediate' => 'Intermediário', 
+
+    border-bottom: 3px solid transparent;                                    'advanced' => 'Avançado'
+
+    transition: all 0.3s ease;                                ];
+
+    color: #1a1a1a;                                $difficulty_level = $exercise['difficulty_level'] ?? 'beginner';
+
+}                                echo $difficulty_map[$difficulty_level] ?? 'Iniciante';
+
+                                ?>
+
+.nav-tabs .nav-link:hover {                            </span>
+
+    border-bottom-color: #6f42c1;                        </div>
+
+    color: #6f42c1;                        <h1 class="display-5 fw-bold mb-3 exercise-title"><?php echo sanitize($exercise['title'] ?? 'Exercício'); ?></h1>
+
+}                        <p class="lead exercise-description mb-3"><?php echo sanitize($exercise['description'] ?? 'Descrição do exercício'); ?></p>
+
+                        
+
+.nav-tabs .nav-link.active {                        <!-- Metadados -->
+
+    border-bottom-color: #6f42c1;                        <div class="metadata-grid">
+
+    color: #6f42c1;                            <div class="metadata-card metadata-category">
+
+    background: transparent;                                <div class="metadata-icon" style="color: <?php echo $current_lang_config['color']; ?>">
+
+}                                    <i class="fab <?php echo $current_lang_config['icon']; ?>"></i>
+
+                                </div>
+
+.tab-content {                                <div class="metadata-info">
+
+    animation: fadeIn 0.3s ease-out;                                    <span class="metadata-label">Linguagem</span>
+
+}                                    <span class="metadata-value"><?php echo $current_lang_config['name']; ?></span>
+
+                                </div>
+
+@keyframes fadeIn {                            </div>
+
+    from { opacity: 0; transform: translateY(10px); }                            <div class="metadata-card metadata-time">
+
+    to { opacity: 1; transform: translateY(0); }                                <div class="metadata-icon">
+
+}                                    <i class="fas fa-clock"></i>
+
+                                </div>
+
+.card {                                <div class="metadata-info">
+
+    transition: all 0.3s ease;                                    <span class="metadata-label">Tempo Médio</span>
+
+}                                    <span class="metadata-value"><?php echo $exercise_stats['avg_completion_time']; ?></span>
+
+                                </div>
+
+.card:hover {                            </div>
+
+    transform: translateY(-2px);                            <div class="metadata-card metadata-success">
+
+}                                <div class="metadata-icon">
+
+                                    <i class="fas fa-chart-line"></i>
+
+.btn {                                </div>
+
+    transition: all 0.3s ease;                                <div class="metadata-info">
+
+}                                    <span class="metadata-label">Taxa de Sucesso</span>
+
+                                    <span class="metadata-value"><?php echo $exercise_stats['success_rate']; ?>%</span>
+
+.btn:hover {                                </div>
+
+    transform: translateY(-1px);                            </div>
+
+}                            <div class="metadata-card metadata-attempts">
+
+                                <div class="metadata-icon">
+
+@media (max-width: 768px) {                                    <i class="fas fa-users"></i>
+
+    .exercise-title { font-size: 1.5rem; }                                </div>
+
+    .code-editor { min-height: 250px; }                                <div class="metadata-info">
+
+}                                    <span class="metadata-label">Tentativas</span>
+
+</style>                                    <span class="metadata-value"><?php echo number_format($exercise_stats['attempts'], 0, ',', '.'); ?></span>
+
+                                </div>
+
+<script>                            </div>
+
+// Code Editor Functions                        </div>
+
+function runCode() {                    </div>
+
+    const code = document.getElementById('codeEditor').value;                    <div class="col-md-4 text-end">
+
+    const resultContent = document.getElementById('resultContent');                        <div class="progress-ring-container">
+
+                                <div class="progress-ring">
+
+    if (!code.trim()) {                                <svg width="120" height="120" viewBox="0 0 120 120">
+
+        notify('O editor está vazio!', 'warning');                                    <circle class="progress-ring-bg" 
+
+        return;                                            stroke="rgba(255,255,255,0.2)" 
+
+    }                                            stroke-width="8" 
+
+                                                fill="transparent" 
+
+    try {                                            r="52" 
+
+        let output = '';                                            cx="60" 
+
+        const originalLog = console.log;                                            cy="60">
+
+        console.log = function(...args) {                                    </circle>
+
+            output += args.join(' ') + '\n';                                    <circle class="progress-ring-circle" 
+
+        };                                            stroke="url(#gradient)" 
+
+                                                    stroke-width="8" 
+
+        eval(code);                                            fill="transparent" 
+
+        console.log = originalLog;                                            r="52" 
+
+                                                    cx="60" 
+
+        resultContent.innerHTML = `                                            cy="60"
+
+            <div class="alert alert-success mb-0">                                            stroke-dasharray="326.56" 
+
+                <h6 class="mb-3"><i class="fas fa-check-circle me-2"></i>Sucesso!</h6>                                            stroke-dashoffset="<?php echo 326.56 * (1 - $exercise_stats['success_rate'] / 100); ?>"
+
+                <pre style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 0;">                                            stroke-linecap="round">
+
+<code>${output || 'Nenhuma saída'}</code></pre>                                    </circle>
+
+            </div>                                    <defs>
+
+        `;                                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+
+                                                    <stop offset="0%" style="stop-color:#06d6a0;stop-opacity:1" />
+
+        new bootstrap.Tab(document.getElementById('result-tab')).show();                                            <stop offset="100%" style="stop-color:#1b9aaa;stop-opacity:1" />
+
+        notify('Código executado!', 'success');                                        </linearGradient>
+
+    } catch (error) {                                    </defs>
+
+        resultContent.innerHTML = `                                </svg>
+
+            <div class="alert alert-danger mb-0">                                <div class="progress-text">
+
+                <h6 class="mb-3"><i class="fas fa-times-circle me-2"></i>Erro!</h6>                                    <span class="progress-percentage"><?php echo $exercise_stats['success_rate']; ?>%</span>
+
+                <p class="mb-2"><strong>${error.name}:</strong> ${error.message}</p>                                    <small class="progress-label">Taxa de Sucesso</small>
+
+                <pre style="background: #fff5f5; padding: 1rem; border-radius: 8px; margin: 0; font-size: 0.85rem;">                                </div>
+
+<code>${error.stack}</code></pre>                            </div>
+
+            </div>                        </div>
+
+        `;                    </div>
+
+                        </div>
+
+        new bootstrap.Tab(document.getElementById('result-tab')).show();            </div>
+
+        notify('Erro na execução!', 'danger');
+
+    }            <!-- Área de Trabalho -->
+
+}            <div class="workspace-container">
+
                 <!-- Navegação por Abas -->
-                <ul class="nav nav-tabs workspace-tabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="instructions-tab" data-bs-toggle="tab" data-bs-target="#instructions" type="button" role="tab" aria-controls="instructions" aria-selected="true">
+
+function runTests() {                <ul class="nav nav-tabs workspace-tabs" role="tablist">
+
+    notify('Testes não disponíveis nesta versão', 'info');                    <li class="nav-item" role="presentation">
+
+}                        <button class="nav-link active" id="instructions-tab" data-bs-toggle="tab" data-bs-target="#instructions" type="button" role="tab" aria-controls="instructions" aria-selected="true">
+
                             <i class="fas fa-book-open me-2"></i>
-                            <span>Instruções</span>
-                            <div class="tab-indicator"></div>
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor" type="button" role="tab" aria-controls="editor" aria-selected="false">
+
+function saveCode() {                            <span>Instruções</span>
+
+    const code = document.getElementById('codeEditor').value;                            <div class="tab-indicator"></div>
+
+    const id = <?php echo $id; ?>;                        </button>
+
+    localStorage.setItem('exercise_code_' + id, code);                    </li>
+
+    notify('Código salvo!', 'success');                    <li class="nav-item" role="presentation">
+
+}                        <button class="nav-link" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor" type="button" role="tab" aria-controls="editor" aria-selected="false">
+
                             <i class="fas fa-code me-2"></i>
-                            <span>Editor</span>
-                            <div class="tab-indicator"></div>
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="output-tab" data-bs-toggle="tab" data-bs-target="#output" type="button" role="tab" aria-controls="output" aria-selected="false">
+
+function copyCode() {                            <span>Editor</span>
+
+    const code = document.getElementById('codeEditor');                            <div class="tab-indicator"></div>
+
+    code.select();                        </button>
+
+    document.execCommand('copy');                    </li>
+
+    notify('Código copiado!', 'success');                    <li class="nav-item" role="presentation">
+
+}                        <button class="nav-link" id="output-tab" data-bs-toggle="tab" data-bs-target="#output" type="button" role="tab" aria-controls="output" aria-selected="false">
+
                             <i class="fas fa-terminal me-2"></i>
-                            <span>Resultado</span>
-                            <?php if ($execution_result): ?>
-                                <span class="result-badge badge-<?php echo $execution_result['success'] ? 'success' : 'danger'; ?>">
-                                    <i class="fas fa-<?php echo $execution_result['success'] ? 'check-circle' : 'times-circle'; ?>"></i>
-                                </span>
-                            <?php endif; ?>
-                            <div class="tab-indicator"></div>
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="solution-tab" data-bs-toggle="tab" data-bs-target="#solution" type="button" role="tab" aria-controls="solution" aria-selected="false">
-                            <i class="fas fa-lightbulb me-2"></i>
-                            <span>Solução</span>
-                            <div class="tab-indicator"></div>
-                        </button>
-                    </li>
-                </ul>
 
-                <div class="tab-content workspace-content">
-                    <!-- Aba Instruções -->
-                    <div class="tab-pane fade show active" id="instructions" role="tabpanel" aria-labelledby="instructions-tab">
-                        <div class="instructions-content">
-                            <section class="instruction-section">
-                                <h4 class="section-title">
-                                    <i class="fas fa-target text-primary me-2"></i>
+function resetCode() {                            <span>Resultado</span>
+
+    if (confirm('Deseja resetar o código?')) {                            <?php if ($execution_result): ?>
+
+        document.getElementById('codeEditor').value = '<?php echo addslashes(sanitize($exercise['initial_code'] ?? '')); ?>';                                <span class="result-badge badge-<?php echo $execution_result['success'] ? 'success' : 'danger'; ?>">
+
+        notify('Código resetado!', 'info');                                    <i class="fas fa-<?php echo $execution_result['success'] ? 'check-circle' : 'times-circle'; ?>"></i>
+
+    }                                </span>
+
+}                            <?php endif; ?>
+
+                            <div class="tab-indicator"></div>
+
+function toggleSolution() {                        </button>
+
+    const content = document.getElementById('solutionContent');                    </li>
+
+    content.style.display = content.style.display === 'none' ? 'block' : 'none';                    <li class="nav-item" role="presentation">
+
+    if (content.style.display === 'block') {                        <button class="nav-link" id="solution-tab" data-bs-toggle="tab" data-bs-target="#solution" type="button" role="tab" aria-controls="solution" aria-selected="false">
+
+        notify('Solução revelada!', 'success');                            <i class="fas fa-lightbulb me-2"></i>
+
+    }                            <span>Solução</span>
+
+}                            <div class="tab-indicator"></div>
+
+                        </button>
+
+function copySolution() {                    </li>
+
+    const code = document.getElementById('solutionCode').textContent;                </ul>
+
+    const textarea = document.createElement('textarea');
+
+    textarea.value = code;                <div class="tab-content workspace-content">
+
+    document.body.appendChild(textarea);                    <!-- Aba Instruções -->
+
+    textarea.select();                    <div class="tab-pane fade show active" id="instructions" role="tabpanel" aria-labelledby="instructions-tab">
+
+    document.execCommand('copy');                        <div class="instructions-content">
+
+    document.body.removeChild(textarea);                            <section class="instruction-section">
+
+    notify('Solução copiada!', 'success');                                <h4 class="section-title">
+
+}                                    <i class="fas fa-target text-primary me-2"></i>
+
                                     Objetivo do Exercício
-                                </h4>
-                                <div class="instruction-card">
-                                    <p><?php echo nl2br(sanitize($exercise['instructions'] ?? 'Instruções não disponíveis.')); ?></p>
-                                </div>
-                            </section>
 
-                            <?php if (!empty($exercise['hints'])): ?>
-                            <section class="instruction-section">
-                                <h4 class="section-title">
-                                    <i class="fas fa-lightbulb text-warning me-2"></i>
-                                    Dicas
-                                </h4>
+function shareExercise() {                                </h4>
+
+    notify('Compartilhamento não disponível nesta versão', 'info');                                <div class="instruction-card">
+
+}                                    <p><?php echo nl2br(sanitize($exercise['instructions'] ?? 'Instruções não disponíveis.')); ?></p>
+
+                                </div>
+
+function notify(msg, type = 'info') {                            </section>
+
+    const alert = document.createElement('div');
+
+    alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;                            <?php if (!empty($exercise['hints'])): ?>
+
+    alert.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';                            <section class="instruction-section">
+
+    alert.innerHTML = `${msg}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;                                <h4 class="section-title">
+
+    document.body.appendChild(alert);                                    <i class="fas fa-lightbulb text-warning me-2"></i>
+
+    setTimeout(() => alert.remove(), 3000);                                    Dicas
+
+}                                </h4>
+
                                 <div class="hints-container">
-                                    <?php 
-                                    $hints = explode("\n", $exercise['hints']);
-                                    foreach ($hints as $index => $hint): 
-                                        if (trim($hint)):
-                                    ?>
-                                    <div class="hint-item">
-                                        <div class="hint-number"><?php echo $index + 1; ?></div>
-                                        <div class="hint-content"><?php echo sanitize($hint); ?></div>
-                                    </div>
-                                    <?php 
-                                        endif;
-                                    endforeach; 
-                                    ?>
-                                </div>
-                            </section>
-                            <?php endif; ?>
 
-                            <section class="instruction-section">
-                                <h4 class="section-title">
+// Support Tab key in editor                                    <?php 
+
+document.addEventListener('DOMContentLoaded', function() {                                    $hints = explode("\n", $exercise['hints']);
+
+    const id = <?php echo $id; ?>;                                    foreach ($hints as $index => $hint): 
+
+    const saved = localStorage.getItem('exercise_code_' + id);                                        if (trim($hint)):
+
+    if (saved && document.getElementById('codeEditor').value === document.getElementById('codeEditor').defaultValue) {                                    ?>
+
+        document.getElementById('codeEditor').value = saved;                                    <div class="hint-item">
+
+    }                                        <div class="hint-number"><?php echo $index + 1; ?></div>
+
+                                            <div class="hint-content"><?php echo sanitize($hint); ?></div>
+
+    document.getElementById('codeEditor').addEventListener('keydown', function(e) {                                    </div>
+
+        if (e.key === 'Tab') {                                    <?php 
+
+            e.preventDefault();                                        endif;
+
+            const start = this.selectionStart;                                    endforeach; 
+
+            const end = this.selectionEnd;                                    ?>
+
+            this.value = this.value.substring(0, start) + '\t' + this.value.substring(end);                                </div>
+
+            this.selectionStart = this.selectionEnd = start + 1;                            </section>
+
+        }                            <?php endif; ?>
+
+    });
+
+});                            <section class="instruction-section">
+
+</script>                                <h4 class="section-title">
+
                                     <i class="fas fa-list-check text-success me-2"></i>
-                                    Requisitos
+
+<?php include 'footer.php'; ?>                                    Requisitos
+
                                 </h4>
                                 <div class="requirements-list">
                                     <div class="requirement-item" data-completed="true">

@@ -478,7 +478,7 @@ function completeExercise(exerciseId) {
 }
 
 .exercises-header .lead {
-    color: #1a1a1a !important;
+    color: #ffffffff !important;
     font-size: 1.1rem;
     font-weight: 600 !important;
 }

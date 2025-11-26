@@ -68,7 +68,7 @@ include 'header.php';
             <i class="fas fa-book-open"></i>
             Tutoriais
         </h1>
-        <p class="lead" style="color:#000000;">
+        <p class="lead" style="color: #1a1a1a;">
             Aprenda desenvolvimento web com nossos tutoriais detalhados
         </p>
         <?php if (isAdmin()): ?>
