@@ -650,11 +650,11 @@ include 'header.php';
 }
 
 .forum-header .lead {
-    color: rgba(255,255,255,0.9);
+    color: #000000;
     font-size: 1.1rem;
 }
-
 /* Cards gerais */
+
 .filters-card, .posts-card, .stats-card, 
 .categories-card, .popular-card, .rules-card {
     border-radius: 15px;

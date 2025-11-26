@@ -1,363 +1,601 @@
-<?php
-/**
- * ARQUIVO: show.php
- * DESCRIÇÃO: Exibe detalhes completos de um tutorial ou exercício
- * AUTOR: Sistema WebLearn
- * DATA: 2024
- */
-
-// Inclui arquivo de configuração com funções auxiliares (sanitize, redirect, etc)
-require_once 'config.php';
-
-// Inclui funções de tutorial se necessário
-if (file_exists('tutorial_functions.php')) {
-    require_once 'tutorial_functions.php';
-}
-
-// Captura e sanitiza o tipo de conteúdo da URL (tutorial ou exercise)
-$type = sanitize($_GET['type'] ?? '');
-
-// Captura e converte o ID para inteiro (proteção contra SQL injection)
-$id = (int)($_GET['id'] ?? 0);
-
-// Verifica se está em modo de prévia (para administradores)
-$preview = isset($_GET['preview']);
-
-// VALIDAÇÃO: Se não tiver tipo OU id, redireciona para página inicial
-if (!$type || !$id) {
-    redirect('index.php');
-}
-
-// ========================================
-// CARREGAR DADOS BASEADO NO TIPO
-// ========================================
-
-if ($type === 'tutorial') {
-    // TUTORIAIS: Carrega do arquivo JSON via função getTutorials()
-    require_once 'data/tutorials.php';
-    $items = getTutorials(); // Busca todos os tutoriais
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plataforma interativa para aprender desenvolvimento web com exercícios práticos e feedback em tempo real.">
+    <meta name="keywords" content="desenvolvimento web, HTML, CSS, JavaScript, PHP, exercícios, tutoriais, programação">
+    <meta name="author" content="WebLearn">
+    <meta name="google" content="notranslate">
     
-    // Filtra o tutorial específico pelo ID usando arrow function
-    $item = array_filter($items, fn($t) => $t['id'] === $id);
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="CSS Grid Layout - WebLearn - Jornada do Desenvolvedor">
+    <meta property="og:description" content="Plataforma interativa para aprender desenvolvimento web">
     
-    // Converte para array indexado e pega o primeiro (ou null se não encontrar)
-    $item = $item ? array_values($item)[0] : null;
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="CSS Grid Layout - WebLearn - Jornada do Desenvolvedor">
+    <meta property="twitter:description" content="Plataforma interativa para aprender desenvolvimento web">
     
-    // Define título da página
-    $title = $item ? $item['title'] : 'Tutorial não encontrado';
+    <title>CSS Grid Layout - WebLearn - Jornada do Desenvolvedor</title>
     
-    // ENRIQUECIMENTO DE DADOS: Adiciona campos extras se não existirem
-    if ($item) {
-        // Operador ?? retorna valor à direita se à esquerda for null
-        $item['author'] = $item['author'] ?? 'Equipe WebLearn';
-        $item['last_updated'] = $item['created_at'] ?? date('Y-m-d');
-        
-        // Valores fixos para demonstração
-        $item['rating'] = 4.8; // Avaliação em estrelas
-        $item['rating_count'] = rand(50, 200); // Número aleatório de avaliações
-        $item['downloads'] = rand(100, 1000); // Downloads simulados
-        $item['tags'] = $item['topics'] ?? []; // Tags para busca
-    }
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-} elseif ($type === 'exercise') {
-    // EXERCÍCIOS: Busca do banco de dados
-    $conn = getDBConnection();
-    $item = null;
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    if ($conn) {
-        $stmt = $conn->prepare("SELECT e.*, c.name as category_name FROM exercises e LEFT JOIN categories c ON e.category_id = c.id WHERE e.id = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $item = $result->fetch_assoc();
-        
-        if ($item) {
-            $item['category'] = $item['category_name'] ?? 'Geral';
-        }
-    }
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../themes.css">
+    <link rel="stylesheet" href="../components.css">
+    <link rel="stylesheet" href="../theme-text.css">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../animations.css">
     
-    $title = $item ? $item['title'] : 'Exercício não encontrado';
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    // ENRIQUECIMENTO: Adiciona campos padrão para exercícios
-    if ($item) {
-        // Array de objetivos de aprendizagem
-        $item['objectives'] = $item['objectives'] ?? [
-            'Implementar a solução proposta',
-            'Seguir as melhores práticas',
-            'Testar o código desenvolvido'
-        ];
-        
-        // Tecnologias usadas (cria array com categoria se não existir)
-        $item['technologies'] = $item['technologies'] ?? [$item['category']];
-        
-        // Pré-requisitos necessários
-        $item['prerequisites'] = $item['prerequisites'] ?? ['Conhecimentos básicos de ' . $item['category']];
-        
-        // Tempo estimado para completar
-        $item['estimated_time'] = $item['estimated_time'] ?? '30 minutos';
-        
-        // Estatísticas
-        $item['rating'] = $item['rating'] ?? 4.5;
-        $item['rating_count'] = $item['rating_count'] ?? rand(20, 100);
-        $item['author'] = $item['author'] ?? 'Equipe WebLearn';
-        $item['last_updated'] = $item['created_at'] ?? date('Y-m-d');
-        $item['downloads'] = $item['downloads'] ?? rand(50, 500);
-        
-        // Tags para categorização (categoria + dificuldade)
-        $item['tags'] = $item['tags'] ?? [$item['category'], $item['difficulty']];
-    }
-    
-} else {
-    // VALIDAÇÃO: Se tipo não for tutorial nem exercise, redireciona
-    redirect('index.php');
-}
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="theme-purple" id="body">
+    <!-- Skip to main content for screen readers -->
+    <a href="#main-content" class="visually-hidden-focusable btn btn-primary position-absolute top-0 start-0 m-2" style="z-index: 9999;">
+        Pular para o conteúdo principal    </a>
 
-// VALIDAÇÃO FINAL: Se não encontrou o item, redireciona para lista apropriada
-if (!$item) {
-    // Operador ternário: condição ? valor_se_true : valor_se_false
-    redirect($type === 'tutorial' ? 'tutorials_index.php' : 'exercises_index.php');
-}
-
-// ========================================
-// SISTEMA DE PROGRESSO DO USUÁRIO
-// ========================================
-
-// Inicializa variáveis de progresso
-$user_progress = 0; // Percentual de conclusão (0-100)
-$time_remaining = 'Não iniciado'; // Status em texto
-
-// Verifica se usuário está autenticado (função do config.php)
-if (isLoggedIn()) {
-    // Obtém conexão com banco de dados
-    $conn = getDBConnection();
-    
-    // Se tem conexão E é tutorial (exercícios tem sistema próprio)
-    if ($conn && $type === 'tutorial') {
-        try {
-            // Verifica se a tabela existe antes de consultar
-            if ($conn instanceof PDO) {
-                // Conexão PDO
-                $stmt = $conn->prepare("SELECT progress FROM tutorial_progress WHERE user_id = ? AND tutorial_id = ?");
-                $stmt->execute([getCurrentUser()['id'], $id]);
-                $progress_data = $stmt->fetch();
-            } else {
-                // Conexão MySQLi
-                $stmt = $conn->prepare("SELECT progress FROM tutorial_progress WHERE user_id = ? AND tutorial_id = ?");
-                if ($stmt) {
-                    $stmt->bind_param("ii", getCurrentUser()['id'], $id);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    $progress_data = $result->fetch_assoc();
-                } else {
-                    $progress_data = false;
-                }
-            }
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" role="navigation" aria-label="Navegação principal">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.php" aria-label="Página inicial">
+                <i class="fas fa-code me-2" aria-hidden="true"></i>
+                WebLearn - Jornada do Desenvolvedor            </a>
             
-            if ($progress_data) {
-                // Converte progresso para inteiro
-                $user_progress = (int)$progress_data['progress'];
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Alternar navegação">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link " 
+                           href="index.php" 
+                           >
+                            <i class="fas fa-home me-1" aria-hidden="true"></i>
+                            Início                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " 
+                           href="exercises_index.php"
+                           >
+                            <i class="fas fa-tasks me-1" aria-hidden="true"></i>
+                            Exercícios                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " 
+                           href="tutorials_index.php"
+                           >
+                            <i class="fas fa-book me-1" aria-hidden="true"></i>
+                            Tutoriais                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " 
+                           href="forum_index.php"
+                           >
+                            <i class="fas fa-comments me-1" aria-hidden="true"></i>
+                            Fórum                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " 
+                           href="badges.php"
+                           >
+                            <i class="fas fa-trophy me-1" aria-hidden="true"></i>
+                            Conquistas
+                        </a>
+                    </li>
+                </ul>
                 
-                // Define status baseado no progresso
-                $time_remaining = $user_progress >= 100 ? 'Concluído' : 'Em andamento';
-            }
+                <ul class="navbar-nav">
+                                            <li class="nav-item">
+                            <a class="nav-link" href="login.php">
+                                <i class="fas fa-sign-in-alt me-1" aria-hidden="true"></i>
+                                Entrar                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="register.php">
+                                <i class="fas fa-user-plus me-1" aria-hidden="true"></i>
+                                Registrar                            </a>
+                        </li>
+                                        
+                    <!-- Botão de configurações sempre visível -->
+                    <li class="nav-item">
+                        <button class="nav-link btn btn-link" onclick="toggleSettings()" 
+                                aria-label="Configurações" title="Configurações">
+                            <i class="fas fa-palette" aria-hidden="true"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Seletor de Tema e Configurações -->
+    <div class="theme-selector collapsed" id="themeSelector" role="dialog" aria-labelledby="settingsTitle" aria-hidden="true">
+        <button class="theme-toggle" onclick="toggleSettings()" aria-label="Alternar configurações">
+            <i class="fas fa-palette" aria-hidden="true"></i>
+        </button>
+        
+        <div class="p-3 " style="color: var(--text-muted);">
+            <h5 id="settingsTitle" class="label">
+                <i class="fas fa-cog me-2" aria-hidden="true"></i>
+                Configurações            </h5>
             
-        } catch (Exception $e) {
-            // TRATAMENTO DE ERRO: Silencia erro se tabela não existir
-            // Não exibe erro para não quebrar a página
-            // Mantém valores padrão: $user_progress = 0, $time_remaining = 'Não iniciado'
-        }
-    }
+            <form method="POST" action="" id="settingsForm">
+                <!-- Seletor de Tema -->
+                <div class="mb-0">
+                    <label class="form-label fw-semibold">Tema</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="theme-option theme-purple active" 
+                                onclick="changeTheme('purple')" 
+                                aria-label="Roxo Moderno"
+                                title="Roxo Moderno"></button>
+                        <button type="button" class="theme-option theme-blue " 
+                                onclick="changeTheme('blue')" 
+                                aria-label="Azul Clássico"
+                                title="Azul Clássico"></button>
+                        <button type="button" class="theme-option theme-green " 
+                                onclick="changeTheme('green')" 
+                                aria-label="Verde Natural"
+                                title="Verde Natural"></button>
+                        <button type="button" class="theme-option theme-dark " 
+                                onclick="changeTheme('dark')" 
+                                aria-label="Escuro"
+                                title="Escuro"></button>
+                    </div>
+                </div>
+                
+                <!-- Seletor de Idioma -->
+                <div class="mb-3">
+                    <label for="languageSelect" class="form-label fw-semibold">Idioma</label>
+                    <select class="form-select form-select-sm" id="languageSelect" name="language" onchange="changeLanguage(this.value)">
+                        <option value="pt-br" selected>
+                            🇧🇷 Português                        </option>
+                        <option value="en" >
+                            🇺🇸 English                        </option>
+                        <option value="es" >
+                            🇪🇸 Español                        </option>
+                    </select>
+                </div>
+                
+                <!-- Modo Acessibilidade -->
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="accessibilityMode" 
+                                                              onchange="toggleAccessibility()">
+                        <label class="form-check-label fw-semibold" for="accessibilityMode">
+                            <i class="fas fa-universal-access me-1" aria-hidden="true"></i>
+                            Modo para Daltônicos                        </label>
+                    </div>
+                    <small class="text-muted">
+                        Ativa cores e padrões otimizados para pessoas com daltonismo                    </small>
+                </div>
+                
+                <input type="hidden" name="change_theme" value="1">
+                <input type="hidden" name="theme" id="themeInput" value="purple">
+                <input type="hidden" name="change_language" value="1">
+                <input type="hidden" name="toggle_accessibility" value="1" id="accessibilityInput">
+            </form>
+        </div>
+    </div>
+
+    <!-- Overlay para fechar configurações -->
+    <div class="settings-overlay" id="settingsOverlay" onclick="closeSettings()" style="display: none;"></div>
+
+    <!-- Main Content -->
+    <main id="main-content" role="main" style="padding-top: 80px;">
+        
+        <div id="cookieBanner" class="cookie-banner">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-cookie-bite fa-2x text-warning me-3"></i>
+                    <div>
+                        <h6 class="mb-1">Uso de Cookies e Dados</h6>
+                        <p2 class=" small" style="color: #fff:">
+                            Utilizamos cookies essenciais para o funcionamento da plataforma e dados pessoais conforme nossa 
+                            <a href="lgpd.php" class="text-decoration-underline">Política de Privacidade</a>.
+                        </p2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-end">
+                <button onclick="acceptCookies()" class="btn btn-success btn-sm me-2">
+                    <i class="fas fa-check me-1"></i>Aceitar
+                </button>
+                <button onclick="showCookieSettings()" class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-cog me-1"></i>Configurar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="cookieSettings" class="cookie-settings" style="display: none;">
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Configurações de Privacidade</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="essentialCookies" checked disabled>
+                    <label class="form-check-label" for="essentialCookies">
+                        <strong>Cookies Essenciais</strong> (Obrigatórios)
+                        <small class="d-block text-muted">Necessários para login e funcionamento básico</small>
+                    </label>
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="analyticsCookies">
+                    <label class="form-check-label" for="analyticsCookies">
+                        <strong>Cookies de Análise</strong> (Opcionais)
+                        <small class="d-block text-muted">Ajudam a melhorar a plataforma</small>
+                    </label>
+                </div>
+                <div class="text-end">
+                    <button onclick="saveCookieSettings()" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Salvar Preferências
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.95);
+    color: #ffffff;
+    padding: 1rem 0;
+    z-index: 1000;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+    font-weight: 500;
 }
 
-// ========================================
-// RENDERIZAÇÃO DA PÁGINA
-// ========================================
+.cookie-banner h6 {
+    color: #ffffff;
+    font-weight: 600;
+}
 
-// Inclui o cabeçalho HTML (navbar, links CSS, etc)
-include 'header.php';
-?>
+.cookie-banner p {
+    color: #f8f9fa;
+}
 
-<!-- Carrega estilos específicos do componente (moved from inline) -->
-<link rel="stylesheet" href="components/course-info.css">
+.cookie-banner a {
+    color: #ffc107;
+    font-weight: 600;
+}
 
-<!-- Ajustes locais de estilo: título, descrição e ícones em preto para melhor contraste e visibilidade -->
+.cookie-settings {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.8);
+    padding: 2rem 0;
+    z-index: 1001;
+}
+</style>
+
+<script>
+function acceptCookies() {
+    const currentLang = getCurrentLanguage();
+    document.cookie = "lgpd_consent=accepted; path=/; max-age=" + (30*60); // 30 minutos
+    document.cookie = "analytics_consent=true; path=/; max-age=" + (30*60);
+    document.cookie = "lgpd_language=" + currentLang + "; path=/; max-age=" + (30*60);
+    document.getElementById('cookieBanner').style.display = 'none';
+}
+
+function getCurrentLanguage() {
+    const path = window.location.pathname;
+    if (path.includes('/en/')) return 'en';
+    if (path.includes('/es/')) return 'es';
+    return 'pt-br';
+}
+
+function showCookieSettings() {
+    document.getElementById('cookieSettings').style.display = 'block';
+}
+
+function saveCookieSettings() {
+    const analytics = document.getElementById('analyticsCookies').checked;
+    const currentLang = getCurrentLanguage();
+    document.cookie = "lgpd_consent=configured; path=/; max-age=" + (30*60);
+    document.cookie = "analytics_consent=" + analytics + "; path=/; max-age=" + (30*60);
+    document.cookie = "lgpd_language=" + currentLang + "; path=/; max-age=" + (30*60);
+    document.getElementById('cookieBanner').style.display = 'none';
+    document.getElementById('cookieSettings').style.display = 'none';
+}
+</script>
+        
+        <!-- Mensagens de Feedback -->
+        
+        
+        
+        
+    <script>
+        let settingsOpen = false;
+        
+        function toggleSettings() {
+            const selector = document.getElementById('themeSelector');
+            const overlay = document.getElementById('settingsOverlay');
+            
+            if (settingsOpen) {
+                closeSettings();
+            } else {
+                openSettings();
+            }
+        }
+        
+        function openSettings() {
+            const selector = document.getElementById('themeSelector');
+            const overlay = document.getElementById('settingsOverlay');
+            
+            selector.classList.remove('collapsed');
+            selector.setAttribute('aria-hidden', 'false');
+            overlay.style.display = 'block';
+            overlay.classList.add('show');
+            settingsOpen = true;
+            
+            // Anunciar abertura para leitores de tela
+            if (typeof announceChange === 'function') {
+                announceChange('Configurações abertas');
+            }
+            
+            // Focus no primeiro elemento focável
+            setTimeout(() => {
+                const firstInput = selector.querySelector('button:not(.theme-toggle), input, select');
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+        
+        function closeSettings() {
+            const selector = document.getElementById('themeSelector');
+            const overlay = document.getElementById('settingsOverlay');
+            
+            selector.classList.add('collapsed');
+            selector.setAttribute('aria-hidden', 'true');
+            overlay.classList.remove('show');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+            settingsOpen = false;
+            
+            // Anunciar fechamento para leitores de tela
+            if (typeof announceChange === 'function') {
+                announceChange('Configurações fechadas');
+            }
+        }
+
+        function changeTheme(theme) {
+            // Atualizar visual imediatamente
+            document.body.className = document.body.className.replace(/theme-\w+/g, '');
+            document.body.classList.add('theme-' + theme);
+            
+            // Atualizar botões ativos
+            document.querySelectorAll('.theme-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const selectedTheme = document.querySelector('.theme-option.theme-' + theme);
+            if (selectedTheme) {
+                selectedTheme.classList.add('active');
+            }
+            
+            // Anunciar mudança de tema
+            const themeNames = {
+                'purple': 'Roxo Moderno',
+                'blue': 'Azul Clássico',
+                'green': 'Verde Natural',
+                'dark': 'Escuro'
+            };
+            
+            if (typeof announceChange === 'function') {
+                announceChange('Tema alterado para ' + themeNames[theme]);
+            }
+            
+            // Enviar para servidor
+            document.getElementById('themeInput').value = theme;
+            
+            // Criar formulário temporário para envio
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.style.display = 'none';
+            
+            const themeInput = document.createElement('input');
+            themeInput.name = 'theme';
+            themeInput.value = theme;
+            
+            const changeThemeInput = document.createElement('input');
+            changeThemeInput.name = 'change_theme';
+            changeThemeInput.value = '1';
+            
+            form.appendChild(themeInput);
+            form.appendChild(changeThemeInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function changeLanguage(language) {
+            // Marcar que o idioma foi alterado para mostrar LGPD novamente
+            document.cookie = "lgpd_consent=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            document.cookie = "lgpd_language=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            
+            // Redirecionar para a pasta do idioma correspondente
+            const currentPath = window.location.pathname;
+            const currentLang = getCurrentLanguage();
+            const newPath = currentPath.replace('/' + currentLang + '/', '/' + language + '/');
+            window.location.href = newPath;
+        }
+        
+        function getCurrentLanguage() {
+            const path = window.location.pathname;
+            if (path.includes('/en/')) return 'en';
+            if (path.includes('/es/')) return 'es';
+            return 'pt-br';
+        }
+
+        function toggleAccessibility() {
+            const checkbox = document.getElementById('accessibilityMode');
+            
+            // Atualizar visual imediatamente
+            if (checkbox.checked) {
+                document.body.classList.add('accessibility-mode');
+            } else {
+                document.body.classList.remove('accessibility-mode');
+            }
+            
+            // Criar formulário temporário para envio
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.style.display = 'none';
+            
+            const accessInput = document.createElement('input');
+            accessInput.name = 'toggle_accessibility';
+            accessInput.value = '1';
+            
+            form.appendChild(accessInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // Fechar configurações com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && settingsOpen) {
+                closeSettings();
+            }
+        });
+
+        // Aplicar tema inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentTheme = 'purple';
+            const accessibilityMode = false;
+            
+            document.body.classList.add('theme-' + currentTheme);
+            if (accessibilityMode) {
+                document.body.classList.add('accessibility-mode');
+            }
+        });
+    </script>
+
+    <style>
+        /* Estilos específicos para melhorar a experiência do usuário */
+        .theme-selector.first-visit {
+            animation: pulse 2s infinite;
+        }
+        
+        .theme-selector.first-visit::after {
+            content: 'Clique para personalizar';
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            animation: fadeInTooltip 0.5s ease-in-out 1s forwards;
+            
+        }
+  
+        @keyframes fadeInTooltip {
+            to { opacity: 1; }
+        }
+        
+        /* Melhorias para dispositivos móveis */
+        @media (max-width: 768px) {
+            .theme-selector.first-visit::after {
+                top: -35px;
+                font-size: 0.7rem;
+                padding: 6px 10px;
+            }
+        }
+        
+    </style>
+
+
+<!-- Estilo específico: garantir título e texto "Sobre este tutorial" em preto -->
 <style>
-    /* Título principal em preto, negrito para destaque */
-    .header-title {
-        color: #1a1a1a !important;
-        font-weight: 700 !important;
+    /* Classe aplicada somente ao bloco "Sobre este tutorial" */
+    .about-tutorial h4, .about-tutorial p {
+        color: #000000 !important;
     }
-
-    /* Descrição do header em preto */
-    .header-description {
-        color: #1a1a1a !important;
-        font-weight: 600 !important;
-    }
-
-    /* Badges em preto para melhor destaque */
-    .badges-row .badge-modern {
-        color: #000 !important;
-        font-weight: 600 !important;
-    }
-
-    /* Ícones e metadados em preto */
-    .metadata-icon {
-        color: #1a1a1a !important;
-    }
-
-    .metadata-label {
-        color: #1a1a1a !important;
-        font-weight: 700 !important;
-    }
-
-    .metadata-value {
-        color: #1a1a1a !important;
-        font-weight: 600 !important;
-    }
-
-    .metadata-text {
-        color: #1a1a1a !important;
-    }
-
-    .metadata-card {
-        color: #1a1a1a !important;
-    }
-
-    .metadata-grid-modern {
-        color: #1a1a1a !important;
-    }
-
-    .stat-badge {
-        color: #1a1a1a !important;
-    }
-
-    .stat-value,
-    .stat-label {
-        color: #1a1a1a !important;
-    }
-
-    /* Títulos de seções do conteúdo em preto e negrito */
+    /* Forçar título da seção Conteúdo do Tutorial para preto */
     .section-title {
-        color: #1a1a1a !important;
-        font-weight: 700 !important;
+        color: #000000 !important;
     }
-
-    /* Subtítulos (h4, h5, h6) dentro de content-block em preto */
-    .content-block h4,
-    .content-block h5,
-    .content-block h6 {
-        color: #1a1a1a !important;
-        font-weight: 700 !important;
+    /* Forçar cor preta para labels e valores dos metadados (Categoria, Dificuldade, Duração, Status, Avaliação, Autor) */
+    .metadata-card .metadata-label,
+    .metadata-card .metadata-value,
+    .metadata-text .metadata-label,
+    .metadata-text .metadata-value {
+        color: #000000 !important;
     }
-
-    /* Texto geral do conteúdo em preto */
-    .content-block p,
-    .tutorial-content p,
-    .about-tutorial,
-    .exercise-description-box p {
-        color: #1a1a1a !important;
-    }
-
-    /* Seções de exercícios */
-    .instruction-title,
-    .instruction-step h5 {
-        color: #1a1a1a !important;
-        font-weight: 700 !important;
-    }
-
-    .instruction-step p,
-    .instruction-step {
-        color: #1a1a1a !important;
-    }
-
-    /* Objetivos e tecnologias */
-    .objective-item,
-    .objective-item span,
-    .tech-badge {
-        color: #1a1a1a !important;
-    }
-
-    /* Recursos */
-    .resource-card h5 {
-        color: #1a1a1a !important;
-        font-weight: 700 !important;
-    }
-
-    .resource-card p {
-        color: #1a1a1a !important;
-    }
-
-    /* Comunidade e discussões */
-    .community-header h4,
-    .section-header-community h4 {
-        color: #1a1a1a !important;
-        font-weight: 700 !important;
-    }
-
-    .discussion-forum,
-    .user-solutions {
-        color: #1a1a1a !important;
-    }
-
-    /* Tópicos e listas */
-    .topics-list li,
-    .topics-list {
-        color: #1a1a1a !important;
-    }
-
-    /* Prerequisitos */
-    .prerequisite-item {
-        color: #1a1a1a !important;
-    }
-
-    /* Card de informações na sidebar */
-    .info-card h4,
-    .info-card h5,
-    .info-card h6 {
-        color: #1a1a1a !important;
-        font-weight: 700 !important;
-    }
-
-    .info-card p,
-    .info-card span {
-        color: #1a1a1a !important;
-    }
-
-    /* Dicas de estudo */
-    .bg-light h5,
-    .bg-light p,
-    .bg-light ul,
-    .bg-light li {
-        color: #1a1a1a !important;
-    }
-
-    /* Garantir que texto em qualquer elemento seja preto */
-    .content-section,
-    .main-content-card,
-    .action-card {
-        color: #1a1a1a !important;
-    }
-
-    /* Labels e valores genéricos */
-    [class*="label"],
-    [class*="value"] {
-        color: #1a1a1a !important;
-    }
+            /* Forçar cor preta especificamente para o valor do bloco de informação 'Autor' (info-item-modern) */
+            .info-item-modern .info-value,
+            .info-item-modern .info-value strong {
+                color: #000000 !important;
+            }
+               /* Forçar título "Exemplo Prático" para preto */
+               .example-practice h4 {
+                   color: #000000 !important;
+               }
+                /* Forçar cor preta para o título principal do conteúdo (por exemplo: "CSS Grid Layout") */
+                .header-title {
+                    color: #000000 !important;
+                }
+                /* Destacar ícones: metadados, estatísticas e bloco Autor */
+                .metadata-card .metadata-icon i,
+                .info-item-modern .info-icon i,
+                .header-stats .stat-icon i,
+                .stat-badge .stat-icon i {
+                    font-size: 1.15rem; /* ligeiramente maior */
+                    width: 40px;
+                    height: 40px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg, rgba(67,97,238,0.12), rgba(108,155,255,0.08));
+                    color: #1f2937 !important; /* tom mais escuro para destaque */
+                    box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+                    transform: translateZ(0);
+                }
+                /* Ícones principais (visualizações/estrela) mais fortes */
+                .header-stats .stat-icon.rating i,
+                .header-stats .stat-icon.downloads i {
+                    font-size: 1.25rem;
+                    color: #0b63ff !important;
+                }
+                /* Pequena briga de espaço para manter alinhamento */
+                .metadata-card .metadata-icon { margin-right: 10px; }
 </style>
 
 <!-- CONTAINER PRINCIPAL Bootstrap -->
 <div class="container mt-4">
     
     <!-- ALERTA DE PRÉVIA: Só aparece se ?preview=1 na URL -->
-    <?php if ($preview): ?>
-        <div class="alert alert-info d-flex align-items-center">
-            <i class="fas fa-eye me-2"></i>
-            <div>
-                <strong>Modo Visualização:</strong> Esta é uma prévia do conteúdo. Alterações não serão salvas.
-            </div>
-        </div>
-    <?php endif; ?>
-
+    
     <div class="row">
         <div class="col-lg-8">
             <!-- Cabeçalho do Conteúdo -->
@@ -370,48 +608,42 @@ include 'header.php';
                         <div class="flex-grow-1">
                             <!-- Badges no topo -->
                             <div class="badges-row mb-3">
-                                <span class="badge-modern type-badge <?php echo $type === 'tutorial' ? 'tutorial' : 'exercise'; ?>">
-                                    <i class="fas fa-<?php echo $type === 'tutorial' ? 'graduation-cap' : 'code'; ?>"></i>
-                                    <?php echo $type === 'tutorial' ? 'Tutorial' : 'Exercício'; ?>
-                                </span>
-                                <span class="badge-modern difficulty-badge-modern difficulty-<?php echo strtolower($item['difficulty']); ?>">
+                                <span class="badge-modern type-badge tutorial">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    Tutorial                                </span>
+                                <span class="badge-modern difficulty-badge-modern difficulty-intermediário">
                                     <i class="fas fa-signal"></i>
-                                    <?php echo sanitize($item['difficulty']); ?>
-                                </span>
+                                    Intermediário                                </span>
                             </div>
                             
                             <!-- Título principal -->
-                            <h1 class="header-title mb-3"><?php echo sanitize($item['title']); ?></h1>
+                            <h1 class="header-title mb-3">CSS Grid Layout</h1>
                             
                             <!-- Descrição -->
-                            <p class="header-description mb-4"><?php echo sanitize($item['description']); ?></p>
+                            <p class="header-description mb-4">Domine o sistema de grid do CSS para layouts modernos</p>
                             
                             <!-- Estatísticas em destaque -->
                             <div class="header-stats">
-                                <?php if (isset($item['rating'])): ?>
-                                <div class="stat-badge">
+                                                                <div class="stat-badge">
                                     <div class="stat-icon rating">
                                         <i class="fas fa-star"></i>
                                     </div>
                                     <div class="stat-info">
-                                        <span class="stat-value"><?php echo $item['rating']; ?></span>
-                                        <span class="stat-label">(<?php echo $item['rating_count']; ?>)</span>
+                                        <span class="stat-value">4.8</span>
+                                        <span class="stat-label">(156)</span>
                                     </div>
                                 </div>
-                                <?php endif; ?>
-                                
-                                <?php if (isset($item['downloads'])): ?>
-                                <div class="stat-badge">
+                                                                
+                                                                <div class="stat-badge">
                                     <div class="stat-icon downloads">
                                         <i class="fas fa-download"></i>
                                     </div>
                                     <div class="stat-info">
-                                        <span class="stat-value"><?php echo number_format($item['downloads']); ?></span>
+                                        <span class="stat-value">163</span>
                                         <span class="stat-label">downloads</span>
                                     </div>
                                 </div>
-                                <?php endif; ?>
-                            </div>
+                                                            </div>
                         </div>
                         
                         <!-- Ações do header -->
@@ -436,18 +668,17 @@ include 'header.php';
                             </div>
                             <div class="metadata-text">
                                 <span class="metadata-label">Categoria</span>
-                                <span class="metadata-value"><?php echo sanitize($item['category']); ?></span>
+                                <span class="metadata-value">CSS</span>
                             </div>
                         </div>
                         
-                        <?php if ($type === 'tutorial'): ?>
-                        <div class="metadata-card">
+                                                <div class="metadata-card">
                             <div class="metadata-icon duration">
                                 <i class="fas fa-clock"></i>
                             </div>
                             <div class="metadata-text">
                                 <span class="metadata-label">Duração</span>
-                                <span class="metadata-value"><?php echo sanitize($item['duration']); ?></span>
+                                <span class="metadata-value">25 min</span>
                             </div>
                         </div>
                         
@@ -457,28 +688,17 @@ include 'header.php';
                             </div>
                             <div class="metadata-text">
                                 <span class="metadata-label">Visualizações</span>
-                                <span class="metadata-value"><?php echo number_format($item['views']); ?></span>
+                                <span class="metadata-value">890</span>
                             </div>
                         </div>
-                        <?php else: ?>
-                        <div class="metadata-card">
-                            <div class="metadata-icon time">
-                                <i class="fas fa-stopwatch"></i>
-                            </div>
-                            <div class="metadata-text">
-                                <span class="metadata-label">Tempo estimado</span>
-                                <span class="metadata-value"><?php echo $item['estimated_time']; ?></span>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-                        
+                                                
                         <div class="metadata-card">
                             <div class="metadata-icon author">
                                 <i class="fas fa-user-circle"></i>
                             </div>
                             <div class="metadata-text">
                                 <span class="metadata-label">Autor</spde exean>
-                                <span class="metadata-value"><?php echo isset($item['author']) ? $item['author'] : 'Equipe WebLearn'; ?></span>
+                                <span class="metadata-value">Equipe WebLearn</span>
                             </div>
                         </div>
                         
@@ -488,7 +708,7 @@ include 'header.php';
                             </div>
                             <div class="metadata-text">
                                 <span class="metadata-label">Atualização</span>
-                                <span class="metadata-value"><?php echo isset($item['last_updated']) ? date('d/m/Y', strtotime($item['last_updated'])) : date('d/m/Y'); ?></span>
+                                <span class="metadata-value">20/01/2024</span>
                             </div>
                         </div>
                     </div>
@@ -504,14 +724,7 @@ include 'header.php';
                                 <i class="fas fa-file-alt me-2"></i>Conteúdo
                             </button>
                         </li>
-                        <?php if ($type === 'exercise'): ?>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#objectives" type="button" role="tab">
-                                <i class="fas fa-bullseye me-2"></i>Objetivos
-                            </button>
-                        </li>
-                        <?php endif; ?>
-                        <li class="nav-item" role="presentation">
+                                                <li class="nav-item" role="presentation">
                             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#resources" type="button" role="tab">
                                 <i class="fas fa-tools me-2"></i>Recursos
                             </button>
@@ -526,72 +739,23 @@ include 'header.php';
                     <div class="tab-content mt-4">
                         <!-- Aba de Conteúdo -->
                         <div class="tab-pane fade show active" id="content" role="tabpanel">
-                            <?php if ($type === 'tutorial'): ?>
-                                <section class="content-section">
+                                                            <section class="content-section">
                                     <h3 class="section-title">📚 Conteúdo do Tutorial</h3>
                                     <div class="tutorial-content">
                                         <div class="content-block about-tutorial">
                                             <h4>Sobre este tutorial</h4>
-                                            <p><?php echo nl2br(htmlspecialchars($item['description'])); ?></p>
+                                            <p>Domine o sistema de grid do CSS para layouts modernos</p>
                                         </div>
                                         
-                                        <?php if (isset($item['topics']) && !empty($item['topics'])): ?>
-                                        <div class="content-block">
-                                            <h4>Tópicos Abordados</h4>
-                                            <ul class="topics-list">
-                                                <?php foreach ($item['topics'] as $topic): ?>
-                                                    <li><i class="fas fa-check-circle text-success me-2"></i><?php echo htmlspecialchars($topic); ?></li>
-                                                <?php endforeach; ?>
-                                            </ul>
-                                        </div>
-                                        <?php endif; ?>
-                                        
-                                        <?php if (isset($item['learning_outcomes']) && !empty($item['learning_outcomes'])): ?>
-                                        <div class="content-block">
-                                            <h4>O que você vai aprender</h4>
-                                            <div class="learning-objectives">
-                                                <?php foreach ($item['learning_outcomes'] as $outcome): ?>
-                                                <div class="objective-card">
-                                                    <i class="fas fa-lightbulb text-warning"></i>
-                                                    <div>
-                                                        <p><?php echo htmlspecialchars($outcome); ?></p>
-                                                    </div>
-                                                </div>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        </div>
-                                        <?php endif; ?>
-                                        
-                                        <?php if (isset($item['prerequisites']) && !empty($item['prerequisites'])): ?>
-                                        <div class="content-block">
-                                            <h4>Pré-requisitos</h4>
-                                            <div class="prerequisites-grid">
-                                                <?php foreach ($item['prerequisites'] as $prereq): ?>
-                                                <div class="prerequisite-item required">
-                                                    <i class="fas fa-check-circle"></i>
-                                                    <span><?php echo htmlspecialchars($prereq); ?></span>
-                                                </div>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        </div>
-                                        <?php endif; ?>
-                                        
+                                                                                
+                                                                                
+                                                                                
                                         <div class="content-block example-practice">
                                             <h4><i class="fas fa-code text-primary me-2"></i>Exemplo Prático</h4>
                                             <div class="code-example-container">
                                                 <div class="code-example-header">
                                                     <span class="code-example-title">
-                                                        <?php
-                                                        $exampleTitle = match($item['category']) {
-                                                            'HTML' => 'exemplo.html',
-                                                            'CSS' => 'estilos.css',
-                                                            'JavaScript' => 'script.js',
-                                                            'PHP' => 'codigo.php',
-                                                            default => 'exemplo.txt'
-                                                        };
-                                                        echo $exampleTitle;
-                                                        ?>
-                                                    </span>
+                                                        estilos.css                                                    </span>
                                                     <div class="code-example-actions">
                                                         <button class="btn-code-action" onclick="copyCode(this)" title="Copiar código">
                                                             <i class="fas fa-copy"></i>
@@ -599,99 +763,15 @@ include 'header.php';
                                                     </div>
                                                 </div>
                                                 <div class="code-example-body">
-                                                    <pre><code class="language-<?php echo strtolower($item['category']); ?>"><?php
-                                                    // Gerar exemplo baseado na categoria e ID do tutorial
-                                                    $codeExample = '';
-                                                    
-                                                    if ($item['category'] === 'HTML') {
-                                                        if (stripos($item['title'], 'Estrutura') !== false || $item['id'] == 1) {
-                                                            $codeExample = '<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Página com estrutura HTML5 semântica">
-    <title>Estrutura HTML5 Moderna</title>
-</head>
-<body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="#home">Início</a></li>
-                <li><a href="#sobre">Sobre</a></li>
-                <li><a href="#contato">Contato</a></li>
-            </ul>
-        </nav>
-    </header>
-    
-    <main>
-        <article>
-            <h1>Bem-vindo ao HTML5</h1>
-            <p>Esta é uma estrutura semântica e acessível.</p>
-        </article>
-    </main>
-    
-    <footer>
-        <p>&copy; 2024 - Todos os direitos reservados</p>
-    </footer>
-</body>
-</html>';
-                                                        } elseif (stripos($item['title'], 'Formul') !== false || $item['id'] == 4) {
-                                                            $codeExample = '<form action="/processar" method="POST" aria-label="Formulário de contato">
-    <fieldset>
-        <legend>Informações Pessoais</legend>
-        
-        <div class="form-group">
-            <label for="nome">Nome completo:</label>
-            <input type="text" id="nome" name="nome" 
-                   required 
-                   aria-required="true"
-                   placeholder="Digite seu nome">
-        </div>
-        
-        <div class="form-group">
-            <label for="email">E-mail:</label>
-            <input type="email" id="email" name="email" 
-                   required 
-                   aria-required="true"
-                   aria-describedby="email-help">
-            <small id="email-help">Nunca compartilharemos seu e-mail</small>
-        </div>
-        
-        <div class="form-group">
-            <label for="mensagem">Mensagem:</label>
-            <textarea id="mensagem" name="mensagem" 
-                      rows="4" 
-                      aria-label="Digite sua mensagem"></textarea>
-        </div>
-    </fieldset>
-    
-    <button type="submit" class="btn-submit">Enviar</button>
-</form>';
-                                                        } else {
-                                                            $codeExample = '<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>' . htmlspecialchars($item['title']) . '</title>
-</head>
-<body>
-    <h1>Exemplo de ' . htmlspecialchars($item['category']) . '</h1>
-    <p>Conteúdo do tutorial sobre ' . htmlspecialchars($item['title']) . '</p>
-</body>
-</html>';
-                                                        }
-                                                    } elseif ($item['category'] === 'CSS') {
-                                                        if (stripos($item['title'], 'Grid') !== false || $item['id'] == 2) {
-                                                            $codeExample = '/* Layout com CSS Grid */
+                                                    <pre><code class="language-css">/* Layout com CSS Grid */
 .container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: auto 1fr auto;
     grid-template-areas: 
-        "header header header"
-        "sidebar main main"
-        "footer footer footer";
+        &quot;header header header&quot;
+        &quot;sidebar main main&quot;
+        &quot;footer footer footer&quot;;
     gap: 20px;
     min-height: 100vh;
 }
@@ -728,341 +808,12 @@ include 'header.php';
     .container {
         grid-template-columns: 1fr;
         grid-template-areas: 
-            "header"
-            "main"
-            "sidebar"
-            "footer";
+            &quot;header&quot;
+            &quot;main&quot;
+            &quot;sidebar&quot;
+            &quot;footer&quot;;
     }
-}';
-                                                        } elseif (stripos($item['title'], 'Flexbox') !== false || $item['id'] == 5) {
-                                                            $codeExample = '/* Layout Flexível com Flexbox */
-.flex-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    padding: 2rem;
-}
-
-.flex-item {
-    flex: 1;
-    padding: 1.5rem;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-}
-
-.flex-item:hover {
-    transform: translateY(-5px);
-}
-
-/* Navegação com Flexbox */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    background: #2c3e50;
-}
-
-.nav-links {
-    display: flex;
-    gap: 2rem;
-    list-style: none;
-}
-
-/* Cards responsivos */
-.card-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-}
-
-.card {
-    flex: 1 1 300px;
-    max-width: 350px;
-}';
-                                                        } elseif (stripos($item['title'], 'Animation') !== false || $item['id'] == 7) {
-                                                            $codeExample = '/* Animações CSS Avançadas */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-}
-
-.animated-card {
-    animation: fadeInUp 0.6s ease-out;
-    transition: all 0.3s ease;
-}
-
-.animated-card:hover {
-    animation: pulse 1s infinite;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-/* Loading Spinner */
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-/* Transition suave */
-.smooth-transition {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}';
-                                                        } else {
-                                                            $codeExample = '/* Estilos para ' . htmlspecialchars($item['title']) . ' */
-.exemplo {
-    padding: 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 12px;
-    color: white;
-}
-
-.exemplo h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
-.exemplo p {
-    line-height: 1.6;
-    opacity: 0.9;
-}';
-                                                        }
-                                                    } elseif ($item['category'] === 'JavaScript') {
-                                                        if (stripos($item['title'], 'ES6') !== false || stripos($item['title'], 'Moderno') !== false || $item['id'] == 3) {
-                                                            $codeExample = '// JavaScript ES6+ Moderno
-
-// Arrow Functions
-const saudacao = (nome) => `Olá, ${nome}!`;
-
-// Destructuring
-const usuario = {
-    nome: "Maria",
-    email: "maria@example.com",
-    idade: 25
-};
-
-const { nome, email } = usuario;
-
-// Spread Operator
-const numeros = [1, 2, 3];
-const maisNumeros = [...numeros, 4, 5, 6];
-
-// Template Literals
-const mensagem = `
-    Bem-vindo, ${nome}!
-    Seu email é: ${email}
-`;
-
-// Async/Await
-async function buscarDados() {
-    try {
-        const response = await fetch(\'/api/dados\');
-        const dados = await response.json();
-        console.log(dados);
-    } catch (erro) {
-        console.error(\'Erro:\', erro);
-    }
-}
-
-// Promises
-const promessa = new Promise((resolve, reject) => {
-    setTimeout(() => {
-        resolve(\'Dados carregados!\');
-    }, 1000);
-});
-
-promessa.then(resultado => console.log(resultado));
-
-// Map, Filter, Reduce
-const valores = [1, 2, 3, 4, 5];
-const dobrados = valores.map(n => n * 2);
-const pares = valores.filter(n => n % 2 === 0);
-const soma = valores.reduce((acc, n) => acc + n, 0);';
-                                                        } elseif (stripos($item['title'], 'DOM') !== false || $item['id'] == 8) {
-                                                            $codeExample = '// Manipulação do DOM
-
-// Seleção de elementos
-const titulo = document.querySelector(\'h1\');
-const botoes = document.querySelectorAll(\'.btn\');
-const formulario = document.getElementById(\'meuForm\');
-
-// Modificar conteúdo
-titulo.textContent = \'Novo Título\';
-titulo.innerHTML = \'<strong>Título em Negrito</strong>\';
-
-// Adicionar classes
-titulo.classList.add(\'destaque\');
-titulo.classList.toggle(\'ativo\');
-titulo.classList.remove(\'antigo\');
-
-// Criar elementos
-const novoDiv = document.createElement(\'div\');
-novoDiv.className = \'card\';
-novoDiv.innerHTML = `
-    <h3>Novo Card</h3>
-    <p>Criado dinamicamente</p>
-`;
-
-document.body.appendChild(novoDiv);
-
-// Eventos
-botoes.forEach(btn => {
-    btn.addEventListener(\'click\', (e) => {
-        console.log(\'Botão clicado!\', e.target);
-    });
-});
-
-// Event Delegation
-document.addEventListener(\'click\', (e) => {
-    if (e.target.matches(\'.deletar\')) {
-        e.target.closest(\'.item\').remove();
-    }
-});
-
-// Formulários
-formulario.addEventListener(\'submit\', (e) => {
-    e.preventDefault();
-    const dados = new FormData(formulario);
-    console.log(Object.fromEntries(dados));
-});';
-                                                        } else {
-                                                            $codeExample = '// Exemplo de ' . htmlspecialchars($item['title']) . '
-
-// Função principal
-function executar() {
-    console.log("Exemplo de JavaScript");
-    
-    // Seu código aqui
-    const dados = {
-        titulo: "' . addslashes($item['title']) . '",
-        status: "ativo"
-    };
-    
-    return dados;
-}
-
-// Executar
-executar();';
-                                                        }
-                                                    } elseif ($item['category'] === 'PHP') {
-                                                        if (stripos($item['title'], 'Fundamental') !== false || $item['id'] == 6) {
-                                                            $codeExample = '<?php
-// PHP Fundamentals
-
-// Variáveis e tipos
-$nome = "João";
-$idade = 25;
-$ativo = true;
-$preco = 99.90;
-
-// Arrays
-$frutas = ["maçã", "banana", "laranja"];
-$usuario = [
-    "nome" => "Maria",
-    "email" => "maria@example.com",
-    "idade" => 30
-];
-
-// Estruturas de controle
-if ($idade >= 18) {
-    echo "Maior de idade";
-} else {
-    echo "Menor de idade";
-}
-
-// Loops
-foreach ($frutas as $fruta) {
-    echo $fruta . "<br>";
-}
-
-// Funções
-function saudacao($nome) {
-    return "Olá, " . $nome . "!";
-}
-
-echo saudacao($nome);
-
-// Classes e Objetos
-class Usuario {
-    private $nome;
-    private $email;
-    
-    public function __construct($nome, $email) {
-        $this->nome = $nome;
-        $this->email = $email;
-    }
-    
-    public function getNome() {
-        return $this->nome;
-    }
-}
-
-$user = new Usuario("João", "joao@example.com");
-
-// Processamento de formulário
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $dados = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-    // Processar dados
-}
-?>';
-                                                        } else {
-                                                            $codeExample = '<?php
-// Exemplo de ' . htmlspecialchars($item['title']) . '
-
-// Configuração
-require_once \'config.php\';
-
-// Função principal
-function processar() {
-    $resultado = [
-        "status" => "sucesso",
-        "mensagem" => "Operação concluída"
-    ];
-    
-    return $resultado;
-}
-
-// Executar
-$dados = processar();
-echo json_encode($dados);
-?>';
-                                                        }
-                                                    } else {
-                                                        $codeExample = '// Exemplo de código para ' . htmlspecialchars($item['title']) . '
-
-console.log("Tutorial em desenvolvimento");';
-                                                    }
-                                                    
-                                                    echo htmlspecialchars($codeExample);
-                                                    ?></code></pre>
+}</code></pre>
                                                 </div>
                                             </div>
                                         </div>
@@ -1077,320 +828,68 @@ console.log("Tutorial em desenvolvimento");';
                                     </div>
                                 </section>
 
-                            <?php else: ?>
-                                <section class="content-section">
-                                    <h3 class="section-title">🎯 Descrição do Exercício</h3>
-                                    <div class="exercise-description-box">
-                                        <p><?php echo nl2br(htmlspecialchars($item['description'])); ?></p>
-                                    </div>
-                                    
-                                    <div class="exercise-instructions mt-4">
-                                        <h4 class="instruction-title">
-                                            <i class="fas fa-list-ol text-primary me-2"></i>
-                                            Como realizar este exercício
-                                        </h4>
-                                        <div class="instruction-steps">
-                                            <div class="instruction-step">
-                                                <div class="step-number">1</div>
-                                                <div class="step-content">
-                                                    <h5>Leia o enunciado com atenção</h5>
-                                                    <p>Entenda completamente o que é solicitado antes de começar a programar</p>
-                                                </div>
-                                            </div>
-                                            <div class="instruction-step">
-                                                <div class="step-number">2</div>
-                                                <div class="step-content">
-                                                    <h5>Planeje sua solução</h5>
-                                                    <p>Pense na estrutura e lógica antes de escrever o código</p>
-                                                </div>
-                                            </div>
-                                            <div class="instruction-step">
-                                                <div class="step-number">3</div>
-                                                <div class="step-content">
-                                                    <h5>Implemente e teste</h5>
-                                                    <p>Desenvolva a solução e teste em diferentes cenários</p>
-                                                </div>
-                                            </div>
-                                            <div class="instruction-step">
-                                                <div class="step-number">4</div>
-                                                <div class="step-content">
-                                                    <h5>Refine seu código</h5>
-                                                    <p>Melhore a qualidade e siga as boas práticas</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="alert alert-success mt-4">
-                                        <i class="fas fa-play-circle me-2"></i>
-                                        <strong>Pronto para começar?</strong> Clique no botão "Iniciar Exercício" na barra lateral para começar a praticar!
-                                    </div>
-                                </section>
-                            <?php endif; ?>
-                        </div>
+                                                    </div>
 
                         <!-- Aba de Objetivos (Exercícios) -->
-                        <?php if ($type === 'exercise'): ?>
-                        <div class="tab-pane fade" id="objectives" role="tabpanel">
-                            <div class="objectives-grid">
-                                <?php foreach ($item['objectives'] as $objective): ?>
-                                <div class="objective-item">
-                                    <i class="fas fa-check-circle text-success"></i>
-                                    <span><?php echo $objective; ?></span>
-                                </div>
-                                <?php endforeach; ?>
-                            </div>
-                            
-                            <div class="technologies-section mt-4">
-                                <h4 class="section-title">🛠 Tecnologias Utilizadas</h4>
-                                <div class="technologies-grid">
-                                    <?php foreach ($item['technologies'] as $tech): ?>
-                                    <div class="tech-badge">
-                                        <i class="fas fa-cog me-1"></i>
-                                        <?php echo $tech; ?>
-                                    </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-
+                        
                         <!-- Aba de Recursos -->
                         <div class="tab-pane fade" id="resources" role="tabpanel">
                             <div class="resources-grid">
-                                <?php
-                                // Definir recursos baseados na categoria
-                                $category = $item['category'];
-                                $resources = [];
-                                
-                                if ($category === 'HTML') {
-                                    $resources = [
-                                        [
-                                            'icon' => 'fab fa-html5 text-danger',
-                                            'title' => 'MDN Web Docs - HTML',
-                                            'description' => 'Documentação oficial completa de HTML',
-                                            'url' => 'https://developer.mozilla.org/pt-BR/docs/Web/HTML',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-book text-primary',
-                                            'title' => 'Guia HTML5',
-                                            'description' => 'Guia completo de HTML5 semântico',
-                                            'url' => 'https://www.w3schools.com/html/',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-video text-danger',
-                                            'title' => 'Vídeos HTML',
-                                            'description' => 'Tutoriais em vídeo sobre HTML',
-                                            'url' => 'https://www.youtube.com/results?search_query=html5+tutorial+portugues',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-code text-success',
-                                            'title' => 'Exemplos Práticos',
-                                            'description' => 'Galeria de exemplos de código HTML',
-                                            'url' => 'https://www.w3schools.com/html/html_examples.asp',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-tasks text-warning',
-                                            'title' => 'Exercícios HTML',
-                                            'description' => 'Pratique com exercícios interativos',
-                                            'url' => 'exercises_index.php?category=HTML',
-                                            'type' => 'internal'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-comments text-info',
-                                            'title' => 'Fórum HTML',
-                                            'description' => 'Discussões e dúvidas sobre HTML',
-                                            'url' => 'forum_index.php?category=HTML',
-                                            'type' => 'internal'
-                                        ]
-                                    ];
-                                } elseif ($category === 'CSS') {
-                                    $resources = [
-                                        [
-                                            'icon' => 'fab fa-css3-alt text-primary',
-                                            'title' => 'MDN Web Docs - CSS',
-                                            'description' => 'Documentação oficial completa de CSS',
-                                            'url' => 'https://developer.mozilla.org/pt-BR/docs/Web/CSS',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-palette text-info',
-                                            'title' => 'CSS Tricks',
-                                            'description' => 'Dicas e truques avançados de CSS',
-                                            'url' => 'https://css-tricks.com/',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-video text-danger',
-                                            'title' => 'Vídeos CSS',
-                                            'description' => 'Tutoriais em vídeo sobre CSS',
-                                            'url' => 'https://www.youtube.com/results?search_query=css3+tutorial+portugues',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-th text-success',
-                                            'title' => 'CSS Grid Garden',
-                                            'description' => 'Aprenda Grid Layout jogando',
-                                            'url' => 'https://cssgridgarden.com/#pt-br',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-frog text-warning',
-                                            'title' => 'Flexbox Froggy',
-                                            'description' => 'Aprenda Flexbox jogando',
-                                            'url' => 'https://flexboxfroggy.com/#pt-br',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-tasks text-primary',
-                                            'title' => 'Exercícios CSS',
-                                            'description' => 'Pratique com exercícios interativos',
-                                            'url' => 'exercises_index.php?category=CSS',
-                                            'type' => 'internal'
-                                        ]
-                                    ];
-                                } elseif ($category === 'JavaScript') {
-                                    $resources = [
-                                        [
-                                            'icon' => 'fab fa-js-square text-warning',
-                                            'title' => 'MDN Web Docs - JavaScript',
-                                            'description' => 'Documentação oficial completa de JS',
-                                            'url' => 'https://developer.mozilla.org/pt-BR/docs/Web/JavaScript',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-book-open text-success',
-                                            'title' => 'JavaScript.info',
-                                            'description' => 'Tutorial moderno de JavaScript',
-                                            'url' => 'https://javascript.info/',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-video text-danger',
-                                            'title' => 'Vídeos JavaScript',
-                                            'description' => 'Tutoriais em vídeo sobre JS',
-                                            'url' => 'https://www.youtube.com/results?search_query=javascript+tutorial+portugues',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-gamepad text-info',
-                                            'title' => 'Exercícios Interativos',
-                                            'description' => 'Pratique JavaScript jogando',
-                                            'url' => 'https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-tasks text-primary',
-                                            'title' => 'Exercícios JavaScript',
-                                            'description' => 'Pratique com exercícios',
-                                            'url' => 'exercises_index.php?category=JavaScript',
-                                            'type' => 'internal'
-                                        ],
-                                        [
-                                            'icon' => 'fab fa-github text-dark',
-                                            'title' => 'Projetos no GitHub',
-                                            'description' => 'Exemplos de código no GitHub',
-                                            'url' => 'https://github.com/topics/javascript',
-                                            'type' => 'external'
-                                        ]
-                                    ];
-                                } elseif ($category === 'PHP') {
-                                    $resources = [
-                                        [
-                                            'icon' => 'fab fa-php text-info',
-                                            'title' => 'PHP Manual',
-                                            'description' => 'Documentação oficial do PHP',
-                                            'url' => 'https://www.php.net/manual/pt_BR/',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-book text-primary',
-                                            'title' => 'PHP: The Right Way',
-                                            'description' => 'Boas práticas de PHP moderno',
-                                            'url' => 'https://phptherightway.com/pages/The-Basics.html',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-video text-danger',
-                                            'title' => 'Vídeos PHP',
-                                            'description' => 'Tutoriais em vídeo sobre PHP',
-                                            'url' => 'https://www.youtube.com/results?search_query=php+tutorial+portugues',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-code text-success',
-                                            'title' => 'Exemplos de Código',
-                                            'description' => 'Galeria de exemplos PHP',
-                                            'url' => 'https://www.w3schools.com/php/php_examples.asp',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-tasks text-warning',
-                                            'title' => 'Exercícios PHP',
-                                            'description' => 'Pratique com exercícios',
-                                            'url' => 'exercises_index.php?category=PHP',
-                                            'type' => 'internal'
-                                        ],
-                                        [
-                                            'icon' => 'fab fa-laravel text-danger',
-                                            'title' => 'Framework Laravel',
-                                            'description' => 'Aprenda Laravel (avançado)',
-                                            'url' => 'https://laravel.com/docs',
-                                            'type' => 'external'
-                                        ]
-                                    ];
-                                } else {
-                                    // Recursos genéricos
-                                    $resources = [
-                                        [
-                                            'icon' => 'fas fa-book text-primary',
-                                            'title' => 'Documentação',
-                                            'description' => 'Referência oficial completa',
-                                            'url' => 'https://developer.mozilla.org/pt-BR/',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-video text-danger',
-                                            'title' => 'Vídeo Aulas',
-                                            'description' => 'Tutoriais em vídeo',
-                                            'url' => 'https://www.youtube.com/results?search_query=web+development+tutorial',
-                                            'type' => 'external'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-tasks text-success',
-                                            'title' => 'Exercícios',
-                                            'description' => 'Pratique seus conhecimentos',
-                                            'url' => 'exercises_index.php',
-                                            'type' => 'internal'
-                                        ],
-                                        [
-                                            'icon' => 'fas fa-comments text-info',
-                                            'title' => 'Comunidade',
-                                            'description' => 'Fórum de discussões',
-                                            'url' => 'forum_index.php',
-                                            'type' => 'internal'
-                                        ]
-                                    ];
-                                }
-                                
-                                foreach ($resources as $resource):
-                                ?>
-                                <div class="resource-card">
-                                    <i class="<?php echo $resource['icon']; ?>"></i>
-                                    <h5><?php echo htmlspecialchars($resource['title']); ?></h5>
-                                    <p><?php echo htmlspecialchars($resource['description']); ?></p>
-                                    <a href="<?php echo $resource['url']; ?>" 
+                                                                <div class="resource-card">
+                                    <i class="fab fa-css3-alt text-primary"></i>
+                                    <h5>MDN Web Docs - CSS</h5>
+                                    <p>Documentação oficial completa de CSS</p>
+                                    <a href="https://developer.mozilla.org/pt-BR/docs/Web/CSS" 
                                        class="btn btn-outline-primary btn-sm" 
-                                       <?php echo $resource['type'] === 'external' ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>>
-                                        <?php echo $resource['type'] === 'external' ? '<i class="fas fa-external-link-alt me-1"></i>Acessar' : '<i class="fas fa-arrow-right me-1"></i>Ver'; ?>
-                                    </a>
+                                       target="_blank" rel="noopener noreferrer">
+                                        <i class="fas fa-external-link-alt me-1"></i>Acessar                                    </a>
                                 </div>
-                                <?php endforeach; ?>
-                            </div>
+                                                                <div class="resource-card">
+                                    <i class="fas fa-palette text-info"></i>
+                                    <h5>CSS Tricks</h5>
+                                    <p>Dicas e truques avançados de CSS</p>
+                                    <a href="https://css-tricks.com/" 
+                                       class="btn btn-outline-primary btn-sm" 
+                                       target="_blank" rel="noopener noreferrer">
+                                        <i class="fas fa-external-link-alt me-1"></i>Acessar                                    </a>
+                                </div>
+                                                                <div class="resource-card">
+                                    <i class="fas fa-video text-danger"></i>
+                                    <h5>Vídeos CSS</h5>
+                                    <p>Tutoriais em vídeo sobre CSS</p>
+                                    <a href="https://www.youtube.com/results?search_query=css3+tutorial+portugues" 
+                                       class="btn btn-outline-primary btn-sm" 
+                                       target="_blank" rel="noopener noreferrer">
+                                        <i class="fas fa-external-link-alt me-1"></i>Acessar                                    </a>
+                                </div>
+                                                                <div class="resource-card">
+                                    <i class="fas fa-th text-success"></i>
+                                    <h5>CSS Grid Garden</h5>
+                                    <p>Aprenda Grid Layout jogando</p>
+                                    <a href="https://cssgridgarden.com/#pt-br" 
+                                       class="btn btn-outline-primary btn-sm" 
+                                       target="_blank" rel="noopener noreferrer">
+                                        <i class="fas fa-external-link-alt me-1"></i>Acessar                                    </a>
+                                </div>
+                                                                <div class="resource-card">
+                                    <i class="fas fa-frog text-warning"></i>
+                                    <h5>Flexbox Froggy</h5>
+                                    <p>Aprenda Flexbox jogando</p>
+                                    <a href="https://flexboxfroggy.com/#pt-br" 
+                                       class="btn btn-outline-primary btn-sm" 
+                                       target="_blank" rel="noopener noreferrer">
+                                        <i class="fas fa-external-link-alt me-1"></i>Acessar                                    </a>
+                                </div>
+                                                                <div class="resource-card">
+                                    <i class="fas fa-tasks text-primary"></i>
+                                    <h5>Exercícios CSS</h5>
+                                    <p>Pratique com exercícios interativos</p>
+                                    <a href="exercises_index.php?category=CSS" 
+                                       class="btn btn-outline-primary btn-sm" 
+                                       >
+                                        <i class="fas fa-arrow-right me-1"></i>Ver                                    </a>
+                                </div>
+                                                            </div>
                             
                             <div class="mt-4 p-3 bg-light rounded">
                                 <h5 class="mb-3">
@@ -1431,42 +930,13 @@ console.log("Tutorial em desenvolvimento");';
                                 <div class="discussion-forum mb-5">
                                     <div class="section-header-community mb-3">
                                         <h4 class="mb-0"><i class="fas fa-comments me-2 text-primary"></i>Discussões</h4>
-                                        <?php if (isLoggedIn()): ?>
-                                        <button class="btn btn-primary btn-sm" onclick="toggleAddDiscussion()">
-                                            <i class="fas fa-plus me-2"></i>Nova Discussão
-                                        </button>
-                                        <?php endif; ?>
-                                    </div>
+                                                                            </div>
                                     
-                                    <?php if (isLoggedIn()): ?>
-                                    <div id="addDiscussionForm" style="display: none;" class="add-discussion-form mb-3">
-                                        <div class="form-card">
-                                            <label for="discussionMessage" class="form-label fw-bold">
-                                                <i class="fas fa-edit me-2"></i>Sua mensagem
-                                            </label>
-                                            <textarea id="discussionMessage" class="form-control" rows="4" 
-                                                placeholder="Compartilhe suas dúvidas, experiências ou insights sobre este conteúdo..."></textarea>
-                                            <div class="form-help mt-2">
-                                                <i class="fas fa-info-circle me-1"></i>
-                                                Seja claro e respeitoso. Mínimo de 10 caracteres.
-                                            </div>
-                                            <div class="d-flex gap-2 mt-3">
-                                                <button class="btn btn-primary" onclick="submitDiscussion()">
-                                                    <i class="fas fa-paper-plane me-2"></i>Publicar
-                                                </button>
-                                                <button class="btn btn-outline-secondary" onclick="toggleAddDiscussion()">
-                                                    <i class="fas fa-times me-2"></i>Cancelar
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php else: ?>
-                                    <div class="alert alert-info">
+                                                                        <div class="alert alert-info">
                                         <i class="fas fa-info-circle me-2"></i>
                                         <a href="login.php" class="alert-link">Faça login</a> para participar das discussões
                                     </div>
-                                    <?php endif; ?>
-                                    
+                                                                        
                                     <!-- Container de Discussões (preenchido via AJAX) -->
                                     <div id="discussionsList">
                                         <div class="loading-state">
@@ -1481,63 +951,13 @@ console.log("Tutorial em desenvolvimento");';
                                 <div class="user-solutions">
                                     <div class="section-header-community mb-3">
                                         <h4 class="mb-0"><i class="fas fa-code me-2 text-success"></i>Soluções da Comunidade</h4>
-                                        <?php if (isLoggedIn()): ?>
-                                        <button class="btn btn-success btn-sm" onclick="toggleAddSolution()">
-                                            <i class="fas fa-plus me-2"></i>Compartilhar Solução
-                                        </button>
-                                        <?php endif; ?>
-                                    </div>
+                                                                            </div>
                                     
-                                    <?php if (isLoggedIn()): ?>
-                                    <div id="addSolutionForm" style="display: none;" class="add-solution-form mb-3">
-                                        <div class="form-card">
-                                            <div class="mb-3">
-                                                <label for="solutionTitle" class="form-label fw-bold">
-                                                    <i class="fas fa-heading me-2"></i>Título da Solução
-                                                </label>
-                                                <input type="text" id="solutionTitle" class="form-control" 
-                                                    placeholder="Ex: Solução usando Grid Layout">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="solutionLanguage" class="form-label fw-bold">
-                                                    <i class="fas fa-code me-2"></i>Linguagem
-                                                </label>
-                                                <select id="solutionLanguage" class="form-select">
-                                                    <option value="html">HTML</option>
-                                                    <option value="css">CSS</option>
-                                                    <option value="javascript">JavaScript</option>
-                                                    <option value="php">PHP</option>
-                                                    <option value="python">Python</option>
-                                                </select>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="solutionCode" class="form-label fw-bold">
-                                                    <i class="fas fa-file-code me-2"></i>Código
-                                                </label>
-                                                <textarea id="solutionCode" class="form-control code-textarea" rows="8" 
-                                                    placeholder="Cole seu código aqui..."></textarea>
-                                                <div class="form-help mt-2">
-                                                    <i class="fas fa-lightbulb me-1"></i>
-                                                    Adicione comentários para facilitar o entendimento.
-                                                </div>
-                                            </div>
-                                            <div class="d-flex gap-2">
-                                                <button class="btn btn-success" onclick="submitSolution()">
-                                                    <i class="fas fa-share-alt me-2"></i>Compartilhar
-                                                </button>
-                                                <button class="btn btn-outline-secondary" onclick="toggleAddSolution()">
-                                                    <i class="fas fa-times me-2"></i>Cancelar
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php else: ?>
-                                    <div class="alert alert-info">
+                                                                        <div class="alert alert-info">
                                         <i class="fas fa-info-circle me-2"></i>
                                         <a href="login.php" class="alert-link">Faça login</a> para compartilhar soluções
                                     </div>
-                                    <?php endif; ?>
-                                    
+                                                                        
                                     <!-- Container de Soluções (preenchido via AJAX) -->
                                     <div id="solutionsList" class="solutions-grid">
                                         <div class="loading-state">
@@ -1588,21 +1008,12 @@ console.log("Tutorial em desenvolvimento");';
             <!-- Card de Ações -->
             <div class="action-card mb-4">
                 <div class="action-buttons">
-                    <a href="<?php echo $type === 'tutorial' ? 'tutorials_index.php' : 'exercises_index.php'; ?>" 
+                    <a href="tutorials_index.php" 
                        class="btn btn-outline-secondary btn-block">
                         <i class="fas fa-arrow-left me-2"></i>Voltar para Lista
                     </a>
                     
-                    <?php if (!$preview): ?>
-                        <?php if ($type === 'exercise'): ?>
-                            <button class="btn btn-success btn-block mt-2" id="startExercise">
-                                <i class="fas fa-play me-2"></i>Iniciar Exercício
-                            </button>
-                            <button class="btn btn-outline-success btn-block mt-2" id="saveProgress">
-                                <i class="fas fa-save me-2"></i>Salvar Progresso
-                            </button>
-                        <?php else: ?>
-                            <div class="btn-group w-100 mt-2" role="group">
+                                                                        <div class="btn-group w-100 mt-2" role="group">
                                 <button class="btn btn-primary" id="markComplete">
                                     <i class="fas fa-check me-2"></i>Marcar como Concluído
                                 </button>
@@ -1615,9 +1026,7 @@ console.log("Tutorial em desenvolvimento");';
                                     <i class="fas fa-share-alt me-2"></i>Compartilhar
                                 </button>
                             </div>
-                        <?php endif; ?>
-                    <?php endif; ?>
-                </div>
+                                                            </div>
             </div>
 
             <!-- Card de Informações -->
@@ -1632,52 +1041,25 @@ console.log("Tutorial em desenvolvimento");';
                     <!-- Categoria -->
                     <div class="info-item-modern">
                         <div class="info-icon">
-                            <?php
-                            $categoryIcon = match($item['category']) {
-                                'HTML' => 'fab fa-html5',
-                                'CSS' => 'fab fa-css3-alt',
-                                'JavaScript' => 'fab fa-js-square',
-                                'PHP' => 'fab fa-php',
-                                default => 'fas fa-code'
-                            };
-                            $categoryColor = match($item['category']) {
-                                'HTML' => 'danger',
-                                'CSS' => 'primary',
-                                'JavaScript' => 'warning',
-                                'PHP' => 'info',
-                                default => 'secondary'
-                            };
-                            ?>
-                            <i class="<?php echo $categoryIcon; ?> text-<?php echo $categoryColor; ?>"></i>
+                                                        <i class="fab fa-css3-alt text-primary"></i>
                         </div>
                         <div class="info-content">
                             <span class="info-label">Categoria</span>
-                            <span class="info-value fw-bold text-<?php echo $categoryColor; ?>">
-                                <?php echo sanitize($item['category']); ?>
-                            </span>
+                            <span class="info-value fw-bold text-primary">
+                                CSS                            </span>
                         </div>
                     </div>
                     
                     <!-- Dificuldade -->
                     <div class="info-item-modern">
                         <div class="info-icon">
-                            <?php
-                            $difficultyIcon = 'fas fa-signal';
-                            $difficultyColor = match(strtolower($item['difficulty'])) {
-                                'iniciante', 'beginner', 'fácil' => 'success',
-                                'intermediário', 'intermediate', 'médio' => 'warning',
-                                'avançado', 'advanced', 'difícil' => 'danger',
-                                default => 'info'
-                            };
-                            ?>
-                            <i class="<?php echo $difficultyIcon; ?> text-<?php echo $difficultyColor; ?>"></i>
+                                                        <i class="fas fa-signal text-warning"></i>
                         </div>
                         <div class="info-content">
                             <span class="info-label">Dificuldade</span>
                             <span class="info-value">
-                                <span class="badge bg-<?php echo $difficultyColor; ?>">
-                                    <?php echo ucfirst(sanitize($item['difficulty'])); ?>
-                                </span>
+                                <span class="badge bg-warning">
+                                    Intermediário                                </span>
                             </span>
                         </div>
                     </div>
@@ -1689,36 +1071,27 @@ console.log("Tutorial em desenvolvimento");';
                         </div>
                         <div class="info-content">
                             <span class="info-label">
-                                <?php echo $type === 'tutorial' ? 'Duração' : 'Tempo Estimado'; ?>
-                            </span>
+                                Duração                            </span>
                             <span class="info-value fw-bold">
-                                <?php 
-                                echo $type === 'tutorial' 
-                                    ? sanitize($item['duration']) 
-                                    : $item['estimated_time']; 
-                                ?>
-                            </span>
+                                25 min                            </span>
                         </div>
                     </div>
                     
-                    <?php if ($type === 'tutorial' && isset($item['status'])): ?>
-                    <!-- Status -->
+                                        <!-- Status -->
                     <div class="info-item-modern">
                         <div class="info-icon">
-                            <i class="fas fa-circle text-<?php echo strtolower($item['status']) === 'publicado' ? 'success' : 'warning'; ?>"></i>
+                            <i class="fas fa-circle text-success"></i>
                         </div>
                         <div class="info-content">
                             <span class="info-label">Status</span>
                             <span class="info-value">
-                                <span class="badge bg-<?php echo strtolower($item['status']) === 'publicado' ? 'success' : 'warning'; ?>">
+                                <span class="badge bg-success">
                                     <i class="fas fa-check-circle me-1"></i>
-                                    <?php echo sanitize($item['status']); ?>
-                                </span>
+                                    Publicado                                </span>
                             </span>
                         </div>
                     </div>
-                    <?php endif; ?>
-                    
+                                        
                     <!-- Avaliação -->
                     <div class="info-item-modern">
                         <div class="info-icon">
@@ -1728,30 +1101,13 @@ console.log("Tutorial em desenvolvimento");';
                             <span class="info-label">Avaliação</span>
                             <span class="info-value">
                                 <div class="rating-stars">
-                                    <?php
-                                    $rating = isset($item['rating']) ? $item['rating'] : 4.5;
-                                    $fullStars = floor($rating);
-                                    $hasHalfStar = $rating - $fullStars >= 0.5;
-                                    
-                                    for ($i = 0; $i < $fullStars; $i++) {
-                                        echo '<i class="fas fa-star"></i>';
-                                    }
-                                    if ($hasHalfStar) {
-                                        echo '<i class="fas fa-star-half-alt"></i>';
-                                    }
-                                    $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
-                                    for ($i = 0; $i < $emptyStars; $i++) {
-                                        echo '<i class="far fa-star"></i>';
-                                    }
-                                    ?>
-                                    <strong class="ms-2"><?php echo number_format($rating, 1); ?></strong>
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>                                    <strong class="ms-2">4.8</strong>
                                 </div>
                             </span>
                         </div>
                     </div>
                     
-                    <?php if (isset($item['author'])): ?>
-                    <!-- Autor -->
+                                        <!-- Autor -->
                     <div class="info-item-modern">
                         <div class="info-icon">
                             <i class="fas fa-user-circle text-secondary"></i>
@@ -1759,12 +1115,11 @@ console.log("Tutorial em desenvolvimento");';
                         <div class="info-content">
                             <span class="info-label">Autor</span>
                             <span class="info-value">
-                                <strong><?php echo $item['author']; ?></strong>
+                                <strong>Equipe WebLearn</strong>
                             </span>
                         </div>
                     </div>
-                    <?php endif; ?>
-                    
+                                        
                     <!-- Data de Atualização -->
                     <div class="info-item-modern border-0">
                         <div class="info-icon">
@@ -1773,12 +1128,7 @@ console.log("Tutorial em desenvolvimento");';
                         <div class="info-content">
                             <span class="info-label">Última Atualização</span>
                             <span class="info-value text-muted">
-                                <?php 
-                                echo isset($item['last_updated']) 
-                                    ? date('d/m/Y', strtotime($item['last_updated'])) 
-                                    : date('d/m/Y'); 
-                                ?>
-                            </span>
+                                20/01/2024                            </span>
                         </div>
                     </div>
                 </div>
@@ -1792,12 +1142,7 @@ console.log("Tutorial em desenvolvimento");';
                             <i class="fas fa-trophy me-2"></i>
                             Seu Progresso
                         </h6>
-                        <?php if ($user_progress >= 100): ?>
-                            <span class="badge bg-white bg-opacity-25">
-                                <i class="fas fa-medal"></i> Completo
-                            </span>
-                        <?php endif; ?>
-                    </div>
+                                            </div>
                 </div>
                 <div class="card-body p-4">
                     <!-- Círculo de Progresso -->
@@ -1817,7 +1162,7 @@ console.log("Tutorial em desenvolvimento");';
                                     r="52" 
                                     cx="60" 
                                     cy="60"
-                                    style="stroke-dasharray: <?php echo 2 * 3.14159 * 52; ?>; stroke-dashoffset: <?php echo 2 * 3.14159 * 52 * (1 - $user_progress / 100); ?>;"/>
+                                    style="stroke-dasharray: 326.72536; stroke-dashoffset: 326.72536;"/>
                             <defs>
                                 <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" style="stop-color:#06ffa5;stop-opacity:1" />
@@ -1826,7 +1171,7 @@ console.log("Tutorial em desenvolvimento");';
                             </defs>
                         </svg>
                         <div class="progress-percentage">
-                            <span class="percentage-value"><?php echo $user_progress; ?>%</span>
+                            <span class="percentage-value">0%</span>
                             <span class="percentage-label">Completo</span>
                         </div>
                     </div>
@@ -1839,34 +1184,17 @@ console.log("Tutorial em desenvolvimento");';
                             </div>
                             <div class="info-text">
                                 <small class="text-muted">Status</small>
-                                <div class="fw-semibold"><?php echo $time_remaining; ?></div>
+                                <div class="fw-semibold">Não iniciado</div>
                             </div>
                         </div>
                         
-                        <?php if ($user_progress > 0 && $user_progress < 100): ?>
-                        <div class="info-row">
-                            <div class="info-icon">
-                                <i class="fas fa-fire text-danger"></i>
-                            </div>
-                            <div class="info-text">
-                                <small class="text-muted">Sequência</small>
-                                <div class="fw-semibold"><?php echo rand(1, 7); ?> dias</div>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-                    </div>
+                                            </div>
                     
                     <!-- Botão de Ação -->
-                    <?php if ($user_progress < 100): ?>
-                    <button class="btn btn-gradient-success w-100 mt-3" id="continueBtn">
+                                        <button class="btn btn-gradient-success w-100 mt-3" id="continueBtn">
                         <i class="fas fa-play me-2"></i> Continuar Aprendendo
                     </button>
-                    <?php else: ?>
-                    <button class="btn btn-success w-100 mt-3" disabled>
-                        <i class="fas fa-check-circle me-2"></i> Concluído com Sucesso
-                    </button>
-                    <?php endif; ?>
-                </div>
+                                    </div>
             </div>
 
             <!-- Card de Conteúdo Relacionado -->
@@ -1879,104 +1207,26 @@ console.log("Tutorial em desenvolvimento");';
                 </div>
                 <div class="card-body p-3">
                     <div class="related-list">
-                        <?php
-                        // Buscar conteúdo relacionado
-                        $relatedItems = [];
-                        
-                        if ($type === 'tutorial') {
-                            // Buscar tutoriais relacionados da mesma categoria
-                            $allTutorials = getTutorials();
-                            $relatedItems = array_filter($allTutorials, function($t) use ($item) {
-                                return $t['id'] !== $item['id'] && $t['category'] === $item['category'];
-                            });
-                            
-                            // Se não encontrar da mesma categoria, busca do mesmo nível
-                            if (empty($relatedItems)) {
-                                $relatedItems = array_filter($allTutorials, function($t) use ($item) {
-                                    return $t['id'] !== $item['id'] && $t['level'] === $item['level'];
-                                });
-                            }
-                            
-                            // Limita a 4 itens
-                            $relatedItems = array_slice(array_values($relatedItems), 0, 4);
-                            
-                        } else {
-                            // Buscar exercícios relacionados
-                            if (file_exists('data/exercises.php')) {
-                                require_once 'data/exercises.php';
-                                $allExercises = getExercisesData();
-                                
-                                // Filtra exercícios da mesma categoria
-                                $relatedItems = array_filter($allExercises, function($e) use ($item) {
-                                    return $e['id'] !== $item['id'] && $e['category'] === $item['category'];
-                                });
-                                
-                                // Se não encontrar da mesma categoria, busca da mesma dificuldade
-                                if (empty($relatedItems)) {
-                                    $relatedItems = array_filter($allExercises, function($e) use ($item) {
-                                        return $e['id'] !== $item['id'] && $e['difficulty'] === $item['difficulty'];
-                                    });
-                                }
-                                
-                                // Limita a 4 itens
-                                $relatedItems = array_slice(array_values($relatedItems), 0, 4);
-                            }
-                        }
-                        
-                        // Exibir itens relacionados
-                        if (empty($relatedItems)): ?>
-                            <div class="empty-related text-center py-5">
-                                <i class="fas fa-compass fa-3x text-muted mb-3 opacity-25"></i>
-                                <p class="text-muted mb-0">Nenhum conteúdo relacionado disponível</p>
-                            </div>
-                        <?php else:
-                            foreach ($relatedItems as $index => $related):
-                                $iconClass = match($related['category']) {
-                                    'HTML' => 'fab fa-html5',
-                                    'CSS' => 'fab fa-css3-alt',
-                                    'JavaScript' => 'fab fa-js-square',
-                                    'PHP' => 'fab fa-php',
-                                    default => 'fas fa-book'
-                                };
-                                
-                                $colorClass = match($related['category']) {
-                                    'HTML' => 'html',
-                                    'CSS' => 'css',
-                                    'JavaScript' => 'js',
-                                    'PHP' => 'php',
-                                    default => 'default'
-                                };
-                                
-                                $relatedType = $type;
-                                $relatedLabel = $type === 'tutorial' ? 'Tutorial' : 'Exercício';
-                                $relatedInfo = $type === 'tutorial' 
-                                    ? ($related['duration'] ?? '30 min')
-                                    : ($related['difficulty'] ?? 'Intermediário');
-                            ?>
-                                <a href="show.php?type=<?php echo $relatedType; ?>&id=<?php echo $related['id']; ?>" 
+                                                        <a href="show.php?type=tutorial&id=5" 
                                    class="related-item-modern" 
-                                   style="animation-delay: <?php echo $index * 0.1; ?>s">
-                                    <div class="related-icon-modern <?php echo $colorClass; ?>">
-                                        <i class="<?php echo $iconClass; ?>"></i>
+                                   style="animation-delay: 0s">
+                                    <div class="related-icon-modern css">
+                                        <i class="fab fa-css3-alt"></i>
                                     </div>
                                     <div class="related-content-modern">
-                                        <h6 class="related-title"><?php echo htmlspecialchars($related['title']); ?></h6>
+                                        <h6 class="related-title">Flexbox na Prática</h6>
                                         <div class="related-meta">
-                                            <span class="badge-type"><?php echo $relatedLabel; ?></span>
+                                            <span class="badge-type">Tutorial</span>
                                             <span class="badge-info">
                                                 <i class="fas fa-clock"></i>
-                                                <?php echo $relatedInfo; ?>
-                                            </span>
+                                                18 min                                            </span>
                                         </div>
                                     </div>
                                     <div class="related-arrow">
                                         <i class="fas fa-chevron-right"></i>
                                     </div>
                                 </a>
-                            <?php
-                            endforeach;
-                        endif; ?>
-                    </div>
+                                                </div>
                 </div>
             </div>
             
@@ -1998,7 +1248,7 @@ console.log("Tutorial em desenvolvimento");';
                                 <i class="fas fa-download"></i>
                             </div>
                             <div class="stat-details">
-                                <div class="stat-value-modern"><?php echo isset($item['downloads']) ? number_format($item['downloads']) : '1,200'; ?></div>
+                                <div class="stat-value-modern">163</div>
                                 <div class="stat-label-modern">Downloads</div>
                                 <div class="stat-trend positive">
                                     <i class="fas fa-arrow-up"></i>
@@ -2012,7 +1262,7 @@ console.log("Tutorial em desenvolvimento");';
                                 <i class="fas fa-star"></i>
                             </div>
                             <div class="stat-details">
-                                <div class="stat-value-modern"><?php echo isset($item['rating_count']) ? number_format($item['rating_count']) : '245'; ?></div>
+                                <div class="stat-value-modern">156</div>
                                 <div class="stat-label-modern">Avaliações</div>
                                 <div class="stat-trend positive">
                                     <i class="fas fa-arrow-up"></i>
@@ -2026,7 +1276,7 @@ console.log("Tutorial em desenvolvimento");';
                                 <i class="fas fa-eye"></i>
                             </div>
                             <div class="stat-details">
-                                <div class="stat-value-modern"><?php echo isset($item['views']) ? number_format($item['views']) : '3,400'; ?></div>
+                                <div class="stat-value-modern">890</div>
                                 <div class="stat-label-modern">Visualizações</div>
                                 <div class="stat-trend positive">
                                     <i class="fas fa-arrow-up"></i>
@@ -2060,7 +1310,7 @@ console.log("Tutorial em desenvolvimento");';
                         </div>
                         <div class="footer-stat-item">
                             <i class="fas fa-users text-primary"></i>
-                            <span><strong><?php echo rand(50, 200); ?></strong> usuários ativos agora</span>
+                            <span><strong>53</strong> usuários ativos agora</span>
                         </div>
                     </div>
                 </div>
@@ -4231,9 +3481,9 @@ console.log("Tutorial em desenvolvimento");';
 
 <script>
 // Variáveis globais
-const contentType = '<?php echo $type; ?>';
-const contentId = <?php echo $id; ?>;
-const isLoggedIn = <?php echo isLoggedIn() ? 'true' : 'false'; ?>;
+const contentType = 'tutorial';
+const contentId = 2;
+const isLoggedIn = false;
 
 // Debug: Log das variáveis globais
 console.log('🔧 Comunidade Debug:', {
@@ -4318,7 +3568,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const startExerciseBtn = document.getElementById('startExercise');
     if (startExerciseBtn) {
         startExerciseBtn.addEventListener('click', function() {
-            const exerciseId = <?php echo $id; ?>;
+            const exerciseId = 2;
             window.location.href = 'exercise_detail.php?id=' + exerciseId;
         });
     }
@@ -4333,7 +3583,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const markCompleteBtn = document.getElementById('markComplete');
     if (markCompleteBtn) {
         markCompleteBtn.addEventListener('click', function() {
-            const tutorialId = <?php echo $id; ?>;
+            const tutorialId = 2;
             
             // Enviar requisição para marcar como concluído
             fetch('api/mark_complete.php', {
@@ -4342,7 +3592,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    type: '<?php echo $type; ?>',
+                    type: 'tutorial',
                     id: tutorialId
                 })
             })
@@ -4944,4 +4194,400 @@ function escapeHtml(text) {
 }
 </script>
 
-<?php include 'footer.php'; ?>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5 mt-5" role="contentinfo">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="text-gradient fw-bold mb-3">
+                        <i class="fas fa-code me-2" aria-hidden="true"></i>
+                        WebLearn - Jornada do Desenvolvedor                    </h5>
+                    <p2 class="fw-semibold mb-3">
+                        Plataforma interativa para aprender desenvolvimento web com exercícios práticos, tutoriais detalhados e uma comunidade ativa de desenvolvedores.                    </p2>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="fw-semibold mb-3" aria-label="Facebook" title="Facebook">
+                            <i class="fab fa-facebook-f" aria-hidden="true"></i>
+                        </a>
+                        <a href="#" class="fw-semibold mb-3" aria-label="Twitter" title="Twitter">
+                            <i class="fab fa-twitter" aria-hidden="true"></i>
+                        </a>
+                        <a href="#" class="fw-semibold mb-3" aria-label="LinkedIn" title="LinkedIn">
+                            <i class="fab fa-linkedin-in" aria-hidden="true"></i>
+                        </a>
+                        <a href="#" class="fw-semibold mb-3" aria-label="GitHub" title="GitHub">
+                            <i class="fab fa-github" aria-hidden="true"></i>
+                        </a>
+                        <a href="#" class="fw-semibold mb-3" aria-label="YouTube" title="YouTube">
+                            <i class="fab fa-youtube" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="fw-semibold mb-3">Aprendizado</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="exercises_index.php" class="fw-semibold mb-3">
+                                Exercícios                            </a>
+                        </li>
+                        <li class="mb-2"> 
+                            <a href="tutorials_index.php" class="fw-semibold mb-3">
+                                Tutoriais                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="forum_index.php" class="fw-semibold mb-3">
+                                Fórum                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Desafios                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="fw-semibold mb-3">Recursos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3" >
+                                Documentação                            </a>
+                        </li>
+                        <li class="mb-2"> 
+                            <a href="#" class="fw-semibold mb-3">
+                                API                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Blog                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Newsletter                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="fw-semibold mb-3">Suporte</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Central de Ajuda                            </a>
+                        </li>
+                        <li class="mb-2"> 
+                            <a href="#" class="fw-semibold mb-3">
+                                Contato                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                FAQ                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Feedback                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="fw-semibold mb-3">Legal</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="lgpd.php" class="fw-semibold mb-3">
+                                Política de Privacidade                            </a>
+                        </li>
+                        <li class="mb-2"> 
+                            <a href="#" class="fw-semibold mb-3">
+                                Termos de Serviço                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Cookies                            </a>
+                        </li> 
+                        <li class="mb-2">
+                            <a href="#" class="fw-semibold mb-3">
+                                Declaração de Acessibilidade                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="my-4 border-secondary">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p2 class="fw-semibold mb-3" style="color: #ffffffff;">
+                        &copy; 2025 WebLearn - Jornada do Desenvolvedor. 
+                        Todos os direitos reservados.                    </p2>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex justify-content-md-end gap-3 mt-3 mt-md-0">
+                        <span class="fw-semibold mb-3">
+                            <i class="fas fa-heart text-danger me-1" aria-hidden="true"></i>
+                            Feito com amor                        </span>
+                        <span class="fw-semibold mb-3">
+                            <i class="fas fa-universal-access me-1" aria-hidden="true"></i>
+                            Design Acessível                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botão Voltar ao Topo -->
+    <button id="backToTop" class="btn btn-primary position-fixed bottom-0 end-0 m-4 rounded-circle" 
+            style="width: 50px; height: 50px; display: none; z-index: 1000;" 
+            onclick="scrollToTop()" 
+            aria-label="Voltar ao topo"
+            title="Voltar ao topo">
+        <i class="fas fa-arrow-up" aria-hidden="true"></i>
+    </button>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Botão voltar ao topo
+        window.addEventListener('scroll', function() {
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Animações de entrada
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.card, .alert, .badge');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in-up');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            elements.forEach(element => {
+                observer.observe(element);
+            });
+        }
+
+        // Melhorias de acessibilidade
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar animações
+            animateOnScroll();
+            
+            // Melhorar navegação por teclado
+            const focusableElements = document.querySelectorAll(
+                'a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
+            );
+            
+            // Adicionar indicadores visuais de foco
+            focusableElements.forEach(element => {
+                element.addEventListener('focus', function() {
+                    this.style.outline = '2px solid var(--primary-color)';
+                    this.style.outlineOffset = '2px';
+                });
+                
+                element.addEventListener('blur', function() {
+                    this.style.outline = '';
+                    this.style.outlineOffset = '';
+                });
+            });
+
+            // Anunciar mudanças de página para leitores de tela
+            const pageTitle = document.title;
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'visually-hidden';
+            announcement.textContent = `Página carregada: ${pageTitle}`;
+            document.body.appendChild(announcement);
+
+            // Remover anúncio após 3 segundos
+            setTimeout(() => {
+                if (announcement.parentNode) {
+                    announcement.parentNode.removeChild(announcement);
+                }
+            }, 3000);
+
+            // Configurar tooltips do Bootstrap
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Configurar popovers do Bootstrap
+            const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
+
+        // Função para detectar preferências de movimento reduzido
+        function respectMotionPreferences() {
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+            
+            if (prefersReducedMotion.matches) {
+                // Desabilitar animações para usuários que preferem movimento reduzido
+                const style = document.createElement('style');
+                style.textContent = `
+                    *, *::before, *::after {
+                        animation-duration: 0.01ms !important;
+                        animation-iteration-count: 1 !important;
+                        transition-duration: 0.01ms !important;
+                        scroll-behavior: auto !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        // Aplicar preferências de movimento
+        respectMotionPreferences();
+
+        // Função para melhorar contraste em modo de alto contraste
+        function handleHighContrast() {
+            if (window.matchMedia('(prefers-contrast: high)').matches) {
+                document.body.classList.add('high-contrast-mode');
+            }
+        }
+
+        // Aplicar modo de alto contraste se necessário
+        handleHighContrast();
+
+        // Função para anunciar mudanças dinâmicas
+        function announceChange(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.className = 'visually-hidden';
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+            
+            setTimeout(() => {
+                if (announcement.parentNode) {
+                    announcement.parentNode.removeChild(announcement);
+                }
+            }, 1000);
+        }
+
+        // Função para validação de formulários acessível
+        function setupAccessibleValidation() {
+            const forms = document.querySelectorAll('form');
+            
+            forms.forEach(form => {
+                const inputs = form.querySelectorAll('input, textarea, select');
+                
+                inputs.forEach(input => {
+                    input.addEventListener('invalid', function(e) {
+                        e.preventDefault();
+                        
+                        // Criar mensagem de erro acessível
+                        let errorMessage = this.validationMessage;
+                        
+                        // Personalizar mensagens em português
+                        if (this.validity.valueMissing) {
+                            errorMessage = 'Este campo é obrigatório';
+                        } else if (this.validity.typeMismatch) {
+                            if (this.type === 'email') {
+                                errorMessage = 'Por favor, insira um email válido';
+                            }
+                        } else if (this.validity.tooShort) {
+                            errorMessage = `Mínimo de ${this.minLength} caracteres`;
+                        }
+                        
+                        // Anunciar erro
+                        announceChange(errorMessage);
+                        
+                        // Focar no campo com erro
+                        this.focus();
+                    });
+                });
+            });
+        }
+
+        // Configurar validação acessível
+        setupAccessibleValidation();
+    </script>
+
+    <!-- Estilos adicionais para acessibilidade -->
+    <style>
+        /* Modo de alto contraste */
+        .high-contrast-mode {
+            filter: contrast(150%);
+        }
+
+        /* Melhorias para foco */
+        *:focus {
+            outline: 2px solid var(--primary-color) !important;
+            outline-offset: 2px !important;
+        }
+
+        /* Indicadores visuais para elementos interativos */
+        button, a, input, textarea, select {
+            transition: all 0.2s ease;
+        }
+
+        button:hover, a:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Melhorias para leitores de tela */
+        .visually-hidden-focusable:not(:focus):not(:focus-within) {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+
+        /* Animação suave para mudanças de tema */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Melhorias para dispositivos móveis */
+        @media (max-width: 768px) {
+            .btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        /* Indicadores para modo acessibilidade */
+        .accessibility-mode .btn::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+    </style>
+
+</body>
+</html>

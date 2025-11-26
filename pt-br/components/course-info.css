@@ -1,0 +1,185 @@
+/* Estilos para componente course-info (pt-br) */
+:root{
+  --card-bg: #ffffff;
+  --card-border:#e6e9ef;
+  --text:#222533;
+  --muted:#6b7280;
+  --primary:#4361ee;
+  --success:#16a34a;
+  --pill-bg:#f1f5f9;
+  --radius:12px;
+  --gap:12px;
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --card-bg:#111217;
+    --card-border:#262a33;
+    --text:#e6e9ef;
+    --muted:#9aa3b2;
+    --pill-bg:#1b1f25;
+  }
+}
+
+.course-info-card{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  padding:16px;
+  box-shadow:0 4px 18px rgba(15,23,42,0.04);
+  color:var(--text);
+  max-width:420px;
+  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.course-info-card .course-meta dl{display:block;margin:0 0 12px 0}
+.meta-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--card-border)}
+.meta-row dt{font-weight:600;color:var(--muted)}
+.meta-row dd{margin:0;font-weight:700}
+
+.rating{color:var(--primary);font-weight:700}
+
+.course-progress{margin-top:12px}
+.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--muted)}
+.progress-percent{font-weight:700;color:var(--text)}
+
+.progress-bar{background:var(--pill-bg);border-radius:999px;height:12px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),#6c9bff);width:0%;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+
+.progress-actions{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.status-pill{padding:6px 10px;border-radius:999px;background:var(--pill-bg);color:var(--muted);font-weight:600;font-size:0.9rem}
+.status-notstarted{border:1px solid var(--card-border)}
+
+.btn{display:inline-block;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:700}
+.btn-primary{background:var(--primary);color:white}
+.btn-primary:focus{outline:3px solid rgba(67,97,238,0.18);outline-offset:3px}
+
+.course-extras{margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+.related-link{color:var(--primary);text-decoration:none;font-weight:700}
+.stats{color:var(--muted);font-size:.95rem}
+
+/* Responsive */
+@media (max-width:480px){
+  .course-info-card{padding:12px;max-width:100%}
+  /* Estilos para componente course-info (pt-br) */
+  :root{
+    --card-bg: #ffffff;
+    --card-border:#e6e9ef;
+    --text:#222533;
+    --muted:#6b7280;
+    --primary:#4361ee;
+    --success:#16a34a;
+    --pill-bg:#f1f5f9;
+    --radius:12px;
+    --gap:12px;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root{
+      --card-bg:#111217;
+      --card-border:#262a33;
+      --text:#e6e9ef;
+      --muted:#9aa3b2;
+      --pill-bg:#1b1f25;
+    }
+  }
+
+  .course-info-card{
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:16px;
+    box-shadow:0 4px 18px rgba(15,23,42,0.04);
+    color:var(--text);
+    max-width:420px;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+
+  .course-info-card .course-meta dl{display:block;margin:0 0 12px 0}
+  .meta-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--card-border)}
+  .meta-row dt{font-weight:600;color:var(--muted)}
+  .meta-row dd{margin:0;font-weight:700}
+
+  .rating{color:var(--primary);font-weight:700}
+
+  .course-progress{margin-top:12px}
+  .progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--muted)}
+  .progress-percent{font-weight:700;color:var(--text)}
+
+  .progress-bar{background:var(--pill-bg);border-radius:999px;height:12px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),#6c9bff);width:0%;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+
+  .progress-actions{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+  .status-pill{padding:6px 10px;border-radius:999px;background:var(--pill-bg);color:var(--muted);font-weight:600;font-size:0.9rem}
+  .status-notstarted{border:1px solid var(--card-border)}
+
+  .btn{display:inline-block;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:700}
+  .btn-primary{background:var(--primary);color:white}
+  .btn-primary:focus{outline:3px solid rgba(67,97,238,0.18);outline-offset:3px}
+
+  .course-extras{margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+  .related-link{color:var(--primary);text-decoration:none;font-weight:700}
+  .stats{color:var(--muted);font-size:.95rem}
+
+  /* Responsive */
+  @media (max-width:480px){
+    .course-info-card{padding:12px;max-width:100%}
+    .meta-row{padding:8px 0}
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    .progress-fill{transition:none}
+  }
+
+  /* Regras movidas do show.php para centralizar estilo do componente */
+  .about-tutorial h4,
+  .about-tutorial p {
+    color: #000000;
+  }
+
+
+  .metadata-card .metadata-label,
+  .metadata-card .metadata-value,
+  .metadata-text .metadata-label,
+  .metadata-text .metadata-value {
+    color: #000000;
+  }
+
+  .info-item-modern .info-value,
+  .info-item-modern .info-value strong {
+    color: #000000;
+  }
+
+  .example-practice h4 {
+    color: #000000;
+  }
+
+  .header-title {
+    color: #000000;
+  }
+
+  .metadata-card .metadata-icon i,
+  .info-item-modern .info-icon i,
+  .header-stats .stat-icon i,
+  .stat-badge .stat-icon i {
+    font-size: 1.15rem;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(67,97,238,0.12), rgba(108,155,255,0.08));
+    color: #1f2937;
+    box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+    transform: translateZ(0);
+  }
+
+  .header-stats .stat-icon.rating i,
+  .header-stats .stat-icon.downloads i {
+    font-size: 1.25rem;
+    color: #0b63ff;
+  }
+
+  .metadata-card .metadata-icon { margin-right: 10px; }

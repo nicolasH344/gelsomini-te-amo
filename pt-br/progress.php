@@ -1,6 +1,6 @@
 <?php
 require_once 'config.php';
-require_once 'database_connector.php';
+// require_once 'database_connector.php'; // Arquivo não existe, removido
 
 // Verificar se está logado
 if (!isLoggedIn()) {

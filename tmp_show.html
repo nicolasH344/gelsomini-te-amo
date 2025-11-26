@@ -10,15 +10,15 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Tutoriais - WebLearn - Jornada do Desenvolvedor">
+    <meta property="og:title" content="Início - WebLearn - Jornada do Desenvolvedor">
     <meta property="og:description" content="Plataforma interativa para aprender desenvolvimento web">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Tutoriais - WebLearn - Jornada do Desenvolvedor">
+    <meta property="twitter:title" content="Início - WebLearn - Jornada do Desenvolvedor">
     <meta property="twitter:description" content="Plataforma interativa para aprender desenvolvimento web">
     
-    <title>Tutoriais - WebLearn - Jornada do Desenvolvedor</title>
+    <title>Início - WebLearn - Jornada do Desenvolvedor</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="../components.css">
     <link rel="stylesheet" href="../theme-text.css">
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../animations.css">
     
     <!-- Preload critical resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,9 +62,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link " 
+                        <a class="nav-link active" 
                            href="index.php" 
-                           >
+                           aria-current="page">
                             <i class="fas fa-home me-1" aria-hidden="true"></i>
                             Início                        </a>
                     </li>
@@ -75,9 +76,9 @@
                             Exercícios                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" 
+                        <a class="nav-link " 
                            href="tutorials_index.php"
-                           aria-current="page">
+                           >
                             <i class="fas fa-book me-1" aria-hidden="true"></i>
                             Tutoriais                        </a>
                     </li>
@@ -533,275 +534,513 @@ function saveCookieSettings() {
     </style>
 
 
-<div class="container mt-4">
-    <!-- Header da página -->
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h1><i class="fas fa-book-open" aria-hidden="true"></i> Tutoriais</h1>
-            <p class="lead" style="color:#000000;">Aprenda desenvolvimento web com nossos tutoriais detalhados</p>
-        </div>
-        <div class="col-md-4 text-end">
-                    </div>
-    </div>
-
-    <!-- Filtros -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h2 class="h5 card-title">Filtrar Tutoriais</h2>
-            <form method="GET" action="tutorials_index.php" class="row g-3">
-                <div class="col-md-3">
-                    <label for="category" class="form-label">Categoria</label>
-                    <select class="form-select" id="category" name="category">
-                        <option value="">Todas as categorias</option>
-                                                    <option value="git" >
-                                Git                            </option>
-                                                    <option value="html" >
-                                HTML                            </option>
-                                                    <option value="html &amp; css" >
-                                HTML &amp; CSS                            </option>
-                                                    <option value="javascript" >
-                                JavaScript                            </option>
-                                                    <option value="mysql" >
-                                MySQL                            </option>
-                                                    <option value="php" >
-                                PHP                            </option>
-                                                    <option value="python" >
-                                Python                            </option>
-                                            </select>
-                </div>
-                
-                <div class="col-md-3">
-                    <label for="level" class="form-label">Nível</label>
-                    <select class="form-select" id="level" name="level">
-                        <option value="">Todos os níveis</option>
-                        <option value="beginner" >Iniciante</option>
-                        <option value="intermediate" >Intermediário</option>
-                        <option value="advanced" >Avançado</option>
-                    </select>
-                </div>
-                
-                <div class="col-md-4">
-                    <label for="search" class="form-label">Buscar</label>
-                    <input type="text" class="form-control" id="search" name="search" 
-                           value=""
-                           placeholder="Digite palavras-chave...">
-                </div>
-                
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search" aria-hidden="true"></i> Filtrar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Lista de tutoriais -->
-    <div class="row">
-                                    <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span class="badge bg-primary">
-                                HTML                            </span>
-                            <span class="badge bg-
-Warning: Undefined array key "level" in C:\xampp\htdocs\gelsomini-te-amo\pt-br\tutorials_index.php on line 163
-
-Warning: Undefined array key "level" in C:\xampp\htdocs\gelsomini-te-amo\pt-br\tutorials_index.php on line 164
-danger">
-                                
-Warning: Undefined array key "level" in C:\xampp\htdocs\gelsomini-te-amo\pt-br\tutorials_index.php on line 166
-
-Deprecated: ucfirst(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\gelsomini-te-amo\pt-br\tutorials_index.php on line 166
-                            </span>
-                        </div>
-                        
-                        <div class="card-body">
-                            <h3 class="card-title h5 mb-3">Introdução ao HTML</h3>
-                            <p class="card-text">Aprenda os fundamentos do HTML</p>
-                            
-                            <div class="d-flex justify-content-between text-muted small">
-                                <span>
-                                    <i class="fas fa-clock me-1" aria-hidden="true"></i>
-                                    15 min                                </span>
-                                <span>
-                                    <i class="fas fa-eye me-1" aria-hidden="true"></i>
-                                    0 visualizações
-                                </span>
+<!-- Hero Section -->
+<section class="hero-section py-5 text-white position-relative">
+    <div class="container py-5">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold mb-4 fade-in-up">
+                        Aprenda Desenvolvimento Web                    </h1>
+                    <p2 class="lead mb-4 fade-in-up" style="animation-delay: 0.2s;">
+                        Plataforma interativa para aprender programação                    </p2>
+                    
+                    <div class="d-flex flex-column flex-sm-row gap-3 mb-4 fade-in-up" style="animation-delay: 0.4s;">
+                                                    <a href="register.php" class="btn btn-primary btn-lg">
+                                <i class="fas fa-rocket me-2" aria-hidden="true"></i>
+                                Começar Agora                            </a>
+                            <a href="login.php" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>
+                                Fazer Login                            </a>
+                                            </div>
+                    
+                    <!-- Estatísticas rápidas -->
+                    <div class="row text-center fade-in-up" style="animation-delay: 0.6s;">
+                        <div class="col-6 col-md-3">
+                            <div class="stat-item">
+                                <h3 class="h4 fw-bold text-warning">1,250</h3>
+                                <small class="text-light">Estudantes</small>
                             </div>
                         </div>
-                        
-                        <div class="card-footer bg-transparent">
-                            <div class="d-flex gap-2">
-                                <a href="show.php?type=tutorial&id=1" 
-                                   class="btn btn-primary btn-sm flex-fill">
-                                    <i class="fas fa-play" aria-hidden="true"></i> Ler Tutorial
-                                </a>
-                                <button class="btn btn-outline-secondary btn-sm" 
-                                        onclick="showTutorialPreview(1)"
-                                        aria-label="Visualizar tutorial">
-                                    <i class="fas fa-eye" aria-hidden="true"></i>
-                                </button>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-item">
+                                <h3 class="h4 fw-bold text-info">85</h3>
+                                <small class="text-light">Exercícios</small>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-item">
+                                <h3 class="h4 fw-bold text-success">42</h3>
+                                <small class="text-light">Tutoriais</small>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-item">
+                                <h3 class="h4 fw-bold text-danger">3,680</h3>
+                                <small class="text-light">Posts no Fórum</small>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="hero-image text-center fade-in-up" style="animation-delay: 0.8s;">
+                    <div class="position-relative">
+                        <!-- Código animado -->
+                        <div class="code-animation bg-dark rounded-3 p-4 shadow-lg">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="d-flex gap-2">
+                                    <div class="bg-danger rounded-circle" style="width: 12px; height: 12px;"></div>
+                                    <div class="bg-warning rounded-circle" style="width: 12px; height: 12px;"></div>
+                                    <div class="bg-success rounded-circle" style="width: 12px; height: 12px;"></div>
+                                </div>
+                                <small class=" ms-3 mb-4">index.html</small>
+                            </div>
+                            <pre class="text-start text-light mb-0" style="font-size: 0.9rem;"><code id="typingCode"></code></pre>
                         </div>
-
-    <!-- Categorias populares -->
-    <div class="row mt-5">
-        <div class="col-12">
-            <h2 class="h4 mb-4">Categorias Populares</h2>
-        </div>
-        
-                    <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card bg-primary text-white">
-                    <div class="card-body text-center">
-                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
-                        <h3 class="h5 mt-2">Git</h3>
-                        <a href="?category=git" class="btn btn-light btn-sm">
-                            Ver Tutoriais
-                        </a>
+                        
+                        <!-- Elementos flutuantes -->
+                        <div class="floating-elements">
+                            <div class="floating-icon" style="top: 10%; left: 10%; animation-delay: 0s;">
+                                <i class="fab fa-html5 text-warning fa-2x"></i>
+                            </div>
+                            <div class="floating-icon" style="top: 20%; right: 15%; animation-delay: 1s;">
+                                <i class="fab fa-css3-alt text-info fa-2x"></i>
+                            </div>
+                            <div class="floating-icon" style="bottom: 30%; left: 5%; animation-delay: 2s;">
+                                <i class="fab fa-js-square text-warning fa-2x"></i>
+                            </div>
+                            <div class="floating-icon" style="bottom: 10%; right: 10%; animation-delay: 3s;">
+                                <i class="fab fa-php text-primary fa-2x"></i>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-                    <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card bg-primary text-white">
-                    <div class="card-body text-center">
-                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
-                        <h3 class="h5 mt-2">HTML</h3>
-                        <a href="?category=html" class="btn btn-light btn-sm">
-                            Ver Tutoriais
-                        </a>
-                    </div>
-                </div>
-            </div>
-                    <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card bg-primary text-white">
-                    <div class="card-body text-center">
-                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
-                        <h3 class="h5 mt-2">HTML &amp; CSS</h3>
-                        <a href="?category=html & css" class="btn btn-light btn-sm">
-                            Ver Tutoriais
-                        </a>
-                    </div>
-                </div>
-            </div>
-                    <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card bg-primary text-white">
-                    <div class="card-body text-center">
-                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
-                        <h3 class="h5 mt-2">JavaScript</h3>
-                        <a href="?category=javascript" class="btn btn-light btn-sm">
-                            Ver Tutoriais
-                        </a>
-                    </div>
-                </div>
-            </div>
-                    <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card bg-primary text-white">
-                    <div class="card-body text-center">
-                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
-                        <h3 class="h5 mt-2">MySQL</h3>
-                        <a href="?category=mysql" class="btn btn-light btn-sm">
-                            Ver Tutoriais
-                        </a>
-                    </div>
-                </div>
-            </div>
-                    <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card bg-primary text-white">
-                    <div class="card-body text-center">
-                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
-                        <h3 class="h5 mt-2">PHP</h3>
-                        <a href="?category=php" class="btn btn-light btn-sm">
-                            Ver Tutoriais
-                        </a>
-                    </div>
-                </div>
-            </div>
-                    <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card bg-primary text-white">
-                    <div class="card-body text-center">
-                        <i class="fas fa-code" style="font-size: 2rem;" aria-hidden="true"></i>
-                        <h3 class="h5 mt-2">Python</h3>
-                        <a href="?category=python" class="btn btn-light btn-sm">
-                            Ver Tutoriais
-                        </a>
-                    </div>
-                </div>
-            </div>
-            </div>
-
-    <!-- Informações adicionais -->
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card bg-light">
-                <div class="card-body">
-                    <h2 class="h5 card-title">
-                        <i class="fas fa-graduation-cap text-success" aria-hidden="true"></i> 
-                        Como Aproveitar os Tutoriais
-                    </h2>
-                    <ul class="list-unstyled mb-0">
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
-                            Leia com atenção e pratique os exemplos
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
-                            Faça anotações dos pontos importantes
-                        </li>
-                        <li class="mb-0">
-                            <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
-                            Aplique o conhecimento nos exercícios
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6">
-            <div class="card bg-light">
-                <div class="card-body">
-                    <h2 class="h5 card-title">
-                        <i class="fas fa-question-circle text-info" aria-hidden="true"></i> 
-                        Precisa de Ajuda?
-                    </h2>
-                    <p class="mb-3">
-                        Tem dúvidas sobre algum tutorial? Nossa comunidade está aqui para ajudar!
-                    </p>
-                    <a href="forum_index.php" class="btn btn-info btn-sm">
-                        <i class="fas fa-comments" aria-hidden="true"></i> Ir para o Fórum
-                    </a>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- Seção de Recursos -->
+<section class="py-5 bg-primary2">
+    <div class="container">
+        <div class="row about-section">
+            <div class="col-12 text-center mb-0">
+                <h2 class="display-5 fw-bold text-gradient theme-text-heading">
+                    Por que nos escolher?                </h2>
+                <p class="lead theme-text-body">
+                    Descubra os benefícios da nossa plataforma de aprendizagem                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4 feature-section">
+            <div class="col-lg-4 col-md-6">
+                <div class="card theme-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-code fa-3x text-primary"></i>
+                        </div>
+                        <h4 class="mb-0">Exercícios Práticos</h4>
+                        <p class="card-text theme-text-body">
+                            Aprenda fazendo com exercícios interativos que simulam situações reais de desenvolvimento.                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-bolt fa-3x text-warning"></i>
+                        </div>
+                        <h4 class="mb-0">Feedback Instantâneo</h4>
+                        <p class="card-text text-muted">
+                            Receba feedback imediato sobre seu código e aprenda com seus erros em tempo real.                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-users fa-3x text-success"></i>
+                        </div>
+                        <h4 class="mb-0">Comunidade Ativa</h4>
+                        <p class="card-text text-muted">
+                            Conecte-se com outros desenvolvedores, tire dúvidas e compartilhe conhecimento.                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-chart-line fa-3x text-info"></i>
+                        </div>
+                        <h4 class="mb-0">Acompanhamento de Progresso</h4>
+                        <p class="card-text text-muted">
+                            Acompanhe seu progresso com estatísticas detalhadas e alcance seus objetivos.                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-mobile-alt fa-3x text-danger"></i>
+                        </div>
+                        <h4 class="mb-0">Design Responsivo</h4>
+                        <p class="card-text text-muted">
+                            Acesse a plataforma de qualquer dispositivo, a qualquer hora e em qualquer lugar.                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-universal-access fa-3x text-secondary"></i>
+                        </div>
+                        <h4 class="mb-0">Acessibilidade</h4>
+                        <p class="card-text text-muted">
+                            Plataforma totalmente acessível, incluindo suporte para pessoas com daltonismo.                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Seção de Trilhas de Aprendizado -->
+<section class="py-5 ">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-4">
+                <h2 class="display-5 fw-bold text-gradient mb-0">
+                    Trilhas de Aprendizado                </h2>
+                <p class="lead text-muted">
+                    Escolha sua jornada e domine as tecnologias web                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card border-gradient h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="card-title mb-4">
+                            <i class="fas fa-seedling me-2" aria-hidden="true"></i>
+                            Trilha Iniciante                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Perfeito para iniciantes. Aprenda HTML, CSS e JavaScript do zero.                        </p>
+                        <ul class="list-unstyled">
+                            <li class="mb-0">
+                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                HTML5 Fundamentos                            </li>
+                            <li class="mb-0">
+                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                CSS3 & Design Responsivo                            </li>
+                            <li class="mb-0">
+                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                JavaScript Básico                            </li>
+                            <li class="mb-0">
+                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                Primeiros Projetos                            </li>
+                        </ul>
+                        <a href="exercises_index.php?level=beginner" class="btn btn-primary">
+                            Iniciar Trilha                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card border-gradient h-100">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="card-title mb-4">
+                            <i class="fas fa-rocket me-2" aria-hidden="true"></i>
+                            Trilha Avançada                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Para desenvolvedores que querem se aprofundar em tecnologias modernas.                        </p>
+                        <ul class="list-unstyled">
+                            <li class="mb-0">
+                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                React & Vue.js
+                            </li>
+                            <li class="mb-0">
+                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                Node.js & Express
+                            </li>
+                            <li class="mb-0">
+                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                Bancos de Dados                            </li>
+                            <li class="mb-0">
+                                <i class="fas fa-check text-success me-2" aria-hidden="true"></i>
+                                Deploy e DevOps                            </li>
+                        </ul>
+                        <a href="exercises_index.php?level=advanced" class="btn btn-warning">
+                            Iniciar Trilha                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Seção de Depoimentos -->
+<section class="py-5 bg-primary2">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-0">
+                <h2 class="display-5 fw-bold text-gradient">
+                    O que nossos estudantes dizem                </h2>
+                <p2 class="lead fw-bold mb-0" >
+                    Veja a experiência de quem já está na jornada                </p2>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Depoimento 1 -->
+            <div class="col-lg-4 d-flex align-items-stretch">
+                <div class="card testimonial-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="mb-3">
+                            <img src="https://i.pravatar.cc/100?u=1" 
+                                 alt="Foto do estudante" 
+                                 class="rounded-circle border border-2 border-primary p-1">
+                        </div>
+                        <blockquote class="blockquote flex-grow-1">
+                            <p class="mb-3 theme-text-body">
+                                "A plataforma é incrível! Os exercícios práticos me ajudaram a consolidar meus conhecimentos de uma forma que nenhum outro curso online havia conseguido antes."
+                            </p>
+                        </blockquote>
+                        <footer class="blockquote-footer mt-auto mb-3">
+                            <strong class="d-block theme-text-heading mb-0">Joana Silva</strong>
+                            <cite title="Cargo" class="theme-text-muted">
+                                Desenvolvedor Front-end                            </cite>
+                        </footer>
+                        <div class="mt-3 text-warning mb-3>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Depoimento 2 -->
+            <div class="col-lg-4 d-flex align-items-stretch">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="mb-3">
+                            <img src="https://i.pravatar.cc/100?u=2" 
+                                 alt="Foto do estudante" 
+                                 class="rounded-circle border border-2 border-primary p-1">
+                        </div>
+                        <blockquote class="blockquote flex-grow-1">
+                            <p class="mb-3">
+                                "O feedback instantâneo é um divisor de águas. Pude corrigir meus erros e evoluir muito mais rápido. Recomendo para todos!"
+                            </p>
+                        </blockquote>
+                        <footer class="blockquote-footer mt-auto mb-0">
+                            <strong class="d-block">Carlos Souza</strong>
+                            <cite title="Cargo">
+                                Estudante de Análise de Sistemas                            </cite>
+                        </footer>
+                        <div class="mt-3 text-warning">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star-half-alt" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Depoimento 3 -->
+            <div class="col-lg-4 d-flex align-items-stretch">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="mb-3">
+                            <img src="https://i.pravatar.cc/100?u=3" 
+                                 alt="Foto do estudante" 
+                                 class="rounded-circle border border-2 border-primary p-1">
+                        </div>
+                        <blockquote class="blockquote flex-grow-1">
+                            <p class="mb-3">
+                                "A comunidade é muito ativa e prestativa. Sempre que tive dúvidas, encontrei ajuda no fórum. Isso faz toda a diferença no aprendizado."
+                            </p>
+                        </blockquote>
+                        <footer class="blockquote-footer mt-auto mb-0">
+                            <strong class="d-block">Mariana Lima</strong>
+                            <cite title="Cargo">
+                                Designer UI/UX                            </cite>
+                        </footer>
+                        <div class="mt-3 text-warning">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="far fa-star" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-primary text-white hero-section" style="min-height: auto;">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-5 fw-bold mb-4">
+                    Pronto para começar sua jornada?                </h2>
+                <p2 class="lead mb-4">
+                    Junte-se a milhares de desenvolvedores que já transformaram suas carreiras                </p2>
+                
+                                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                        <a href="register.php" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-user-plus me-2" aria-hidden="true"></i>
+                            Criar Conta Gratuita                        </a>
+                        <a href="exercises_index.php" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-eye me-2" aria-hidden="true"></i>
+                            Explorar Conteúdo                        </a>
+                    </div>
+                            </div>
+        </div>
+    </div>
+</section>
 
 <script>
-function showTutorialPreview(id) {
-    // Implementar preview do tutorial
-    alert('Preview do tutorial ' + id);
-}
-
+// Animação de digitação para o código
 document.addEventListener('DOMContentLoaded', function() {
-    // Filtros em tempo real
-    const categorySelect = document.getElementById('category');
-    const levelSelect = document.getElementById('level');
+    const codeElement = document.getElementById('typingCode');
+    const codeText = `<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Site</title>
+</head>
+<body>
+    <h1>Olá, Mundo!</h1>
+    <p>Bem-vindo à sua Jornada de Desenvolvedor</p>
+</body>
+</html>`;
     
-    if (categorySelect) {
-        categorySelect.addEventListener('change', function() {
-            this.closest('form').submit();
-        });
+    let i = 0;
+    function typeWriter() {
+        if (i < codeText.length) {
+            codeElement.textContent += codeText.charAt(i);
+            i++;
+            setTimeout(typeWriter, 50);
+        } else {
+            // Reiniciar após 3 segundos
+            setTimeout(() => {
+                codeElement.textContent = '';
+                i = 0;
+                typeWriter();
+            }, 3000);
+        }
     }
-
-    if (levelSelect) {
-        levelSelect.addEventListener('change', function() {
-            this.closest('form').submit();
-        });
-    }
+    
+    typeWriter();
 });
 </script>
+
+<style>
+/* Estilos específicos da página inicial */
+.hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+.stat-item {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    margin-bottom: 1rem;
+}
+
+.code-animation {
+    max-width: 400px;
+    margin: 0 auto;
+    font-family: 'Courier New', monospace;
+}
+
+.floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.floating-icon {
+    position: absolute;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    color: white;
+}
+
+.card:hover .feature-icon {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: auto;
+        padding: 3rem 0;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .floating-elements {
+        display: none;
+    }
+    
+    .code-animation {
+        font-size: 0.8rem;
+    }
+}
+</style>
 
     </main>
 

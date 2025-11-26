@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demonstração do CSS Grid Layout - Gelsomini</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2b2d42;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        /* ========================================
+           DEMONSTRAÇÃO 1: GRID LAYOUT
+           ======================================== */
+        .demo-section {
+            margin-bottom: 4rem;
+        }
+
+        .demo-title {
+            font-size: 1.5rem;
+            color: #4361ee;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .demo-title i {
+            color: #667eea;
+        }
+
+        .demo-description {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-left: 4px solid #4361ee;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        /* GRID LAYOUT - Versão Original do Tutorial */
+        .grid-example {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: auto 1fr auto;
+            grid-template-areas:
+                "header header header"
+                "sidebar main main"
+                "footer footer footer";
+            gap: 20px;
+            min-height: 500px;
+            margin-bottom: 2rem;
+            border: 2px solid #e9ecef;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8f9fa;
+        }
+
+        .grid-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .grid-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .grid-item.header {
+            grid-area: header;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+        }
+
+        .grid-item.sidebar {
+            grid-area: sidebar;
+            background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+        }
+
+        .grid-item.main {
+            grid-area: main;
+            background: linear-gradient(135deg, #06ffa5 0%, #06d6a0 100%);
+        }
+
+        .grid-item.footer {
+            grid-area: footer;
+            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+        }
+
+        /* GRID LAYOUT - Versão Melhorada do show.php */
+        .grid-layout-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            grid-gap: 2rem;
+            margin-bottom: 2rem;
+            border: 2px solid #e9ecef;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8f9fa;
+        }
+
+        .grid-main-content,
+        .grid-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .content-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #4361ee;
+        }
+
+        .sidebar-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a5568;
+            font-weight: 600;
+            border: 2px dashed #cbd5e0;
+        }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 1024px) {
+            .grid-layout-container {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-sidebar {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-example {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                grid-template-areas:
+                    "header"
+                    "main"
+                    "sidebar"
+                    "footer";
+                min-height: auto;
+            }
+
+            .grid-layout-container {
+                padding: 10px;
+            }
+
+            .grid-sidebar {
+                grid-template-columns: 1fr;
+            }
+
+            .content-card,
+            .sidebar-card {
+                padding: 1rem;
+            }
+        }
+
+        /* ========================================
+           COMPARAÇÃO CÓDIGO
+           ======================================== */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .comparison-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid #e9ecef;
+        }
+
+        .comparison-item h3 {
+            color: #2b2d42;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .comparison-item code {
+            display: block;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .old { border-left: 4px solid #ef4444; }
+        .new { border-left: 4px solid #06d6a0; }
+
+        /* FEATURES LIST */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.05), rgba(102, 126, 234, 0.05));
+            border: 2px solid rgba(67, 97, 238, 0.2);
+            padding: 1.5rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: #4361ee;
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: #4361ee;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .feature-card h4 {
+            color: #2b2d42;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .feature-card p {
+            color: #4a5568;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* RESPONSIVE DEMO */
+        .responsive-demo {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            margin-bottom: 2rem;
+        }
+
+        .responsive-label {
+            font-weight: 700;
+            color: #4361ee;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .responsive-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .breakpoint {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            color: #4a5568;
+            border: 2px solid #cbd5e0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .breakpoint.active {
+            background: linear-gradient(135deg, #4361ee, #667eea);
+            color: white;
+            border-color: #4361ee;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        /* BUTTONS */
+        .btn-demo {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #4361ee, #667eea);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+
+        .btn-demo:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .text-muted {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <i class="fas fa-th-large"></i>
+            CSS Grid Layout Showcase
+        </h1>
+        <p class="subtitle">Demonstração das melhorias implementadas no projeto Gelsomini</p>
+
+        <!-- DEMO 1: Layout Original do Tutorial -->
+        <div class="demo-section">
+            <div class="demo-title">
+                <i class="fas fa-book"></i>
+                1. Layout Original (do Tutorial CSS Grid)
+            </div>
+            <div class="demo-description">
+                <strong>Descrição:</strong> Este é o exemplo original apresentado no tutorial CSS Grid. 
+                Demonstra como criar layouts com grid areas usando grid-template-areas.
+            </div>
+
+            <div class="grid-example">
+                <div class="grid-item header">
+                    <i class="fas fa-heading"></i> HEADER
+                </div>
+                <div class="grid-item sidebar">
+                    <i class="fas fa-bars"></i> SIDEBAR
+                </div>
+                <div class="grid-item main">
+                    <i class="fas fa-file-alt"></i> MAIN CONTENT
+                </div>
+                <div class="grid-item footer">
+                    <i class="fas fa-copyright"></i> FOOTER
+                </div>
+            </div>
+
+            <div class="comparison">
+                <div class="comparison-item old">
+                    <h3><i class="fas fa-code"></i> CSS Grid - Original</h3>
+                    <code>
+.container {
+    display: grid;
+    grid-template-columns: 
+        repeat(3, 1fr);
+    grid-template-rows: 
+        auto 1fr auto;
+    grid-template-areas:
+        "header header header"
+        "sidebar main main"
+        "footer footer footer";
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "header"
+            "main"
+            "sidebar"
+            "footer";
+    }
+}
+                    </code>
+                </div>
+                <div class="comparison-item">
+                    <h3><i class="fas fa-check"></i> Responsive</h3>
+                    <p style="margin-bottom: 1rem;">
+                        ✅ <strong>Desktop:</strong> 3 colunas com header e footer em toda a largura<br>
+                        ✅ <strong>Mobile:</strong> 1 coluna com reordenação automática
+                    </p>
+                    <div class="responsive-display">
+                        <div class="breakpoint active">
+                            <i class="fas fa-desktop"></i><br>
+                            <small>Desktop</small>
+                        </div>
+                        <div class="breakpoint">
+                            <i class="fas fa-tablet"></i><br>
+                            <small>Tablet</small>
+                        </div>
+                        <div class="breakpoint">
+                            <i class="fas fa-mobile"></i><br>
+                            <small>Mobile</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DEMO 2: Implementação em show.php -->
+        <div class="demo-section">
+            <div class="demo-title">
+                <i class="fas fa-rocket"></i>
+                2. Implementação Melhorada (show.php)
+            </div>
+            <div class="demo-description">
+                <strong>Descrição:</strong> Layout aprimorado para a página de visualização de tutoriais/exercícios.
+                Utiliza 2 colunas no desktop: conteúdo principal (1fr) + sidebar sticky (350px).
+            </div>
+
+            <div class="grid-layout-container">
+                <div class="grid-main-content">
+                    <div class="content-card">
+                        <h4><i class="fas fa-star"></i> Conteúdo Principal</h4>
+                        <p style="margin: 0; color: #4a5568; font-size: 0.9rem;">
+                            Área de conteúdo flexível e responsiva
+                        </p>
+                    </div>
+                    <div class="content-card">
+                        <h4><i class="fas fa-code"></i> Seções Adicionais</h4>
+                        <p style="margin: 0; color: #4a5568; font-size: 0.9rem;">
+                            Tópicos, objetivos, exemplos de código
+                        </p>
+                    </div>
+                    <div class="content-card">
+                        <h4><i class="fas fa-comments"></i> Comunidade</h4>
+                        <p style="margin: 0; color: #4a5568; font-size: 0.9rem;">
+                            Discussões, soluções, feedback
+                        </p>
+                    </div>
+                </div>
+                <div class="grid-sidebar">
+                    <div class="sidebar-card">
+                        <div style="text-align: center;">
+                            <i class="fas fa-play" style="font-size: 2rem; color: #4361ee; margin-bottom: 0.5rem; display: block;"></i>
+                            Ações
+                        </div>
+                    </div>
+                    <div class="sidebar-card">
+                        <div style="text-align: center;">
+                            <i class="fas fa-info-circle" style="font-size: 2rem; color: #667eea; margin-bottom: 0.5rem; display: block;"></i>
+                            Informações
+                        </div>
+                    </div>
+                    <div class="sidebar-card">
+                        <div style="text-align: center;">
+                            <i class="fas fa-trophy" style="font-size: 2rem; color: #06d6a0; margin-bottom: 0.5rem; display: block;"></i>
+                            Progresso
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison">
+                <div class="comparison-item new">
+                    <h3><i class="fas fa-check"></i> Novo Layout (show.php)</h3>
+                    <code>
+.grid-layout-container {
+    display: grid;
+    grid-template-columns: 
+        1fr 350px;
+    grid-gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.grid-sidebar {
+    position: sticky;
+    top: 120px;
+    height: fit-content;
+}
+
+@media (max-width: 1024px) {
+    .grid-layout-container {
+        grid-template-columns: 1fr;
+    }
+    .grid-sidebar {
+        position: static;
+        display: grid;
+        grid-template-columns: 
+            repeat(auto-fit, 
+            minmax(250px, 1fr));
+    }
+}
+                    </code>
+                </div>
+                <div class="comparison-item">
+                    <h3><i class="fas fa-check"></i> Vantagens</h3>
+                    <p>
+                        ✅ <strong>Sidebar Sticky:</strong> Fica visível ao scroll em desktop<br>
+                        ✅ <strong>Responsivo:</strong> Automaticamente adapta em tablets e mobile<br>
+                        ✅ <strong>Semântico:</strong> Usa nomes de classe descritivas<br>
+                        ✅ <strong>Performance:</strong> Sem JavaScript, puro CSS<br>
+                        ✅ <strong>Flexível:</strong> Fácil de customizar proporções
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FEATURES -->
+        <div class="demo-section">
+            <div class="demo-title">
+                <i class="fas fa-star"></i>
+                3. Melhorias Implementadas
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-th"></i>
+                    <h4>CSS Grid Moderno</h4>
+                    <p>Layout responsivo de 2 colunas que se adapta automaticamente para mobile</p>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fas fa-sticky-note"></i>
+                    <h4>Sidebar Sticky</h4>
+                    <p>Barra lateral que fica visível ao scroll, facilitando acesso rápido às ações</p>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fas fa-font"></i>
+                    <h4>Tipografia Profissional</h4>
+                    <p>Line-height 1.6-1.8, letter-spacing consistente e fontes otimizadas</p>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fas fa-paint-brush"></i>
+                    <h4>Cores Harmoniosas</h4>
+                    <p>Sistema de cores CSS com gradientes e contraste WCAG AA</p>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h4>100% Responsivo</h4>
+                    <p>Breakpoints otimizados para desktop, tablet e mobile</p>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fas fa-magic"></i>
+                    <h4>Animações Suaves</h4>
+                    <p>Transições CSS elegantes sem comprometer performance</p>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fas fa-check-circle"></i>
+                    <h4>Todos os Textos Legíveis</h4>
+                    <p>Contraste, espaçamento e tamanho de fonte otimizados</p>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fas fa-bolt"></i>
+                    <h4>Sem JavaScript Desnecessário</h4>
+                    <p>Puro CSS Grid para máxima performance e compatibilidade</p>
+                </div>
+
+                <div class="feature-card">
+                    <i class="fas fa-code-branch"></i>
+                    <h4>Manutenível e Modular</h4>
+                    <p>Código organizado com comentários e fácil de estender</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESPONSIVE DEMONSTRATION -->
+        <div class="demo-section">
+            <div class="demo-title">
+                <i class="fas fa-mobile-alt"></i>
+                4. Breakpoints Responsivos
+            </div>
+
+            <div class="responsive-demo">
+                <div class="responsive-label">Desktop (1024px+)</div>
+                <div class="responsive-display">
+                    <div class="breakpoint active" style="grid-column: 1 / 3;">
+                        <i class="fas fa-th"></i><br>
+                        <small>1fr + 350px</small>
+                    </div>
+                    <div class="breakpoint active">
+                        <i class="fas fa-file-alt"></i><br>
+                        <small>Conteúdo</small>
+                    </div>
+                    <div class="breakpoint active">
+                        <i class="fas fa-bars"></i><br>
+                        <small>Sidebar Sticky</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="responsive-demo">
+                <div class="responsive-label">Tablet (768px - 1024px)</div>
+                <div class="responsive-display">
+                    <div class="breakpoint active">
+                        <i class="fas fa-file-alt"></i><br>
+                        <small>Conteúdo</small>
+                    </div>
+                    <div class="breakpoint active">
+                        <i class="fas fa-bars"></i><br>
+                        <small>Cards</small>
+                    </div>
+                    <div class="breakpoint active">
+                        <i class="fas fa-bars"></i><br>
+                        <small>Cards</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="responsive-demo">
+                <div class="responsive-label">Mobile (&lt;768px)</div>
+                <div class="responsive-display">
+                    <div class="breakpoint active" style="grid-column: 1 / -1;">
+                        <i class="fas fa-mobile"></i><br>
+                        <small>Uma coluna - Stack vertical</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CALL TO ACTION -->
+        <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(102, 126, 234, 0.1)); border-radius: 12px; border: 2px solid rgba(67, 97, 238, 0.2); margin-top: 2rem;">
+            <h2 style="color: #2b2d42; margin-bottom: 1rem;">
+                <i class="fas fa-rocket"></i> Pronto para Começar?
+            </h2>
+            <p style="color: #4a5568; margin-bottom: 1.5rem; font-size: 1.05rem;">
+                O layout com CSS Grid agora está implementado em <strong>show.php</strong><br>
+                Todos os textos estão otimizados para legibilidade máxima
+            </p>
+            <a href="pt-br/show.php?type=tutorial&id=2" class="btn-demo">
+                <i class="fas fa-eye"></i> Ver Demonstração Live
+            </a>
+            <a href="javascript:history.back()" class="btn-demo" style="background: transparent; border: 2px solid #4361ee; color: #4361ee;">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #e9ecef; text-align: center; color: #718096;">
+            <p style="margin: 0;">
+                <strong>Desenvolvido com ❤️ para Gelsomini</strong><br>
+                CSS Grid Layout Showcase | 26/11/2024
+            </p>
+        </div>
+    </div>
+</body>
+</html>

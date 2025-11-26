@@ -1,13 +1,9 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 class Database {
     private $host = "localhost";
     private $user = "root";
-    private $password = "Home@spSENAI2025!"; // ou "" se estiver sem senha
-    private $database = "cursinho";
+    private $password = "momohiki"; // Senha original que estava funcionando
+    private $database = "Aims-sub2";
     public $conn;
 
     public function __construct() {
@@ -23,7 +19,7 @@ class Database {
                 throw new Exception("Erro de conexão: " . $this->conn->connect_error);
             }
 
-            $this->conn->set_charset("utf8");
+            $this->conn->set_charset("utf8mb4");
             
         } catch (Exception $e) {
             die("❌ Falha na conexão: " . $e->getMessage() . "\n");

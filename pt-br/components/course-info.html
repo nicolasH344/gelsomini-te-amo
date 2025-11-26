@@ -1,0 +1,61 @@
+<!-- Componente: Informações do Curso (pt-br)
+     Inclusão: no show.php use <?php include __DIR__ . '/components/course-info.html'; ?>
+     Estilos: carregar course-info.css no header.php ou diretamente via <link>
+-->
+<section class="course-info-card" aria-labelledby="course-info-title">
+  <h2 id="course-info-title" class="sr-only">Informações do Curso</h2>
+
+  <div class="course-meta">
+    <dl>
+      <div class="meta-row">
+        <dt>Categoria</dt>
+        <dd>CSS</dd>
+      </div>
+      <div class="meta-row">
+        <dt>Dificuldade</dt>
+        <dd>Intermediário</dd>
+      </div>
+      <div class="meta-row">
+        <dt>Duração</dt>
+        <dd>25 min</dd>
+      </div>
+      <div class="meta-row">
+        <dt>Status</dt>
+        <dd>Publicado</dd>
+      </div>
+      <div class="meta-row">
+        <dt>Avaliação</dt>
+        <dd>
+          <div class="rating" aria-label="Avaliação: 4.8 de 5">4.8 <span aria-hidden="true">★</span></div>
+        </dd>
+      </div>
+      <div class="meta-row">
+        <dt>Autor</dt>
+        <dd>Equipe WebLearn</dd>
+      </div>
+      <div class="meta-row">
+        <dt>Última Atualização</dt>
+        <dd>20/01/2024</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="course-progress" aria-hidden="false">
+    <div class="progress-header">
+      <span>Seu Progresso</span>
+      <span class="progress-percent">0%</span>
+    </div>
+    <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="progress-actions">
+      <span class="status-pill status-notstarted">Não iniciado</span>
+      <a class="btn btn-primary btn-continue" href="#" title="Continuar tutorial">Continuar Explorando</a>
+    </div>
+  </div>
+
+  <div class="course-extras">
+    <a href="/pt-br/exercises_index.php" class="related-link">Flexbox na Prática — 18 min</a>
+    <div class="stats" aria-hidden="true">Últimos 30 dias: <strong>284</strong></div>
+  </div>
+</section>

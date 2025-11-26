@@ -1,11 +1,11 @@
 <?php 
-// Incluir configurações
+// Incluir configuraciones
 require_once 'config.php';
 
-// Variável para armazenar a mensagem de erro localmente
+// Variable para almacenar el mensaje de error localmente
 $error = null;
 
-// Processar registro se formulário foi enviado
+// Procesar registro si el formulario fue enviado
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = processRegister($_POST);
     
@@ -14,18 +14,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: login.php');
         exit;
     } else {
-        // Usar uma variável local para exibir o erro na página
+        // Usar variable local para mostrar error en la página
         $error = $result['message'];
     }
 }
 
-// Se já estiver logado, redirecionar
+// Si ya está logueado, redirigir
 if (isLoggedIn()) {
     header('Location: index.php');
     exit;
 }
 
-// Definir título da página
+// Definir título de la página
 $title = 'Crear Cuenta';
 
 include 'header.php'; 
@@ -35,12 +35,12 @@ include 'header.php';
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-7">
             
-            <?php // Exibir a mensagem de erro local, se houver ?>
+            <?php // Mostrar mensaje de error local si existe ?>
             <?php if ($error): ?>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>
                     <?php echo sanitize($error); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
                 </div>
             <?php endif; ?>
 
@@ -57,7 +57,7 @@ include 'header.php';
                             <legend class="visually-hidden">Información Personal</legend>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="mb-3">
+                                    <div class="mb-0">
                                         <label for="first_name" class="form-label required">Nombre</label>
                                         <input type="text" 
                                                class="form-control" 
@@ -73,7 +73,7 @@ include 'header.php';
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-3">
+                                    <div class="mb-0">
                                         <label for="last_name" class="form-label required">Apellido</label>
                                         <input type="text" 
                                                class="form-control" 
@@ -93,7 +93,7 @@ include 'header.php';
                         
                         <fieldset>
                             <legend class="visually-hidden">Información de Acceso</legend>
-                            <div class="mb-3">
+                            <div class="mb-0">
                                 <label for="username" class="form-label required">Nombre de Usuario</label>
                                 <input type="text" 
                                        class="form-control" 
@@ -105,7 +105,7 @@ include 'header.php';
                                        pattern="[a-zA-Z0-9_]{3,}"
                                        value="<?php echo isset($_POST['username']) ? sanitize($_POST['username']) : ''; ?>">
                                 <div id="username-help" class="form-text">
-                                    Solo letras, números y guiones bajos. Mínimo 3 caracteres.
+                                    Solo letras, números y guión bajo. Mínimo 3 caracteres.
                                 </div>
                             </div>
                             
@@ -119,7 +119,7 @@ include 'header.php';
                                        autocomplete="email"
                                        aria-describedby="email-help"
                                        value="<?php echo isset($_POST['email']) ? sanitize($_POST['email']) : ''; ?>">
-                                <div id="email-help" class="form-text">
+                                <div id="email-help" class="form-text mb-0">
                                     Ingresa una dirección de email válida
                                 </div>
                             </div>
@@ -129,7 +129,7 @@ include 'header.php';
                             <legend class="visually-hidden">Definir Contraseña</legend>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="mb-3">
+                                    <div class="mb-0">
                                         <label for="password" class="form-label required">Contraseña</label>
                                         <div class="input-group">
                                             <input type="password" 
@@ -153,7 +153,7 @@ include 'header.php';
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-3">
+                                    <div class="mb-0">
                                         <label for="confirm_password" class="form-label required">Confirmar Contraseña</label>
                                         <div class="input-group">
                                             <input type="password" 
@@ -178,7 +178,7 @@ include 'header.php';
                             </div>
                         </fieldset>
                         
-                        <div class="mb-3 form-check">
+                        <div class="mb-0 form-check">
                             <input type="checkbox" 
                                    class="form-check-input" 
                                    id="terms" 
@@ -186,11 +186,27 @@ include 'header.php';
                                    required
                                    aria-describedby="terms-help"
                                    <?php echo isset($_POST['terms']) ? 'checked' : ''; ?>>
-                            <label class="form-check-label required" for="terms">
-                                Acepto los <a href="terms.php" class="text-decoration-none">términos de uso</a> y <a href="privacy.php" class="text-decoration-none">política de privacidad</a>
+                            <label class="form-check-label required mb-0" for="terms">
+                                Acepto los términos de uso
                             </label>
                             <div id="terms-help" class="form-text">
                                 Es necesario aceptar los términos para crear una cuenta
+                            </div>
+                        </div>
+                        
+                        <div class="mb-0 form-check">
+                            <input type="checkbox" 
+                                   class="form-check-input" 
+                                   id="lgpd_consent" 
+                                   name="lgpd_consent"
+                                   required
+                                   aria-describedby="lgpd-help"
+                                   <?php echo isset($_POST['lgpd_consent']) ? 'checked' : ''; ?>>
+                            <label class="form-check-label required mb-0" for="lgpd_consent">
+                                Acepto la <a href="politica-privacidad.php" class="text-decoration-none" target="_blank">Política de Privacidad</a>
+                            </label>
+                            <div id="lgpd-help" class="form-text">
+                                Consentimiento para el tratamiento de datos personales según las regulaciones de privacidad
                             </div>
                         </div>
                         
@@ -215,17 +231,17 @@ include 'header.php';
 </div>
 
 <script>
-// Scripts para mostrar/ocultar senhas e validação
+// Scripts para mostrar/ocultar contraseñas y validación
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle para senha
+    // Toggle para contraseña
     const togglePassword = document.getElementById('togglePassword');
     const passwordField = document.getElementById('password');
     
-    // Toggle para confirmação de senha
+    // Toggle para confirmación de contraseña
     const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
     const confirmPasswordField = document.getElementById('confirm_password');
     
-    // Função para alternar visibilidade da senha
+    // Función para alternar visibilidad de contraseña
     function togglePasswordVisibility(button, field) {
         if (button && field) {
             const icon = button.querySelector('i');
@@ -250,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
     togglePasswordVisibility(togglePassword, passwordField);
     togglePasswordVisibility(toggleConfirmPassword, confirmPasswordField);
     
-    // Validação de confirmação de senha
+    // Validación de confirmación de contraseña
     function validatePasswordMatch() {
         if (confirmPasswordField && passwordField) {
             if (confirmPasswordField.value && passwordField.value !== confirmPasswordField.value) {

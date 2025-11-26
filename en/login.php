@@ -1,21 +1,20 @@
-@@ -1,168 +1,168 @@
 <?php 
-// Incluir configurações
+// Include configurations
 require_once 'config.php';
 
-// Variável para armazenar a mensagem de erro localmente
+// Variable to store error message locally
 $error = null;
 
-// Processar login se formulário foi enviado
+// Process login if form was submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validar CSRF token
+    // Validate CSRF token
     if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
-        $error = 'Token de segurança inválido';
+        $error = 'Invalid security token';
     } else {
-        // Se "Lembrar de mim" for marcado, estende a duração do cookie da sessão
+        // If "Remember me" is checked, extend session cookie duration
         if (!empty($_POST['remember'])) {
-            $lifetime = 60 * 60 * 24 * 30; // 30 dias
-            SecurityHelper::setSecureCookie(session_name(), session_id(), time() + $lifetime);
+            $lifetime = 60 * 60 * 24 * 30; // 30 days
+            setcookie(session_name(), session_id(), time() + $lifetime, '/', '', false, true);
         }
 
         $result = processLogin($_POST['username'] ?? '', $_POST['password'] ?? '');
@@ -25,20 +24,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: index.php');
             exit;
         } else {
-            // Usar uma variável local para exibir o erro na página de login
+            // Use local variable to display error on login page
             $error = $result['message'];
         }
     }
 }
 
-// Se já estiver logado, redirecionar
+// If already logged in, redirect
 if (isLoggedIn()) {
     header('Location: index.php');
     exit;
 }
 
-// Definir título da página
-$title = 'Entrar';
+// Set page title
+$title = 'Login';
 
 include 'header.php'; 
 ?>
@@ -78,8 +77,6 @@ include 'header.php';
 .bubble:nth-child(13) { left: 85%; width: 20px; height: 20px; animation-delay: 9s; }
 .bubble:nth-child(14) { left: 55%; width: 70px; height: 70px; animation-delay: 4.5s; }
 
-
-
 @keyframes rise {
     to {
         bottom: 100vh;
@@ -87,10 +84,10 @@ include 'header.php';
     }
 }
 
-.theme-purple .bubble { background: rgba(138, 43, 226, 0.3); }
-.theme-blue .bubble { background: rgba(74, 144, 226, 0.3); }
-.theme-green .bubble { background: rgba(40, 167, 69, 0.3); }
-.theme-dark .bubble { background: rgba(255, 255, 255, 0.15); }
+.theme-purple .bubble { background: rgba(141, 28, 247, 0.31); }
+.theme-blue .bubble { background: rgba(76, 152, 238, 0.33); }
+.theme-green .bubble { background: rgba(42, 182, 75, 0.54); }
+.theme-dark .bubble { background: rgba(212, 159, 255, 0.54); }
 </style>
 
 <div class="bubbles-container">
@@ -114,28 +111,27 @@ include 'header.php';
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
             
-            <?php // Exibir a mensagem de erro local, se houver ?>
+            <?php // Display local error message if any ?>
             <?php if ($error): ?>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>
                     <?php echo sanitize($error); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
 
             <div class="card shadow">
-                <div class="card-header bg-primary text-white">
                 <div class="card-header">
-                    <h1 class="h4 mb-0">
+                    <h1 class="h4 mb-4">
                         <i class="fas fa-sign-in-alt" aria-hidden="true"></i> 
-                        Entrar na sua conta
+                        Sign in to your account
                     </h1>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="login.php" novalidate>
                         <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
-                        <div class="mb-3">
-                            <label for="username" class="form-label required">Usuário ou Email</label>
+                        <div class="mb-4">
+                            <label for="username" class="form-label required">Username or Email</label>
                             <input type="text" 
                                    class="form-control" 
                                    id="username" 
@@ -145,12 +141,12 @@ include 'header.php';
                                    aria-describedby="username-help"
                                    value="<?php echo isset($_POST['username']) ? sanitize($_POST['username']) : ''; ?>">
                             <div id="username-help" class="form-text">
-                                Digite seu nome de usuário ou endereço de email
+                                Enter your username or email address
                             </div>
                         </div>
                         
-                        <div class="mb-3">
-                            <label for="password" class="form-label required">Senha</label>
+                        <div class="mb-4">
+                            <label for="password" class="form-label required">Password</label>
                             <div class="input-group">
                                 <input type="password" 
                                        class="form-control" 
@@ -162,49 +158,50 @@ include 'header.php';
                                 <button class="btn btn-outline-secondary" 
                                         type="button" 
                                         id="togglePassword"
-                                        aria-label="Mostrar/ocultar senha">
+                                        aria-label="Show/hide password">
                                     <i class="fas fa-eye" aria-hidden="true"></i>
                                 </button>
                             </div>
                             <div id="password-help" class="form-text">
-                                Digite sua senha
+                                Enter your password
                             </div>
                         </div>
                         
-                        <div class="mb-3 form-check">
+                        <div class="mb-4 form-check" style="color: #ffffffd8;">
                             <input type="checkbox" 
                                    class="form-check-input" 
                                    id="remember" 
                                    name="remember"
                                    <?php echo isset($_POST['remember']) ? 'checked' : ''; ?>>
-                            <label class="form-check-label" for="remember">
-                                Lembrar de mim neste dispositivo
+                            <label class="form-check-label mb-0" for="remember">
+                                Remember me on this device
                             </label>
                         </div>
                         
                         <button type="submit" class="btn btn-primary w-100 mb-3">
                             <i class="fas fa-sign-in-alt" aria-hidden="true"></i> 
-                            Entrar
+                            Sign In
                         </button>
                     </form>
                     
                     <hr>
                     
                     <div class="text-center">
-                        <p class="mb-2">
-                            Não tem uma conta? 
-                            <a href="register.php" class="text-decoration-none">Registre-se aqui</a>
-                        </p>
-                        <p class="mb-0">
-                            <a href="forgot_password.php" class="text-decoration-none">Esqueceu sua senha?</a>
+                        <p2 class="mb-0" style="color: #181818ff;">
+                            Don't have an account? 
+                            <a href="register.php" class="text-decoration-none">Register here</a>
+                        </p2>
+                        <p class="" style="color: #000000ff;">
+                            <a href="forgot-password.php" class="text-decoration-none">Forgot your password?</a>
                         </p>
                     </div>
                     
                     <div class="alert alert-info mt-3" role="alert">
-                        <strong>Contas de teste:</strong><br>
+                        <strong>Test accounts:</strong><br>
                         Admin: <code>admin</code> / <code>admin123</code><br>
-                        Usuário: <code>usuario</code> / <code>123456</code>
+                        User: <code>usuario</code> / <code>123456</code>
                     </div>
+                    
                 </div>
             </div>
         </div>
@@ -212,7 +209,7 @@ include 'header.php';
 </div>
 
 <script>
-// Script para mostrar/ocultar senha
+// Script to show/hide password
 document.addEventListener('DOMContentLoaded', function() {
     const togglePassword = document.getElementById('togglePassword');
     const passwordField = document.getElementById('password');
@@ -227,11 +224,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (type === 'password') {
                 toggleIcon.classList.remove('fa-eye-slash');
                 toggleIcon.classList.add('fa-eye');
-                togglePassword.setAttribute('aria-label', 'Mostrar senha');
+                togglePassword.setAttribute('aria-label', 'Show password');
             } else {
                 toggleIcon.classList.remove('fa-eye');
                 toggleIcon.classList.add('fa-eye-slash');
-                togglePassword.setAttribute('aria-label', 'Ocultar senha');
+                togglePassword.setAttribute('aria-label', 'Hide password');
             }
         });
     }

@@ -19,9 +19,9 @@ if (!defined('BASE_PATH')) {
 
 // Configurações do Banco de Dados
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'cursinho');
+define('DB_NAME', 'Aims-sub2');
 define('DB_USER', 'root');
-define('DB_PASS', 'Home@spSENAI2025!');
+define('DB_PASS', 'momohiki');
 define('DB_CHARSET', 'utf8mb4');
 
 // Configurações de debug
@@ -68,7 +68,7 @@ if (!function_exists('getDBConnection')) {
         
         if ($connection === null) {
             try {
-                $connection = new mysqli("localhost", "root", "Home@spSENAI2025!", "cursinho");
+                $connection = new mysqli("localhost", "root", "momohiki", "Aims-sub2");
                 
                 if ($connection->connect_error) {
                     if (DEBUG_MODE) {
@@ -424,7 +424,7 @@ if (!function_exists('processLogin')) {
     function processLogin($username, $password) {
         try {
             // Conexão direta para evitar problemas
-            $conn = new mysqli("localhost", "root", "Home@spSENAI2025!", "cursinho");
+            $conn = new mysqli("localhost", "root", "momohiki", "Aims-sub2");
             
             if ($conn->connect_error) {
                 return ['success' => false, 'message' => 'Erro de conexão: ' . $conn->connect_error];

@@ -21,32 +21,52 @@ $stats = [
     'study_streak' => 0
 ];
 
-$conn = getDBConnection();
-if ($conn) {
-    // Exercícios concluídos
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM user_progress WHERE user_id = ? AND status = 'completed'");
-    $stmt->bind_param("i", $user['id']);
-    $stmt->execute();
-    $stats['exercises_completed'] = $stmt->get_result()->fetch_row()[0];
-    
-    // Tutoriais visualizados
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM tutorial_progress WHERE user_id = ? AND status = 'completed'");
-    $stmt->bind_param("i", $user['id']);
-    $stmt->execute();
-    $stats['tutorials_viewed'] = $stmt->get_result()->fetch_row()[0];
-    
-    // Posts no fórum
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM forum_posts WHERE user_id = ?");
-    $stmt->bind_param("i", $user['id']);
-    $stmt->execute();
-    $stats['forum_posts'] = $stmt->get_result()->fetch_row()[0];
-    
-    // Pontuação total
-    $stmt = $conn->prepare("SELECT SUM(score) FROM user_progress WHERE user_id = ?");
-    $stmt->bind_param("i", $user['id']);
-    $stmt->execute();
-    $result = $stmt->get_result()->fetch_row();
-    $stats['total_score'] = $result[0] ?? 0;
+try {
+    $conn = getDBConnection();
+    if ($conn) {
+        // Exercícios concluídos - usar dados fictícios se tabela não existir
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM user_progress WHERE user_id = ? AND status = 'completed'");
+        if ($stmt) {
+            $stmt->bind_param("i", $user['id']);
+            $stmt->execute();
+            $stats['exercises_completed'] = $stmt->get_result()->fetch_row()[0];
+        }
+        
+        // Tutoriais visualizados
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM tutorial_progress WHERE user_id = ? AND status = 'completed'");
+        if ($stmt) {
+            $stmt->bind_param("i", $user['id']);
+            $stmt->execute();
+            $stats['tutorials_viewed'] = $stmt->get_result()->fetch_row()[0];
+        }
+        
+        // Posts no fórum
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM forum_posts WHERE user_id = ?");
+        if ($stmt) {
+            $stmt->bind_param("i", $user['id']);
+            $stmt->execute();
+            $stats['forum_posts'] = $stmt->get_result()->fetch_row()[0];
+        }
+        
+        // Pontuação total
+        $stmt = $conn->prepare("SELECT SUM(score) FROM user_progress WHERE user_id = ?");
+        if ($stmt) {
+            $stmt->bind_param("i", $user['id']);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_row();
+            $stats['total_score'] = $result[0] ?? 0;
+        }
+    }
+} catch (Exception $e) {
+    // Usar dados padrão se houver erro
+    $stats = [
+        'exercises_completed' => 0,
+        'tutorials_viewed' => 0,
+        'forum_posts' => 0,
+        'total_score' => 0,
+        'badges_earned' => 0,
+        'study_streak' => 0
+    ];
 }
 
 // Definir título da página
@@ -199,22 +219,28 @@ include 'header.php';
                 <div class="card-body">
                     <?php
                     $recent_activities = [];
-                    if ($conn) {
-                        $stmt = $conn->prepare("
-                            SELECT 'exercise' as type, e.title, up.completed_at as date 
-                            FROM user_progress up 
-                            JOIN exercises e ON up.exercise_id = e.id 
-                            WHERE up.user_id = ? AND up.status = 'completed'
-                            UNION ALL
-                            SELECT 'tutorial' as type, t.title, tp.completed_at as date 
-                            FROM tutorial_progress tp 
-                            JOIN tutorials t ON tp.tutorial_id = t.id 
-                            WHERE tp.user_id = ? AND tp.status = 'completed'
-                            ORDER BY date DESC LIMIT 5
-                        ");
-                        $stmt->bind_param("ii", $user['id'], $user['id']);
-                        $stmt->execute();
-                        $recent_activities = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+                    try {
+                        if ($conn) {
+                            $stmt = $conn->prepare("
+                                SELECT 'exercise' as type, e.title, up.completed_at as date 
+                                FROM user_progress up 
+                                JOIN exercises e ON up.exercise_id = e.id 
+                                WHERE up.user_id = ? AND up.status = 'completed'
+                                UNION ALL
+                                SELECT 'tutorial' as type, t.title, tp.completed_at as date 
+                                FROM tutorial_progress tp 
+                                JOIN tutorials t ON tp.tutorial_id = t.id 
+                                WHERE tp.user_id = ? AND tp.status = 'completed'
+                                ORDER BY date DESC LIMIT 5
+                            ");
+                            if ($stmt) {
+                                $stmt->bind_param("ii", $user['id'], $user['id']);
+                                $stmt->execute();
+                                $recent_activities = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+                            }
+                        }
+                    } catch (Exception $e) {
+                        $recent_activities = [];
                     }
                     ?>
                     

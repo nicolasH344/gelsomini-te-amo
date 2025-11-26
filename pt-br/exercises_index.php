@@ -473,11 +473,14 @@ function completeExercise(exerciseId) {
 .exercises-header .display-4 {
     font-size: 2.5rem;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    color: #1a1a1a !important;
+    font-weight: 700 !important;
 }
 
 .exercises-header .lead {
-    color: rgba(255,255,255,0.9);
+    color: #1a1a1a !important;
     font-size: 1.1rem;
+    font-weight: 600 !important;
 }
 
 /* Card de filtros */

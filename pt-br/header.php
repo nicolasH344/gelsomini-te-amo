@@ -31,6 +31,9 @@
     <link rel="stylesheet" href="../components.css">
     <link rel="stylesheet" href="../theme-text.css">
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../animations.css">
+    <!-- Estilos do componente de informações do curso -->
+    <link rel="stylesheet" href="components/course-info.css">
     
     <!-- Preload critical resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

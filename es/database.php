@@ -1,28 +1,29 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 class Database {
     private $host = "localhost";
     private $user = "root";
-    private $password = "Home@spSENAI2025!"; // ou "" se estiver sem senha
-    private $database = "cursinho";
+    private $password = "momohiki"; // Contraseña original que estaba funcionando
+    private $database = "Aims-sub2";
     public $conn;
 
     public function __construct() {
-        $this->conn = new mysqli(
-            $this->host,
-            $this->user,
-            $this->password,
-            $this->database
-        );
+        try {
+            $this->conn = new mysqli(
+                $this->host,
+                $this->user,
+                $this->password,
+                $this->database
+            );
 
-        if ($this->conn->connect_error) {
-            die("❌ Falha na conexão com o banco de dados: " . $this->conn->connect_error);
+            if ($this->conn->connect_error) {
+                throw new Exception("Error de conexión: " . $this->conn->connect_error);
+            }
+
+            $this->conn->set_charset("utf8mb4");
+            
+        } catch (Exception $e) {
+            die("❌ Fallo en la conexión: " . $e->getMessage() . "\n");
         }
-
-        $this->conn->set_charset("utf8");
     }
 
     public function closeConnection() {
@@ -32,7 +33,4 @@ class Database {
     }
 }
 
-// Testando a conexão
-$db = new Database();
-echo "✅ Conexão realizada com sucesso!";
-$db->closeConnection();
+// Clase Database lista para usar

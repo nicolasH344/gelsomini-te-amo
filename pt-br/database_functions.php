@@ -65,7 +65,7 @@ function processRegister($data) {
 
 function getStats() {
     try {
-        $conn = new mysqli("localhost", "root", "Home@spSENAI2025!", "cursinho");
+        $conn = new mysqli("localhost", "root", "momohiki", "Aims-sub2");
         
         if ($conn->connect_error) {
             throw new Exception("Erro de conexão: " . $conn->connect_error);
