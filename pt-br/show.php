@@ -1595,9 +1595,9 @@ console.log("Tutorial em desenvolvimento");';
                     
                     <?php if (!$preview): ?>
                         <?php if ($type === 'exercise'): ?>
-                            <button class="btn btn-success btn-block mt-2" id="startExercise">
+                            <a href="exercise_detail.php?id=<?php echo $id; ?>" class="btn btn-success btn-block mt-2">
                                 <i class="fas fa-play me-2"></i>Iniciar Exercício
-                            </button>
+                            </a>
                             <button class="btn btn-outline-success btn-block mt-2" id="saveProgress">
                                 <i class="fas fa-save me-2"></i>Salvar Progresso
                             </button>
@@ -4315,13 +4315,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    const startExerciseBtn = document.getElementById('startExercise');
-    if (startExerciseBtn) {
-        startExerciseBtn.addEventListener('click', function() {
-            const exerciseId = <?php echo $id; ?>;
-            window.location.href = 'exercise_detail.php?id=' + exerciseId;
-        });
-    }
+    // Botão startExercise foi substituído por link direto
     
     const saveProgressBtn = document.getElementById('saveProgress');
     if (saveProgressBtn) {

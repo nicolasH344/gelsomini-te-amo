@@ -249,7 +249,7 @@ include 'header.php';
                         
                         <div class="card-footer bg-white border-0 pt-0 pb-3">
                             <div class="d-flex gap-2">
-                                <a href="show.php?type=exercise&id=<?php echo $exercise['id'] ?? 1; ?>" 
+                                <a href="exercise_detail.php?id=<?php echo $exercise['id'] ?? 1; ?>" 
                                    class="btn btn-<?php echo $completed ? 'outline-primary' : 'primary'; ?> flex-fill rounded-pill">
                                     <i class="fas fa-<?php echo $completed ? 'redo' : 'play'; ?> me-1"></i>
                                     <?php echo $completed ? 'Revisar' : 'Começar'; ?>

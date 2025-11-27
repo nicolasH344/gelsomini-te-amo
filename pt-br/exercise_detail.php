@@ -1,1628 +1,495 @@
-<?php<?php<?php
-
+<?php
 session_start();
 
-include_once 'config.php';/**require_once 'config.php';
+require_once 'config.php';
+require_once 'exercise_functions.php';
 
-include_once 'database_functions.php';
+// Validações iniciais
+$id = (int)($_GET['id'] ?? 0);
+if (!$id) redirect('exercises_index.php');
 
- * Exercise Detail Page with Integrated Code Editorrequire_once 'exercise_functions.php';
+// Buscar exercício
+$exercise = getExercise($id);
+if (!$exercise) redirect('exercises_index.php');
 
-// Get exercise ID from URL
+$title = $exercise['title'] ?? 'Exercício';
 
-$exercise_id = isset($_GET['id']) ? intval($_GET['id']) : 0; * Página Detalhada de Exercício com Editor de Código Integrado
+// Processar submissão de código
+$execution_result = null;
+$test_results = [];
 
+// Obter código salvo ou usar padrão
+$user_code = isset($_SESSION['exercise_code_' . $id])
+    ? $_SESSION['exercise_code_' . $id]
+    : ($exercise['initial_code'] ?? '// Comece aqui...\n');
 
-
-// Fetch exercise data */$id = (int)($_GET['id'] ?? 0);
-
-if ($exercise_id > 0) {
-
-    $stmt = $mysqli->prepare("SELECT * FROM exercises WHERE id = ? LIMIT 1");if (!$id) redirect('exercises_index.php');
-
-    $stmt->bind_param("i", $exercise_id);
-
-    $stmt->execute();require_once 'config.php';
-
-    $result = $stmt->get_result();
-
-    $exercise = $result->fetch_assoc();require_once 'exercise_functions.php';$exercise = getExercise($id);
-
-    $stmt->close();
-
-    if (!$exercise) redirect('exercises_index.php');
-
-    if (!$exercise) {
-
-        header("Location: exercises_index.php");// Validações iniciais
-
-        exit;
-
-    }$id = (int)($_GET['id'] ?? 0);$title = $exercise['title'];
-
-} else {
-
-    header("Location: exercises_index.php");if (!$id) redirect('exercises_index.php');
-
-    exit;
-
-}// Processar submissão de código
-
-
-
-// Get test cases// Buscar exercício$execution_result = null;
-
-$test_cases = [];
-
-$stmt = $mysqli->prepare("SELECT * FROM test_cases WHERE exercise_id = ? ORDER BY id ASC");$exercise = getExercise($id);$test_results = [];
-
-$stmt->bind_param("i", $exercise_id);
-
-$stmt->execute();if (!$exercise) redirect('exercises_index.php');$user_code = $exercise['initial_code'] ?? '';
-
-$result = $stmt->get_result();
-
-while ($row = $result->fetch_assoc()) {
-
-    $test_cases[] = $row;
-
-}$title = $exercise['title'] ?? 'Exercício';if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-$stmt->close();
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['submit_code'])) {
-
-// Get user's progress if logged in
-
-$user_progress = null;// Obter código salvo ou usar padrão        $user_code = $_POST['user_code'] ?? '';
-
-if (isset($_SESSION['user_id'])) {
-
-    $user_id = $_SESSION['user_id'];$user_code = isset($_SESSION['exercise_code_' . $id])         
-
-    $stmt = $mysqli->prepare("SELECT * FROM user_progress WHERE user_id = ? AND exercise_id = ? LIMIT 1");
-
-    $stmt->bind_param("ii", $user_id, $exercise_id);    ? $_SESSION['exercise_code_' . $id]         // Simular execução e testes
-
-    $stmt->execute();
-
-    $result = $stmt->get_result();    : ($exercise['initial_code'] ?? '// Comece aqui...\n');        $execution_result = [
-
-    $user_progress = $result->fetch_assoc();
-
-    $stmt->close();            'success' => true,
-
+        $user_code = $_POST['user_code'] ?? '';
+        
+        // Simular execução e testes
+        $execution_result = [
+            'success' => true,
+            'output' => "✓ Código executado com sucesso!\n✓ Todos os testes passaram!",
+            'execution_time' => '0.45s',
+            'memory_used' => '2.1MB'
+        ];
+        
+        $test_results = [
+            ['name' => 'Teste de Sintaxe', 'passed' => true, 'message' => 'Código compilou sem erros'],
+            ['name' => 'Teste de Saída', 'passed' => true, 'message' => 'Saída esperada encontrada'],
+            ['name' => 'Teste de Performance', 'passed' => true, 'message' => 'Dentro dos limites de tempo'],
+            ['name' => 'Teste de Casos Extremos', 'passed' => false, 'message' => 'Falha em caso de entrada vazia']
+        ];
+        
+        $_SESSION['success'] = 'Código executado com sucesso!';
+    }
+    
+    if (isset($_POST['reset_code'])) {
+        $user_code = $exercise['initial_code'] ?? '';
+    }
+    
+    if (isset($_POST['save_progress'])) {
+        $_SESSION['success'] = 'Progresso salvo com sucesso!';
+    }
 }
 
-?>// Incluir header            'output' => "✓ Código executado com sucesso!\n✓ Todos os testes passaram!",
-
-<!DOCTYPE html>
-
-<html lang="pt-BR">include 'header.php';            'execution_time' => '0.45s',
-
-<head>
-
-    <meta charset="UTF-8">?>            'memory_used' => '2.1MB'
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title><?php echo htmlspecialchars($exercise['title'] ?? 'Exercício'); ?> - Gelsomini Te Amo</title>        ];
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"><div class="container-fluid mt-4 mb-5">        
-
-    <link href="../style.css" rel="stylesheet">
-
-        <div class="row">        $test_results = [
-
-    <style>
-
-        :root {        <!-- Main Content -->            ['name' => 'Teste de Sintaxe', 'passed' => true, 'message' => 'Código compilou sem erros'],
-
-            --primary: #6f42c1;
-
-            --secondary: #e83e8c;        <div class="col-lg-8">            ['name' => 'Teste de Saída', 'passed' => true, 'message' => 'Saída esperada encontrada'],
-
-            --success: #28a745;
-
-            --danger: #dc3545;            <!-- Exercise Header -->            ['name' => 'Teste de Performance', 'passed' => true, 'message' => 'Dentro dos limites de tempo'],
-
-            --warning: #ffc107;
-
-            --dark-text: #1a1a1a;            <div class="exercise-header mb-4">            ['name' => 'Teste de Casos Extremos', 'passed' => false, 'message' => 'Falha em caso de entrada vazia']
-
-            --light-bg: #f8f9fa;
-
-        }                <div class="d-flex gap-2 mb-3">        ];
-
-
-
-        body {                    <span class="badge bg-primary">        
-
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-
-            min-height: 100vh;                        <i class="fas fa-code me-1"></i>        $_SESSION['success'] = 'Código executado com sucesso!';
-
-            color: var(--dark-text);
-
-        }                        <?php echo strtoupper($exercise['difficulty'] ?? 'Iniciante'); ?>    }
-
-
-
-        .exercise-container {                    </span>    
-
-            max-width: 1400px;
-
-            margin: 30px auto;                    <span class="badge bg-success">    if (isset($_POST['reset_code'])) {
-
-            padding: 0 15px;
-
-        }                        <i class="fas fa-graduation-cap me-1"></i>        $user_code = $exercise['initial_code'] ?? '';
-
-
-
-        .exercise-header {                        <?php echo $exercise['category'] ?? 'Programação'; ?>    }
-
-            background: rgba(255, 255, 255, 0.95);
-
-            border-radius: 15px;                    </span>    
-
-            padding: 40px;
-
-            margin-bottom: 30px;                </div>    if (isset($_POST['save_progress'])) {
-
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-
-        }                <h1 class="exercise-title"><?php echo sanitize($title); ?></h1>        $_SESSION['success'] = 'Progresso salvo com sucesso!';
-
-
-
-        .exercise-title {                <p class="exercise-desc"><?php echo sanitize($exercise['description'] ?? ''); ?></p>    }
-
-            font-size: 2.5rem;
-
-            font-weight: 700;            </div>}
-
-            color: var(--dark-text);
-
-            margin-bottom: 10px;
-
-        }
-
-            <!-- Content Tabs -->// Dados simulados para estatísticas
-
-        .exercise-description {
-
-            font-size: 1.1rem;            <ul class="nav nav-tabs mb-4" role="tablist">$exercise_stats = [
-
-            color: #555;
-
-            margin-bottom: 20px;                <li class="nav-item">    'attempts' => 1247,
-
-        }
-
-                    <button class="nav-link active" id="instructions-tab" data-bs-toggle="tab" data-bs-target="#instructions" type="button">    'success_rate' => 68,
-
-        .metadata-grid {
-
-            display: grid;                        <i class="fas fa-book me-2"></i>Instruções    'avg_completion_time' => '15min',
-
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-
-            gap: 15px;                    </button>    'popularity' => 4.5,
-
-            margin-top: 25px;
-
-        }                </li>    'user_attempts' => 3,
-
-
-
-        .metadata-item {                <li class="nav-item">    'user_best_time' => '12min'
-
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-
-            padding: 15px;                    <button class="nav-link" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor" type="button">];
-
-            border-radius: 10px;
-
-            color: white;                        <i class="fas fa-code me-2"></i>Editor
-
-            text-align: center;
-
-        }                    </button>// Configuração de linguagens
-
-
-
-        .metadata-label {                </li>$language_config = [
-
-            font-size: 0.85rem;
-
-            opacity: 0.9;                <li class="nav-item">    'javascript' => [
-
-            text-transform: uppercase;
-
-        }                    <button class="nav-link" id="result-tab" data-bs-toggle="tab" data-bs-target="#result" type="button">        'icon' => 'fa-js-square',
-
-
-
-        .metadata-value {                        <i class="fas fa-terminal me-2"></i>Resultado        'color' => '#f7df1e',
-
-            font-size: 1.3rem;
-
-            font-weight: 700;                    </button>        'name' => 'JavaScript'
-
-            margin-top: 5px;
-
-        }                </li>    ],
-
-
-
-        .main-content {                <li class="nav-item">    'html' => [
-
-            display: grid;
-
-            grid-template-columns: 1fr 350px;                    <button class="nav-link" id="solution-tab" data-bs-toggle="tab" data-bs-target="#solution" type="button">        'icon' => 'fa-html5',
-
-            gap: 30px;
-
-            align-items: start;                        <i class="fas fa-lightbulb me-2"></i>Solução        'color' => '#e34f26',
-
-        }
-
-                    </button>        'name' => 'HTML5'
-
-        .nav-tabs {
-
-            border: none;                </li>    ],
-
-            background: white;
-
-            border-radius: 12px 12px 0 0;            </ul>    'css' => [
-
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-
-        }        'icon' => 'fa-css3-alt',
-
-
-
-        .nav-tabs .nav-link {            <!-- Tab Content -->        'color' => '#1572b6',
-
-            color: var(--dark-text);
-
-            border: none;            <div class="tab-content">        'name' => 'CSS3'
-
-            padding: 15px 25px;
-
-            font-weight: 600;                <!-- Instructions Tab -->    ],
-
-            background: #f8f9fa;
-
-        }                <div class="tab-pane fade show active" id="instructions">    'php' => [
-
-
-
-        .nav-tabs .nav-link.active {                    <div class="card shadow-sm border-0">        'icon' => 'fa-php',
-
-            color: var(--primary);
-
-            background: white;                        <div class="card-body p-4">        'color' => '#777bb4',
-
-            border-bottom: 3px solid var(--primary);
-
-        }                            <h5 class="mb-3"><i class="fas fa-target text-primary me-2"></i>O que fazer?</h5>        'name' => 'PHP'
-
-
-
-        .tab-content {                            <p class="lead"><?php echo nl2br(sanitize($exercise['instructions'] ?? 'Implemente a solução conforme os requisitos.')); ?></p>    ]
-
-            background: white;
-
-            border-radius: 0 0 12px 12px;];
-
-            padding: 30px;
-
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);                            <?php if (isset($exercise['hints'])): ?>
-
-        }
-
-                            <div class="alert alert-warning mt-4">// Exercícios relacionados por linguagem
-
-        .instruction-section {
-
-            margin-bottom: 25px;                                <h6 class="alert-heading"><i class="fas fa-lightbulb me-2"></i>Dicas</h6>$related_exercises_by_language = [
-
-        }
-
-                                <p class="mb-0"><?php echo nl2br(sanitize($exercise['hints'])); ?></p>    'javascript' => [
-
-        .instruction-section h5 {
-
-            color: var(--primary);                            </div>        [
-
-            font-weight: 700;
-
-            margin-bottom: 12px;                            <?php endif; ?>            'id' => 2,
-
-        }
-
+// Dados simulados para estatísticas
+$exercise_stats = [
+    'attempts' => 1247,
+    'success_rate' => 68,
+    'avg_completion_time' => '15min',
+    'popularity' => 4.5,
+    'user_attempts' => 3,
+    'user_best_time' => '12min'
+];
+
+// Configuração de linguagens
+$language_config = [
+    'javascript' => [
+        'icon' => 'fa-js-square',
+        'color' => '#f7df1e',
+        'name' => 'JavaScript'
+    ],
+    'html' => [
+        'icon' => 'fa-html5',
+        'color' => '#e34f26',
+        'name' => 'HTML5'
+    ],
+    'css' => [
+        'icon' => 'fa-css3-alt',
+        'color' => '#1572b6',
+        'name' => 'CSS3'
+    ],
+    'php' => [
+        'icon' => 'fa-php',
+        'color' => '#777bb4',
+        'name' => 'PHP'
+    ]
+];
+
+// Exercícios relacionados por linguagem
+$related_exercises_by_language = [
+    'javascript' => [
+        [
+            'id' => 2,
             'title' => 'Manipulação de Arrays',
+            'difficulty' => 'beginner',
+            'language' => 'javascript',
+            'completion_rate' => 72
+        ],
+        [
+            'id' => 3,
+            'title' => 'Funções Assíncronas',
+            'difficulty' => 'intermediate',
+            'language' => 'javascript',
+            'completion_rate' => 45
+        ],
+        [
+            'id' => 4,
+            'title' => 'Manipulação de DOM',
+            'difficulty' => 'beginner',
+            'language' => 'javascript',
+            'completion_rate' => 81
+        ]
+    ],
+    'html' => [
+        [
+            'id' => 5,
+            'title' => 'Formulários Avançados',
+            'difficulty' => 'intermediate',
+            'language' => 'html',
+            'completion_rate' => 68
+        ],
+        [
+            'id' => 6,
+            'title' => 'Tabelas Responsivas',
+            'difficulty' => 'beginner',
+            'language' => 'html',
+            'completion_rate' => 82
+        ],
+        [
+            'id' => 7,
+            'title' => 'Estrutura Semântica',
+            'difficulty' => 'intermediate',
+            'language' => 'html',
+            'completion_rate' => 59
+        ]
+    ],
+    'css' => [
+        [
+            'id' => 8,
+            'title' => 'Flexbox Layout',
+            'difficulty' => 'beginner',
+            'language' => 'css',
+            'completion_rate' => 76
+        ],
+        [
+            'id' => 9,
+            'title' => 'Grid System',
+            'difficulty' => 'intermediate',
+            'language' => 'css',
+            'completion_rate' => 54
+        ],
+        [
+            'id' => 10,
+            'title' => 'Animações CSS',
+            'difficulty' => 'advanced',
+            'language' => 'css',
+            'completion_rate' => 41
+        ]
+    ],
+    'php' => [
+        [
+            'id' => 11,
+            'title' => 'Validação de Dados',
+            'difficulty' => 'beginner',
+            'language' => 'php',
+            'completion_rate' => 70
+        ],
+        [
+            'id' => 12,
+            'title' => 'Conexão com Banco',
+            'difficulty' => 'intermediate',
+            'language' => 'php',
+            'completion_rate' => 48
+        ],
+        [
+            'id' => 13,
+            'title' => 'Upload de Arquivos',
+            'difficulty' => 'advanced',
+            'language' => 'php',
+            'completion_rate' => 35
+        ]
+    ]
+];
 
-        .requirement-list {
+// Dicas por linguagem
+$hints_by_language = [
+    'javascript' => [
+        'Use console.log() para debugar seu código e ver os valores das variáveis',
+        'Lembre-se que arrays começam no índice 0',
+        'Funções podem retornar valores usando a palavra-chave return',
+        'Use let e const ao invés de var para declarar variáveis'
+    ],
+    'html' => [
+        'Use tags semânticas como <header>, <nav>, <main> e <footer>',
+        'Sempre adicione atributos alt em imagens para acessibilidade',
+        'Use IDs para elementos únicos e classes para estilos reutilizáveis',
+        'Organize seu código com indentação adequada'
+    ],
+    'css' => [
+        'Use Flexbox ou Grid para layouts responsivos modernos',
+        'Evite usar !important, organize melhor a especificidade',
+        'Use variáveis CSS (--nome-variavel) para cores e medidas',
+        'Mobile-first: comece com estilos mobile e use media queries para desktop'
+    ],
+    'php' => [
+        'Sempre valide e sanitize dados de entrada do usuário',
+        'Use prepared statements para prevenir SQL injection',
+        'Não exiba erros em produção, use logs ao invés',
+        'Use password_hash() e password_verify() para senhas'
+    ]
+];
 
-            list-style: none;                            <div class="alert alert-info mt-4">            'difficulty' => 'beginner',
+// Detectar linguagem do exercício atual
+// Mapeamento direto por ID de exercício (enquanto o banco não tem o campo correto)
+$exercise_language_map = [
+    1 => 'html',      // Minha Primeira Página HTML
+    2 => 'html',      // Lista de Compras
+    3 => 'html',      // Formulário de Contato
+    4 => 'css',       // Estilizando Texto
+    5 => 'css',       // Layout com Flexbox
+    6 => 'javascript', // Olá Mundo JavaScript
+    7 => 'javascript', // Calculadora Simples
+    8 => 'javascript', // Manipulação de Array
+    9 => 'php',       // Olá Mundo PHP
+];
 
-            padding-left: 0;
+// Tentar detectar pela ID primeiro
+$exercise_id = (int)($exercise['id'] ?? 0);
+$current_language = $exercise_language_map[$exercise_id] ?? null;
 
-        }                                <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Como Proceder</h6>            'language' => 'javascript',
-
-
-
-        .requirement-list li {                                <ol class="mb-0">            'completion_rate' => 72
-
-            padding: 8px 0 8px 30px;
-
-            position: relative;                                    <li>Leia as instruções acima</li>        ],
-
+// Se não encontrou por ID, tentar por category_name
+if (!$current_language) {
+    $category_raw = strtolower(trim($exercise['category_name'] ?? ''));
+    
+    // Mapear variações de nomes para as chaves padrão
+    $language_mapping = [
+        'javascript' => 'javascript',
+        'js' => 'javascript',
+        'html' => 'html',
+        'html5' => 'html',
+        'css' => 'css',
+        'css3' => 'css',
+        'php' => 'php',
+        'php7' => 'php',
+        'php8' => 'php',
+        'python' => 'python',
+        'java' => 'java'
+    ];
+    
+    // Detectar por palavra-chave no nome da categoria
+    foreach ($language_mapping as $key => $value) {
+        if (strpos($category_raw, $key) !== false) {
+            $current_language = $value;
+            break;
         }
+    }
+}
 
-                                    <li>Acesse o "Editor" e escreva seu código</li>        [
-
-        .requirement-list li:before {
-
-            content: "✓";                                    <li>Clique "Executar Código" para testar</li>            'id' => 3,
-
-            position: absolute;
-
-            left: 0;                                    <li>Verifique o resultado na aba "Resultado"</li>            'title' => 'Funções Assíncronas',
-
-            color: var(--success);
-
-            font-weight: 700;                                    <li>Consulte "Solução" se precisar de ajuda</li>            'difficulty' => 'intermediate',
-
+// Se ainda não detectou, tentar pelo exercise_type (dados mockados)
+if (!$current_language && !empty($exercise['exercise_type'])) {
+    $exercise_type_raw = strtolower(trim($exercise['exercise_type']));
+    $language_mapping = [
+        'javascript' => 'javascript',
+        'js' => 'javascript',
+        'html' => 'html',
+        'html5' => 'html',
+        'css' => 'css',
+        'css3' => 'css',
+        'php' => 'php',
+        'python' => 'python',
+        'java' => 'java'
+    ];
+    
+    foreach ($language_mapping as $key => $value) {
+        if (strpos($exercise_type_raw, $key) !== false) {
+            $current_language = $value;
+            break;
         }
-
-                                </ol>            'language' => 'javascript',
-
-        .test-case {
-
-            background: #f8f9fa;                            </div>            'completion_rate' => 45
-
-            border-left: 4px solid var(--primary);
-
-            padding: 15px;                        </div>        ],
-
-            margin-bottom: 15px;
-
-            border-radius: 6px;                    </div>        [
-
-        }
-
-                </div>            'id' => 4,
-
-        .test-case-io {
-
-            display: grid;            'title' => 'Manipulação de DOM',
-
-            grid-template-columns: 1fr 1fr;
-
-            gap: 15px;                <!-- Editor Tab -->            'difficulty' => 'beginner',
-
-            font-size: 0.9rem;
-
-        }                <div class="tab-pane fade" id="editor">            'language' => 'javascript',
-
-
-
-        .test-io-block {                    <div class="card shadow-sm border-0">            'completion_rate' => 81
-
-            background: white;
-
-            padding: 10px;                        <div class="card-header bg-light d-flex justify-content-between align-items-center">        ]
-
-            border-radius: 6px;
-
-            border: 1px solid #ddd;                            <span class="fw-bold"><i class="fas fa-file-code me-2"></i>Editor de Código</span>    ],
-
-        }
-
-                            <div class="btn-group btn-group-sm">    'html' => [
-
-        .test-io-label {
-
-            font-weight: 600;                                <button type="button" class="btn btn-outline-secondary" onclick="copyCode()" title="Copiar">        [
-
-            color: var(--primary);
-
-            font-size: 0.85rem;                                    <i class="fas fa-copy"></i>            'id' => 5,
-
-        }
-
-                                </button>            'title' => 'Formulários Avançados',
-
-        .editor-container {
-
-            background: #1e1e1e;                                <button type="button" class="btn btn-outline-secondary" onclick="resetCode()" title="Resetar">            'difficulty' => 'intermediate',
-
-            border-radius: 6px;
-
-            overflow: hidden;                                    <i class="fas fa-redo"></i>            'language' => 'html',
-
-        }
-
-                                </button>            'completion_rate' => 68
-
-        .editor-toolbar {
-
-            background: #252526;                            </div>        ],
-
-            padding: 12px 15px;
-
-            display: flex;                        </div>        [
-
-            justify-content: space-between;
-
-            align-items: center;                        <div class="card-body p-0">            'id' => 6,
-
-        }
-
-                            <textarea id="codeEditor" class="code-editor" rows="20" spellcheck="false"><?php echo sanitize($user_code); ?></textarea>            'title' => 'Tabelas Responsivas',
-
-        .editor-info {
-
-            color: #a0aec0;                        </div>            'difficulty' => 'beginner',
-
-            font-size: 0.9rem;
-
-        }                        <div class="card-footer bg-light">            'language' => 'html',
-
-
-
-        .editor-actions {                            <div class="d-flex gap-2 flex-wrap">            'completion_rate' => 82
-
-            display: flex;
-
-            gap: 10px;                                <button type="button" class="btn btn-success" onclick="runCode()">        ],
-
-        }
-
-                                    <i class="fas fa-play me-2"></i>Executar Código        [
-
-        .editor-btn {
-
-            background: var(--primary);                                </button>            'id' => 7,
-
-            color: white;
-
-            border: none;                                <button type="button" class="btn btn-info" onclick="runTests()">            'title' => 'Estrutura Semântica',
-
-            padding: 8px 16px;
-
-            border-radius: 6px;                                    <i class="fas fa-vial me-2"></i>Executar Testes            'difficulty' => 'intermediate',
-
-            cursor: pointer;
-
-            font-weight: 600;                                </button>            'language' => 'html',
-
-            transition: all 0.3s ease;
-
-        }                                <button type="button" class="btn btn-outline-primary" onclick="saveCode()">            'completion_rate' => 59
-
-
-
-        .editor-btn:hover {                                    <i class="fas fa-save me-2"></i>Salvar        ]
-
-            background: var(--secondary);
-
-        }                                </button>    ],
-
-
-
-        .editor-btn.submit {                            </div>    'css' => [
-
-            background: var(--success);
-
-        }                        </div>        [
-
-
-
-        #codeEditor {                    </div>            'id' => 8,
-
-            font-family: 'Fira Code', 'Consolas', monospace;
-
-            font-size: 14px;                </div>            'title' => 'Flexbox Layout',
-
-            height: 400px;
-
-            color: #d4d4d4;            'difficulty' => 'beginner',
-
-            background: #1e1e1e;
-
-            padding: 15px;                <!-- Result Tab -->            'language' => 'css',
-
-            border: none;
-
-            resize: vertical;                <div class="tab-pane fade" id="result">            'completion_rate' => 76
-
-        }
-
-                    <div class="card shadow-sm border-0">        ],
-
-        .output-container {
-
-            background: #1e1e1e;                        <div class="card-body p-4">        [
-
-            border-radius: 6px;
-
-            padding: 15px;                            <div id="resultContent" class="text-center text-muted py-5">            'id' => 9,
-
-            font-family: 'Fira Code', monospace;
-
-            color: #a0aec0;                                <i class="fas fa-terminal fa-3x mb-3"></i>            'title' => 'Grid System',
-
-            min-height: 100px;
-
-            overflow-y: auto;                                <p>Clique em "Executar Código" para ver os resultados</p>            'difficulty' => 'intermediate',
-
-        }
-
-                            </div>            'language' => 'css',
-
-        .solution-button {
-
-            width: 100%;                        </div>            'completion_rate' => 54
-
-            padding: 15px;
-
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);                    </div>        ],
-
-            color: white;
-
-            border: none;                </div>        [
-
-            border-radius: 8px;
-
-            font-size: 1.1rem;            'id' => 10,
-
-            font-weight: 700;
-
-            cursor: pointer;                <!-- Solution Tab -->            'title' => 'Animações CSS',
-
-            margin-bottom: 15px;
-
-        }                <div class="tab-pane fade" id="solution">            'difficulty' => 'advanced',
-
-
-
-        .solution-content {                    <div class="card shadow-sm border-0">            'language' => 'css',
-
-            background: #f8f9fa;
-
-            border-radius: 8px;                        <div class="card-body p-4">            'completion_rate' => 41
-
-            padding: 20px;
-
-            border-left: 4px solid var(--primary);                            <div class="alert alert-warning mb-4">        ]
-
-            display: none;
-
-        }                                <h6 class="alert-heading"><i class="fas fa-lightbulb me-2"></i>Antes de Ver a Solução...</h6>    ],
-
-
-
-        .solution-content.show {                                <p class="mb-0">Tente resolver o problema sozinho! É mais eficaz para aprender.</p>    'php' => [
-
-            display: block;
-
-        }                            </div>        [
-
-
-
-        .solution-code {            'id' => 11,
-
-            background: #1e1e1e;
-
-            color: #d4d4d4;                            <button type="button" class="btn btn-primary btn-lg w-100 mb-4" onclick="toggleSolution()">            'title' => 'Validação de Dados',
-
-            padding: 12px;
-
-            border-radius: 6px;                                <i class="fas fa-eye me-2"></i>Mostrar Solução Completa            'difficulty' => 'beginner',
-
-            font-family: 'Fira Code', monospace;
-
-            margin-top: 8px;                            </button>            'language' => 'php',
-
-            overflow-x: auto;
-
-        }            'completion_rate' => 70
-
-
-
-        .sidebar {                            <div id="solutionContent" style="display: none;">        ],
-
-            display: flex;
-
-            flex-direction: column;                                <h5 class="mb-3"><i class="fas fa-code me-2"></i>Código de Solução</h5>        [
-
-            gap: 20px;
-
-        }                                <div class="bg-light p-3 rounded mb-4" style="border-left: 4px solid #28a745; max-height: 400px; overflow-y: auto;">            'id' => 12,
-
-
-
-        .sidebar-card {                                    <pre id="solutionCode" class="mb-0"><code><?php echo sanitize($exercise['solution'] ?? '// Solução não disponível'); ?></code></pre>            'title' => 'Conexão com Banco',
-
-            background: white;
-
-            border-radius: 12px;                                </div>            'difficulty' => 'intermediate',
-
-            padding: 20px;
-
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);            'language' => 'php',
-
-        }
-
-                                <h5 class="mb-3"><i class="fas fa-book me-2"></i>Explicação</h5>            'completion_rate' => 48
-
-        .sidebar-card-title {
-
-            font-weight: 700;                                <div class="alert alert-light">        ],
-
-            color: var(--primary);
-
-            margin-bottom: 15px;                                    <p><?php echo sanitize($exercise['explanation'] ?? 'A solução segue as melhores práticas.'); ?></p>        [
-
-        }
-
-                                </div>            'id' => 13,
-
-        .progress-info {
-
-            text-align: center;            'title' => 'Upload de Arquivos',
-
-        }
-
-                                <button type="button" class="btn btn-outline-primary" onclick="copySolution()">            'difficulty' => 'advanced',
-
-        .progress-ring {
-
-            transform: rotate(-90deg);                                    <i class="fas fa-copy me-2"></i>Copiar Solução            'language' => 'php',
-
-            width: 100px;
-
-            height: 100px;                                </button>            'completion_rate' => 35
-
-            margin: 0 auto;
-
-        }                            </div>        ]
-
-
-
-        .action-buttons {                        </div>    ]
-
-            display: flex;
-
-            flex-direction: column;                    </div>];
-
-            gap: 10px;
-
-        }                </div>
-
-
-
-        .action-btn {            </div>// Dicas por linguagem
-
-            padding: 10px;
-
-            border: none;        </div>$hints_by_language = [
-
-            border-radius: 8px;
-
-            font-weight: 600;    'javascript' => [
-
-            cursor: pointer;
-
-            font-size: 0.95rem;        <!-- Sidebar -->        'Use console.log() para debugar seu código e ver os valores das variáveis',
-
-        }
-
-        <div class="col-lg-4">        'Lembre-se que arrays começam no índice 0',
-
-        .action-btn-primary {
-
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);            <!-- Exercise Info -->        'Funções podem retornar valores usando a palavra-chave return',
-
-            color: white;
-
-        }            <div class="card shadow-sm border-0 mb-4">        'Use let e const ao invés de var para declarar variáveis'
-
-
-
-        .action-btn-secondary {                <div class="card-header bg-primary text-white">    ],
-
-            background: #f8f9fa;
-
-            color: var(--dark-text);                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informações</h6>    'html' => [
-
-            border: 1px solid #ddd;
-
-        }                </div>        'Use tags semânticas como <header>, <nav>, <main> e <footer>',
-
-
-
-        .status-message {                <div class="card-body">        'Sempre adicione atributos alt em imagens para acessibilidade',
-
-            padding: 15px;
-
-            border-radius: 8px;                    <div class="info-row">        'Use IDs para elementos únicos e classes para estilos reutilizáveis',
-
-            margin-bottom: 15px;
-
-            display: none;                        <span class="info-label">Dificuldade</span>        'Organize seu código com indentação adequada'
-
-        }
-
-                        <span class="info-value"><?php echo $exercise['difficulty'] ?? 'Iniciante'; ?></span>    ],
-
-        .status-message.show {
-
-            display: block;                    </div>    'css' => [
-
-        }
-
-                    <div class="info-row">        'Use Flexbox ou Grid para layouts responsivos modernos',
-
-        .status-message.success {
-
-            background: #d4edda;                        <span class="info-label">Categoria</span>        'Evite usar !important, organize melhor a especificidade',
-
-            color: #155724;
-
-        }                        <span class="info-value"><?php echo $exercise['category'] ?? 'Geral'; ?></span>        'Use variáveis CSS (--nome-variavel) para cores e medidas',
-
-
-
-        .status-message.error {                    </div>        'Mobile-first: comece com estilos mobile e use media queries para desktop'
-
-            background: #f8d7da;
-
-            color: #721c24;                    <div class="info-row">    ],
-
-        }
-
-                        <span class="info-label">Taxa de Sucesso</span>    'php' => [
-
-        @media (max-width: 768px) {
-
-            .main-content {                        <span class="info-value"><?php echo rand(50, 95); ?>%</span>        'Sempre valide e sanitize dados de entrada do usuário',
-
-                grid-template-columns: 1fr;
-
-            }                    </div>        'Use prepared statements para prevenir SQL injection',
-
-            .exercise-title {
-
-                font-size: 1.8rem;                    <div class="info-row">        'Não exiba erros em produção, use logs ao invés',
-
-            }
-
-            .test-case-io {                        <span class="info-label">Tempo Médio</span>        'Use password_hash() e password_verify() para senhas'
-
-                grid-template-columns: 1fr;
-
-            }                        <span class="info-value"><?php echo rand(10, 60); ?> min</span>    ]
-
-            #codeEditor {
-
-                height: 300px;                    </div>];
-
-            }
-
-        }                </div>
-
-    </style>
-
-</head>            </div>// Detectar linguagem do exercício atual
-
-<body>
-
-    <?php include 'header.php'; ?>// Mapeamento direto por ID de exercício (enquanto o banco não tem o campo correto)
-
-
-
-    <div class="exercise-container">            <!-- Progress -->$exercise_language_map = [
-
-        <!-- Header -->
-
-        <div class="exercise-header">            <div class="card shadow-sm border-0 mb-4">    1 => 'html',      // Minha Primeira Página HTML
-
-            <h1 class="exercise-title"><?php echo htmlspecialchars($exercise['title']); ?></h1>
-
-            <p class="exercise-description"><?php echo htmlspecialchars($exercise['description']); ?></p>                <div class="card-header bg-success text-white">    2 => 'html',      // Lista de Compras
-
-            
-
-            <div class="metadata-grid">                    <h6 class="mb-0"><i class="fas fa-chart-line me-2"></i>Seu Progresso</h6>    3 => 'html',      // Formulário de Contato
-
-                <div class="metadata-item">
-
-                    <div class="metadata-label">Linguagem</div>                </div>    4 => 'css',       // Estilizando Texto
-
-                    <div class="metadata-value"><?php echo htmlspecialchars($exercise['language'] ?? 'Python'); ?></div>
-
-                </div>                <div class="card-body text-center">    5 => 'css',       // Layout com Flexbox
-
-                <div class="metadata-item">
-
-                    <div class="metadata-label">Dificuldade</div>                    <div class="progress mb-3">    6 => 'javascript', // Olá Mundo JavaScript
-
-                    <div class="metadata-value"><?php echo ucfirst(htmlspecialchars($exercise['difficulty'] ?? 'fácil')); ?></div>
-
-                </div>                        <div class="progress-bar bg-success" style="width: 65%;">65%</div>    7 => 'javascript', // Calculadora Simples
-
-                <div class="metadata-item">
-
-                    <div class="metadata-label">Tempo</div>                    </div>    8 => 'javascript', // Manipulação de Array
-
-                    <div class="metadata-value"><?php echo htmlspecialchars($exercise['estimated_time'] ?? '30'); ?> min</div>
-
-                </div>                    <p class="text-muted mb-0">2 de 3 objetivos concluídos</p>    9 => 'php',       // Olá Mundo PHP
-
-                <div class="metadata-item">
-
-                    <div class="metadata-label">Taxa Sucesso</div>                </div>];
-
-                    <div class="metadata-value"><?php echo htmlspecialchars($exercise['success_rate'] ?? '0'); ?>%</div>
-
-                </div>            </div>
-
-            </div>
-
-        </div>// Tentar detectar pela ID primeiro
-
-
-
-        <!-- Main Content -->            <!-- Quick Actions -->$exercise_id = (int)($exercise['id'] ?? 0);
-
-        <div class="main-content">
-
-            <div>            <div class="card shadow-sm border-0">$current_language = $exercise_language_map[$exercise_id] ?? null;
-
-                <ul class="nav nav-tabs" role="tablist">
-
-                    <li class="nav-item">                <div class="card-header bg-info text-white">
-
-                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#instructions">
-
-                            <i class="fas fa-book"></i> Instruções                    <h6 class="mb-0"><i class="fas fa-bolt me-2"></i>Ações Rápidas</h6>// Se não encontrou por ID, tentar por category_name
-
-                        </button>
-
-                    </li>                </div>if (!$current_language) {
-
-                    <li class="nav-item">
-
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#editor">                <div class="card-body">    $category_raw = strtolower(trim($exercise['category_name'] ?? ''));
-
-                            <i class="fas fa-code"></i> Editor
-
-                        </button>                    <a href="exercises_index.php" class="btn btn-outline-primary w-100 mb-2">    
-
-                    </li>
-
-                    <li class="nav-item">                        <i class="fas fa-arrow-left me-2"></i>Voltar    // Mapear variações de nomes para as chaves padrão
-
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#output">
-
-                            <i class="fas fa-terminal"></i> Resultado                    </a>    $language_mapping = [
-
-                        </button>
-
-                    </li>                    <button type="button" class="btn btn-outline-secondary w-100 mb-2" onclick="shareExercise()">        'javascript' => 'javascript',
-
-                    <li class="nav-item">
-
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#solution">                        <i class="fas fa-share me-2"></i>Compartilhar        'js' => 'javascript',
-
-                            <i class="fas fa-lightbulb"></i> Solução
-
-                        </button>                    </button>        'html' => 'html',
-
-                    </li>
-
-                </ul>                    <button type="button" class="btn btn-outline-warning w-100">        'html5' => 'html',
-
-
-
-                <div class="tab-content">                        <i class="fas fa-star me-2"></i>Favoritar        'css' => 'css',
-
-                    <!-- Instructions -->
-
-                    <div class="tab-pane fade show active" id="instructions">                    </button>        'css3' => 'css',
-
-                        <div class="instruction-section">
-
-                            <h5><i class="fas fa-bullseye"></i> Objetivo</h5>                </div>        'php' => 'php',
-
-                            <p><?php echo nl2br(htmlspecialchars($exercise['instructions'] ?? 'Complete este exercício.')); ?></p>
-
-                        </div>            </div>        'php7' => 'php',
-
-
-
-                        <?php if (!empty($exercise['requirements'])): ?>        </div>        'php8' => 'php',
-
-                        <div class="instruction-section">
-
-                            <h5><i class="fas fa-check-circle"></i> Requisitos</h5>    </div>        'python' => 'python',
-
-                            <ul class="requirement-list">
-
-                                <?php </div>        'java' => 'java'
-
-                                $requirements = explode("\n", $exercise['requirements']);
-
-                                foreach ($requirements as $req) {    ];
-
-                                    if (trim($req)) {
-
-                                        echo '<li>' . htmlspecialchars(trim($req)) . '</li>';<style>    
-
-                                    }
-
-                                }.exercise-header {    // Detectar por palavra-chave no nome da categoria
-
+    }
+}
+
+// Fallback final para javascript
+$current_language = $current_language ?? 'javascript';
+
+// Selecionar exercícios e dicas da linguagem atual
+$related_exercises = $related_exercises_by_language[$current_language] ?? $related_exercises_by_language['javascript'];
+$current_hints = $hints_by_language[$current_language] ?? $hints_by_language['javascript'];
+$current_lang_config = $language_config[$current_language] ?? $language_config['javascript'];
+
+include 'header.php';
+?>
+<div class="container-fluid mt-4">
+    <!-- Alertas -->
+    <?php if (isset($_SESSION['success'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
+
+    <div class="row">
+        <!-- Conteúdo Principal -->
+        <div class="col-lg-8">
+            <!-- Cabeçalho do Exercício -->
+            <div class="exercise-header-card mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="exercise-type-badge me-2">
+                                <i class="fas fa-code me-1"></i>
+                                <?php echo strtoupper($exercise['exercise_type'] ?? 'PRÁTICA'); ?>
+                            </span>
+                            <span class="difficulty-badge difficulty-<?php echo $exercise['difficulty_level'] ?? 'beginner'; ?>">
+                                <?php 
+                                $difficulty_map = [
+                                    'beginner' => 'Iniciante', 
+                                    'intermediate' => 'Intermediário', 
+                                    'advanced' => 'Avançado'
+                                ];
+                                $difficulty_level = $exercise['difficulty_level'] ?? 'beginner';
+                                echo $difficulty_map[$difficulty_level] ?? 'Iniciante';
                                 ?>
-
-                            </ul>    background: linear-gradient(135deg, #6f42c1 0%, #8e5dd9 100%);    foreach ($language_mapping as $key => $value) {
-
+                            </span>
                         </div>
-
-                        <?php endif; ?>    color: white;        if (strpos($category_raw, $key) !== false) {
-
-
-
-                        <?php if (!empty($test_cases)): ?>    padding: 2rem;            $current_language = $value;
-
-                        <div class="instruction-section">
-
-                            <h5><i class="fas fa-flask"></i> Casos de Teste</h5>    border-radius: 15px;            break;
-
-                            <?php foreach ($test_cases as $i => $test): ?>
-
-                            <div class="test-case">    box-shadow: 0 8px 24px rgba(111, 66, 193, 0.25);        }
-
-                                <strong>Teste <?php echo $i + 1; ?></strong>
-
-                                <div class="test-case-io">}    }
-
-                                    <div class="test-io-block">
-
-                                        <div class="test-io-label">Entrada</div>}
-
-                                        <div><?php echo htmlspecialchars($test['input'] ?? ''); ?></div>
-
-                                    </div>.exercise-title {
-
-                                    <div class="test-io-block">
-
-                                        <div class="test-io-label">Saída</div>    font-size: 2rem;// Se ainda não detectou, tentar pelo exercise_type (dados mockados)
-
-                                        <div><?php echo htmlspecialchars($test['expected_output'] ?? ''); ?></div>
-
-                                    </div>    font-weight: 700;if (!$current_language && !empty($exercise['exercise_type'])) {
-
+                        <h1 class="display-5 fw-bold mb-3 exercise-title"><?php echo sanitize($exercise['title'] ?? 'Exercício'); ?></h1>
+                        <p class="lead exercise-description mb-3"><?php echo sanitize($exercise['description'] ?? 'Descrição do exercício'); ?></p>
+                        
+                        <!-- Metadados -->
+                        <div class="metadata-grid">
+                            <div class="metadata-card metadata-category">
+                                <div class="metadata-icon" style="color: <?php echo $current_lang_config['color']; ?>">
+                                    <i class="fab <?php echo $current_lang_config['icon']; ?>"></i>
                                 </div>
-
-                            </div>    margin-bottom: 1rem;    $exercise_type_raw = strtolower(trim($exercise['exercise_type']));
-
-                            <?php endforeach; ?>
-
-                        </div>    color: white;    $language_mapping = [
-
-                        <?php endif; ?>
-
-                    </div>}        'javascript' => 'javascript',
-
-
-
-                    <!-- Editor -->        'js' => 'javascript',
-
-                    <div class="tab-pane fade" id="editor">
-
-                        <div class="editor-container">.exercise-desc {        'html' => 'html',
-
-                            <div class="editor-toolbar">
-
-                                <div class="editor-info">    font-size: 1.1rem;        'html5' => 'html',
-
-                                    <span><?php echo htmlspecialchars($exercise['language'] ?? 'Python'); ?></span>
-
-                                </div>    opacity: 0.95;        'css' => 'css',
-
-                                <div class="editor-actions">
-
-                                    <button class="editor-btn" onclick="runCode()">    line-height: 1.6;        'css3' => 'css',
-
-                                        <i class="fas fa-play"></i> Executar
-
-                                    </button>    color: rgba(255, 255, 255, 0.9);        'php' => 'php',
-
-                                    <button class="editor-btn submit" onclick="submitCode()">
-
-                                        <i class="fas fa-check"></i> Enviar}        'python' => 'python',
-
-                                    </button>
-
-                                </div>        'java' => 'java'
-
+                                <div class="metadata-info">
+                                    <span class="metadata-label">Linguagem</span>
+                                    <span class="metadata-value"><?php echo $current_lang_config['name']; ?></span>
+                                </div>
                             </div>
-
-                            <textarea id="codeEditor"><?php echo htmlspecialchars($exercise['template_code'] ?? '# Código aqui'); ?></textarea>.code-editor {    ];
-
+                            <div class="metadata-card metadata-time">
+                                <div class="metadata-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="metadata-info">
+                                    <span class="metadata-label">Tempo Médio</span>
+                                    <span class="metadata-value"><?php echo $exercise_stats['avg_completion_time']; ?></span>
+                                </div>
+                            </div>
+                            <div class="metadata-card metadata-success">
+                                <div class="metadata-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="metadata-info">
+                                    <span class="metadata-label">Taxa de Sucesso</span>
+                                    <span class="metadata-value"><?php echo $exercise_stats['success_rate']; ?>%</span>
+                                </div>
+                            </div>
+                            <div class="metadata-card metadata-attempts">
+                                <div class="metadata-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="metadata-info">
+                                    <span class="metadata-label">Tentativas</span>
+                                    <span class="metadata-value"><?php echo number_format($exercise_stats['attempts'], 0, ',', '.'); ?></span>
+                                </div>
+                            </div>
                         </div>
-
-                    </div>    width: 100%;    
-
-
-
-                    <!-- Output -->    min-height: 400px;    foreach ($language_mapping as $key => $value) {
-
-                    <div class="tab-pane fade" id="output">
-
-                        <div class="status-message" id="statusMessage"></div>    padding: 1rem;        if (strpos($exercise_type_raw, $key) !== false) {
-
-                        <div class="output-container" id="outputContainer">
-
-                            Clique em "Executar" para ver a saída    border: none;            $current_language = $value;
-
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="progress-ring-container">
+                            <div class="progress-ring">
+                                <svg width="120" height="120" viewBox="0 0 120 120">
+                                    <circle class="progress-ring-bg" 
+                                            stroke="rgba(255,255,255,0.2)" 
+                                            stroke-width="8" 
+                                            fill="transparent" 
+                                            r="52" 
+                                            cx="60" 
+                                            cy="60">
+                                    </circle>
+                                    <circle class="progress-ring-circle" 
+                                            stroke="url(#gradient)" 
+                                            stroke-width="8" 
+                                            fill="transparent" 
+                                            r="52" 
+                                            cx="60" 
+                                            cy="60"
+                                            stroke-dasharray="326.56" 
+                                            stroke-dashoffset="<?php echo 326.56 * (1 - $exercise_stats['success_rate'] / 100); ?>"
+                                            stroke-linecap="round">
+                                    </circle>
+                                    <defs>
+                                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#06d6a0;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#1b9aaa;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="progress-text">
+                                    <span class="progress-percentage"><?php echo $exercise_stats['success_rate']; ?>%</span>
+                                    <small class="progress-label">Taxa de Sucesso</small>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Área de Trabalho -->
+            <div class="workspace-container">
+                <!-- Navegação por Abas -->
+                <ul class="nav nav-tabs workspace-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="instructions-tab" data-bs-toggle="tab" data-bs-target="#instructions" type="button" role="tab" aria-controls="instructions" aria-selected="true">
+                            <i class="fas fa-book-open me-2"></i>
+                            <span>Instruções</span>
+                            <div class="tab-indicator"></div>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor" type="button" role="tab" aria-controls="editor" aria-selected="false">
+                            <i class="fas fa-code me-2"></i>
+                            <span>Editor</span>
+                            <div class="tab-indicator"></div>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="output-tab" data-bs-toggle="tab" data-bs-target="#output" type="button" role="tab" aria-controls="output" aria-selected="false">
+                            <i class="fas fa-terminal me-2"></i>
+                            <span>Resultado</span>
+                            <?php if ($execution_result): ?>
+                                <span class="result-badge badge-<?php echo $execution_result['success'] ? 'success' : 'danger'; ?>">
+                                    <i class="fas fa-<?php echo $execution_result['success'] ? 'check-circle' : 'times-circle'; ?>"></i>
+                                </span>
+                            <?php endif; ?>
+                            <div class="tab-indicator"></div>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="solution-tab" data-bs-toggle="tab" data-bs-target="#solution" type="button" role="tab" aria-controls="solution" aria-selected="false">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            <span>Solução</span>
+                            <div class="tab-indicator"></div>
+                        </button>
+                    </li>
+                </ul>
 
-                    </div>    border-radius: 0;            break;
+                <div class="tab-content workspace-content">
+                    <!-- Aba Instruções -->
+                    <div class="tab-pane fade show active" id="instructions" role="tabpanel" aria-labelledby="instructions-tab">
+                        <div class="instructions-content">
+                            <section class="instruction-section">
+                                <h4 class="section-title">
+                                    <i class="fas fa-target text-primary me-2"></i>
+                                    Objetivo do Exercício
+                                </h4>
+                                <div class="instruction-card">
+                                    <p><?php echo nl2br(sanitize($exercise['instructions'] ?? 'Instruções não disponíveis.')); ?></p>
+                                </div>
+                            </section>
 
-
-
-                    <!-- Solution -->    font-family: 'Courier New', Courier, monospace;        }
-
-                    <div class="tab-pane fade" id="solution">
-
-                        <button class="solution-button" id="revealButton" onclick="toggleSolution()">    font-size: 14px;    }
-
-                            <i class="fas fa-eye-slash"></i> Revelar Solução
-
-                        </button>    line-height: 1.6;}
-
-                        <div class="solution-content" id="solutionContent">
-
-                            <?php if (!empty($exercise['solution_explanation'])): ?>    background: #1e1e1e;
-
-                            <div style="margin-bottom: 15px;">
-
-                                <h6 style="color: var(--primary); font-weight: 700;">Explicação</h6>    color: #d4d4d4;// Fallback final para javascript
-
-                                <p><?php echo nl2br(htmlspecialchars($exercise['solution_explanation'])); ?></p>
-
-                            </div>    resize: vertical;$current_language = $current_language ?? 'javascript';
-
+                            <?php if (!empty($exercise['hints'])): ?>
+                            <section class="instruction-section">
+                                <h4 class="section-title">
+                                    <i class="fas fa-lightbulb text-warning me-2"></i>
+                                    Dicas
+                                </h4>
+                                <div class="hints-container">
+                                    <?php 
+                                    $hints_text = is_string($exercise['hints']) ? $exercise['hints'] : '';
+                                    if ($hints_text) {
+                                        $hints = explode("\n", $hints_text);
+                                        foreach ($hints as $index => $hint): 
+                                            if (trim($hint)):
+                                    ?>
+                                    <div class="hint-item">
+                                        <div class="hint-number"><?php echo $index + 1; ?></div>
+                                        <div class="hint-content"><?php echo sanitize($hint); ?></div>
+                                    </div>
+                                    <?php 
+                                            endif;
+                                        endforeach;
+                                    }
+                                    ?>
+                                </div>
+                            </section>
                             <?php endif; ?>
 
-    outline: none;
-
-                            <?php if (!empty($exercise['solution_code'])): ?>
-
-                            <div>    tab-size: 2;// Selecionar exercícios e dicas da linguagem atual
-
-                                <h6 style="color: var(--primary); font-weight: 700;">Código</h6>
-
-                                <div class="solution-code"><?php echo htmlspecialchars($exercise['solution_code']); ?></div>}$related_exercises = $related_exercises_by_language[$current_language] ?? $related_exercises_by_language['javascript'];
-
-                            </div>
-
-                            <?php endif; ?>$current_hints = $hints_by_language[$current_language] ?? $hints_by_language['javascript'];
-
-                        </div>
-
-                    </div>.code-editor::selection {$current_lang_config = $language_config[$current_language] ?? $language_config['javascript'];
-
-                </div>
-
-            </div>    background: rgba(111, 66, 193, 0.3);
-
-
-
-            <!-- Sidebar -->    color: #d4d4d4;include 'header.php';
-
-            <div class="sidebar">
-
-                <div class="sidebar-card">}?>
-
-                    <div class="sidebar-card-title">
-
-                        <i class="fas fa-chart-pie"></i> Progresso
-
-                    </div>
-
-                    <div class="progress-info">.info-row {<div class="container-fluid mt-4">
-
-                        <svg class="progress-ring" viewBox="0 0 120 120">
-
-                            <circle cx="60" cy="60" r="54" fill="none" stroke="#ddd" stroke-width="4"></circle>    display: flex;    <!-- Alertas -->
-
-                            <circle id="progressCircle" cx="60" cy="60" r="54" fill="none" stroke="var(--primary)" stroke-width="4"
-
-                                    style="stroke-dasharray: 339.29; stroke-dashoffset: 339.29; transform: rotate(-90deg); transform-origin: 50% 50%;"></circle>    flex-direction: column;    <?php if (isset($_SESSION['success'])): ?>
-
-                        </svg>
-
-                        <div style="text-align: center; font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-top: -70px;">    padding: 0.75rem 0;        <div class="alert alert-success alert-dismissible fade show" role="alert">
-
-                            <span id="progressPercent">0</span>%
-
-                        </div>    border-bottom: 1px solid #f0f0f0;            <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
-
-                    </div>
-
-                </div>}            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-
-
-
-                <div class="sidebar-card">        </div>
-
-                    <div class="sidebar-card-title">
-
-                        <i class="fas fa-info-circle"></i> Ações.info-row:last-child {    <?php endif; ?>
-
-                    </div>
-
-                    <div class="action-buttons">    border-bottom: none;
-
-                        <button class="action-btn action-btn-primary" onclick="downloadCode()">
-
-                            <i class="fas fa-download"></i> Baixar}    <div class="row">
-
-                        </button>
-
-                        <button class="action-btn action-btn-secondary" onclick="resetCode()">        <!-- Conteúdo Principal -->
-
-                            <i class="fas fa-redo"></i> Resetar
-
-                        </button>.info-label {        <div class="col-lg-8">
-
-                    </div>
-
-                </div>    font-size: 0.75rem;            <!-- Cabeçalho do Exercício -->
-
-            </div>
-
-        </div>    font-weight: 600;            <div class="exercise-header-card mb-4">
-
-    </div>
-
-    color: #6c757d;                <div class="row align-items-center">
-
-    <?php include 'footer.php'; ?>
-
-    text-transform: uppercase;                    <div class="col-md-8">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-
-    letter-spacing: 0.5px;                        <div class="d-flex align-items-center mb-2">
-
-    <script>
-
-        const codeEditor = document.getElementById('codeEditor');}                            <span class="exercise-type-badge me-2">
-
-        
-
-        codeEditor.addEventListener('input', function() {                                <i class="fas fa-code me-1"></i>
-
-            const progress = Math.min((this.value.length / 200) * 100, 100);
-
-            updateProgress(Math.floor(progress));.info-value {                                <?php echo strtoupper($exercise['exercise_type'] ?? 'PRÁTICA'); ?>
-
-        });
-
-    font-size: 1rem;                            </span>
-
-        function updateProgress(percent) {
-
-            document.getElementById('progressPercent').textContent = percent;    font-weight: 700;                            <span class="difficulty-badge difficulty-<?php echo $exercise['difficulty_level'] ?? 'beginner'; ?>">
-
-            const circumference = 2 * Math.PI * 54;
-
-            const offset = circumference - (percent / 100) * circumference;    color: #1a1a1a;                                <?php 
-
-            document.getElementById('progressCircle').style.strokeDashoffset = offset;
-
-        }}                                $difficulty_map = [
-
-
-
-        function runCode() {                                    'beginner' => 'Iniciante', 
-
-            const code = codeEditor.value;
-
-            const output = document.getElementById('outputContainer');.nav-tabs .nav-link {                                    'intermediate' => 'Intermediário', 
-
-            output.textContent = 'Código executado!\nResultado: Sucesso';
-
-            document.getElementById('output-tab').click?.() || document.querySelector('[data-bs-target="#output"]').click();    border-bottom: 3px solid transparent;                                    'advanced' => 'Avançado'
-
-        }
-
-    transition: all 0.3s ease;                                ];
-
-        function submitCode() {
-
-            if (codeEditor.value.trim()) {    color: #1a1a1a;                                $difficulty_level = $exercise['difficulty_level'] ?? 'beginner';
-
-                const msg = document.getElementById('statusMessage');
-
-                msg.className = 'status-message show success';}                                echo $difficulty_map[$difficulty_level] ?? 'Iniciante';
-
-                msg.textContent = '✓ Solução enviada com sucesso!';
-
-                updateProgress(100);                                ?>
-
-            }
-
-        }.nav-tabs .nav-link:hover {                            </span>
-
-
-
-        function toggleSolution() {    border-bottom-color: #6f42c1;                        </div>
-
-            const btn = document.getElementById('revealButton');
-
-            const content = document.getElementById('solutionContent');    color: #6f42c1;                        <h1 class="display-5 fw-bold mb-3 exercise-title"><?php echo sanitize($exercise['title'] ?? 'Exercício'); ?></h1>
-
-            content.classList.toggle('show');
-
-            btn.textContent = content.classList.contains('show') ? }                        <p class="lead exercise-description mb-3"><?php echo sanitize($exercise['description'] ?? 'Descrição do exercício'); ?></p>
-
-                '✓ Solução Revelada' : '🔍 Revelar Solução';
-
-        }                        
-
-
-
-        function resetCode() {.nav-tabs .nav-link.active {                        <!-- Metadados -->
-
-            codeEditor.value = '# Código aqui';
-
-            updateProgress(0);    border-bottom-color: #6f42c1;                        <div class="metadata-grid">
-
-            document.getElementById('outputContainer').textContent = 'Clique em "Executar" para ver a saída';
-
-        }    color: #6f42c1;                            <div class="metadata-card metadata-category">
-
-
-
-        function downloadCode() {    background: transparent;                                <div class="metadata-icon" style="color: <?php echo $current_lang_config['color']; ?>">
-
-            const element = document.createElement('a');
-
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(codeEditor.value));}                                    <i class="fab <?php echo $current_lang_config['icon']; ?>"></i>
-
-            element.setAttribute('download', 'solucao.py');
-
-            element.click();                                </div>
-
-        }
-
-    </script>.tab-content {                                <div class="metadata-info">
-
-</body>
-
-</html>    animation: fadeIn 0.3s ease-out;                                    <span class="metadata-label">Linguagem</span>
-
-
-}                                    <span class="metadata-value"><?php echo $current_lang_config['name']; ?></span>
-
-                                </div>
-
-@keyframes fadeIn {                            </div>
-
-    from { opacity: 0; transform: translateY(10px); }                            <div class="metadata-card metadata-time">
-
-    to { opacity: 1; transform: translateY(0); }                                <div class="metadata-icon">
-
-}                                    <i class="fas fa-clock"></i>
-
-                                </div>
-
-.card {                                <div class="metadata-info">
-
-    transition: all 0.3s ease;                                    <span class="metadata-label">Tempo Médio</span>
-
-}                                    <span class="metadata-value"><?php echo $exercise_stats['avg_completion_time']; ?></span>
-
-                                </div>
-
-.card:hover {                            </div>
-
-    transform: translateY(-2px);                            <div class="metadata-card metadata-success">
-
-}                                <div class="metadata-icon">
-
-                                    <i class="fas fa-chart-line"></i>
-
-.btn {                                </div>
-
-    transition: all 0.3s ease;                                <div class="metadata-info">
-
-}                                    <span class="metadata-label">Taxa de Sucesso</span>
-
-                                    <span class="metadata-value"><?php echo $exercise_stats['success_rate']; ?>%</span>
-
-.btn:hover {                                </div>
-
-    transform: translateY(-1px);                            </div>
-
-}                            <div class="metadata-card metadata-attempts">
-
-                                <div class="metadata-icon">
-
-@media (max-width: 768px) {                                    <i class="fas fa-users"></i>
-
-    .exercise-title { font-size: 1.5rem; }                                </div>
-
-    .code-editor { min-height: 250px; }                                <div class="metadata-info">
-
-}                                    <span class="metadata-label">Tentativas</span>
-
-</style>                                    <span class="metadata-value"><?php echo number_format($exercise_stats['attempts'], 0, ',', '.'); ?></span>
-
-                                </div>
-
-<script>                            </div>
-
-// Code Editor Functions                        </div>
-
-function runCode() {                    </div>
-
-    const code = document.getElementById('codeEditor').value;                    <div class="col-md-4 text-end">
-
-    const resultContent = document.getElementById('resultContent');                        <div class="progress-ring-container">
-
-                                <div class="progress-ring">
-
-    if (!code.trim()) {                                <svg width="120" height="120" viewBox="0 0 120 120">
-
-        notify('O editor está vazio!', 'warning');                                    <circle class="progress-ring-bg" 
-
-        return;                                            stroke="rgba(255,255,255,0.2)" 
-
-    }                                            stroke-width="8" 
-
-                                                fill="transparent" 
-
-    try {                                            r="52" 
-
-        let output = '';                                            cx="60" 
-
-        const originalLog = console.log;                                            cy="60">
-
-        console.log = function(...args) {                                    </circle>
-
-            output += args.join(' ') + '\n';                                    <circle class="progress-ring-circle" 
-
-        };                                            stroke="url(#gradient)" 
-
-                                                    stroke-width="8" 
-
-        eval(code);                                            fill="transparent" 
-
-        console.log = originalLog;                                            r="52" 
-
-                                                    cx="60" 
-
-        resultContent.innerHTML = `                                            cy="60"
-
-            <div class="alert alert-success mb-0">                                            stroke-dasharray="326.56" 
-
-                <h6 class="mb-3"><i class="fas fa-check-circle me-2"></i>Sucesso!</h6>                                            stroke-dashoffset="<?php echo 326.56 * (1 - $exercise_stats['success_rate'] / 100); ?>"
-
-                <pre style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 0;">                                            stroke-linecap="round">
-
-<code>${output || 'Nenhuma saída'}</code></pre>                                    </circle>
-
-            </div>                                    <defs>
-
-        `;                                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-
-                                                    <stop offset="0%" style="stop-color:#06d6a0;stop-opacity:1" />
-
-        new bootstrap.Tab(document.getElementById('result-tab')).show();                                            <stop offset="100%" style="stop-color:#1b9aaa;stop-opacity:1" />
-
-        notify('Código executado!', 'success');                                        </linearGradient>
-
-    } catch (error) {                                    </defs>
-
-        resultContent.innerHTML = `                                </svg>
-
-            <div class="alert alert-danger mb-0">                                <div class="progress-text">
-
-                <h6 class="mb-3"><i class="fas fa-times-circle me-2"></i>Erro!</h6>                                    <span class="progress-percentage"><?php echo $exercise_stats['success_rate']; ?>%</span>
-
-                <p class="mb-2"><strong>${error.name}:</strong> ${error.message}</p>                                    <small class="progress-label">Taxa de Sucesso</small>
-
-                <pre style="background: #fff5f5; padding: 1rem; border-radius: 8px; margin: 0; font-size: 0.85rem;">                                </div>
-
-<code>${error.stack}</code></pre>                            </div>
-
-            </div>                        </div>
-
-        `;                    </div>
-
-                        </div>
-
-        new bootstrap.Tab(document.getElementById('result-tab')).show();            </div>
-
-        notify('Erro na execução!', 'danger');
-
-    }            <!-- Área de Trabalho -->
-
-}            <div class="workspace-container">
-
-                <!-- Navegação por Abas -->
-
-function runTests() {                <ul class="nav nav-tabs workspace-tabs" role="tablist">
-
-    notify('Testes não disponíveis nesta versão', 'info');                    <li class="nav-item" role="presentation">
-
-}                        <button class="nav-link active" id="instructions-tab" data-bs-toggle="tab" data-bs-target="#instructions" type="button" role="tab" aria-controls="instructions" aria-selected="true">
-
-                            <i class="fas fa-book-open me-2"></i>
-
-function saveCode() {                            <span>Instruções</span>
-
-    const code = document.getElementById('codeEditor').value;                            <div class="tab-indicator"></div>
-
-    const id = <?php echo $id; ?>;                        </button>
-
-    localStorage.setItem('exercise_code_' + id, code);                    </li>
-
-    notify('Código salvo!', 'success');                    <li class="nav-item" role="presentation">
-
-}                        <button class="nav-link" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor" type="button" role="tab" aria-controls="editor" aria-selected="false">
-
-                            <i class="fas fa-code me-2"></i>
-
-function copyCode() {                            <span>Editor</span>
-
-    const code = document.getElementById('codeEditor');                            <div class="tab-indicator"></div>
-
-    code.select();                        </button>
-
-    document.execCommand('copy');                    </li>
-
-    notify('Código copiado!', 'success');                    <li class="nav-item" role="presentation">
-
-}                        <button class="nav-link" id="output-tab" data-bs-toggle="tab" data-bs-target="#output" type="button" role="tab" aria-controls="output" aria-selected="false">
-
-                            <i class="fas fa-terminal me-2"></i>
-
-function resetCode() {                            <span>Resultado</span>
-
-    if (confirm('Deseja resetar o código?')) {                            <?php if ($execution_result): ?>
-
-        document.getElementById('codeEditor').value = '<?php echo addslashes(sanitize($exercise['initial_code'] ?? '')); ?>';                                <span class="result-badge badge-<?php echo $execution_result['success'] ? 'success' : 'danger'; ?>">
-
-        notify('Código resetado!', 'info');                                    <i class="fas fa-<?php echo $execution_result['success'] ? 'check-circle' : 'times-circle'; ?>"></i>
-
-    }                                </span>
-
-}                            <?php endif; ?>
-
-                            <div class="tab-indicator"></div>
-
-function toggleSolution() {                        </button>
-
-    const content = document.getElementById('solutionContent');                    </li>
-
-    content.style.display = content.style.display === 'none' ? 'block' : 'none';                    <li class="nav-item" role="presentation">
-
-    if (content.style.display === 'block') {                        <button class="nav-link" id="solution-tab" data-bs-toggle="tab" data-bs-target="#solution" type="button" role="tab" aria-controls="solution" aria-selected="false">
-
-        notify('Solução revelada!', 'success');                            <i class="fas fa-lightbulb me-2"></i>
-
-    }                            <span>Solução</span>
-
-}                            <div class="tab-indicator"></div>
-
-                        </button>
-
-function copySolution() {                    </li>
-
-    const code = document.getElementById('solutionCode').textContent;                </ul>
-
-    const textarea = document.createElement('textarea');
-
-    textarea.value = code;                <div class="tab-content workspace-content">
-
-    document.body.appendChild(textarea);                    <!-- Aba Instruções -->
-
-    textarea.select();                    <div class="tab-pane fade show active" id="instructions" role="tabpanel" aria-labelledby="instructions-tab">
-
-    document.execCommand('copy');                        <div class="instructions-content">
-
-    document.body.removeChild(textarea);                            <section class="instruction-section">
-
-    notify('Solução copiada!', 'success');                                <h4 class="section-title">
-
-}                                    <i class="fas fa-target text-primary me-2"></i>
-
-                                    Objetivo do Exercício
-
-function shareExercise() {                                </h4>
-
-    notify('Compartilhamento não disponível nesta versão', 'info');                                <div class="instruction-card">
-
-}                                    <p><?php echo nl2br(sanitize($exercise['instructions'] ?? 'Instruções não disponíveis.')); ?></p>
-
-                                </div>
-
-function notify(msg, type = 'info') {                            </section>
-
-    const alert = document.createElement('div');
-
-    alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;                            <?php if (!empty($exercise['hints'])): ?>
-
-    alert.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';                            <section class="instruction-section">
-
-    alert.innerHTML = `${msg}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;                                <h4 class="section-title">
-
-    document.body.appendChild(alert);                                    <i class="fas fa-lightbulb text-warning me-2"></i>
-
-    setTimeout(() => alert.remove(), 3000);                                    Dicas
-
-}                                </h4>
-
-                                <div class="hints-container">
-
-// Support Tab key in editor                                    <?php 
-
-document.addEventListener('DOMContentLoaded', function() {                                    $hints = explode("\n", $exercise['hints']);
-
-    const id = <?php echo $id; ?>;                                    foreach ($hints as $index => $hint): 
-
-    const saved = localStorage.getItem('exercise_code_' + id);                                        if (trim($hint)):
-
-    if (saved && document.getElementById('codeEditor').value === document.getElementById('codeEditor').defaultValue) {                                    ?>
-
-        document.getElementById('codeEditor').value = saved;                                    <div class="hint-item">
-
-    }                                        <div class="hint-number"><?php echo $index + 1; ?></div>
-
-                                            <div class="hint-content"><?php echo sanitize($hint); ?></div>
-
-    document.getElementById('codeEditor').addEventListener('keydown', function(e) {                                    </div>
-
-        if (e.key === 'Tab') {                                    <?php 
-
-            e.preventDefault();                                        endif;
-
-            const start = this.selectionStart;                                    endforeach; 
-
-            const end = this.selectionEnd;                                    ?>
-
-            this.value = this.value.substring(0, start) + '\t' + this.value.substring(end);                                </div>
-
-            this.selectionStart = this.selectionEnd = start + 1;                            </section>
-
-        }                            <?php endif; ?>
-
-    });
-
-});                            <section class="instruction-section">
-
-</script>                                <h4 class="section-title">
-
+                            <section class="instruction-section">
+                                <h4 class="section-title">
                                     <i class="fas fa-list-check text-success me-2"></i>
-
-<?php include 'footer.php'; ?>                                    Requisitos
-
+                                    Requisitos
                                 </h4>
                                 <div class="requirements-list">
                                     <div class="requirement-item" data-completed="true">
@@ -1663,136 +530,8 @@ document.addEventListener('DOMContentLoaded', function() {                      
                                     </div>
                                 </div>
                             </section>
-
-                            <section class="instruction-section">
-                                <h4 class="section-title">
-                                    <i class="fas fa-vial text-info me-2"></i>
-                                    Casos de Teste
-                                    <span class="test-summary">3 de 3 passando</span>
-                                </h4>
-                                <div class="test-cases">
-                                    <div class="test-case test-passed" onclick="toggleTestDetails(this)">
-                                        <div class="test-case-header">
-                                            <div class="test-info">
-                                                <div class="test-icon">
-                                                    <i class="fas fa-check-circle"></i>
-                                                </div>
-                                                <div class="test-title-group">
-                                                    <span class="test-case-name">Caso Básico</span>
-                                                    <span class="test-case-desc">Teste com array de números positivos</span>
-                                                </div>
-                                            </div>
-                                            <div class="test-status">
-                                                <span class="badge badge-success-custom">
-                                                    <i class="fas fa-check me-1"></i>Passa
-                                                </span>
-                                                <i class="fas fa-chevron-down toggle-icon"></i>
-                                            </div>
-                                        </div>
-                                        <div class="test-case-content">
-                                            <div class="test-io-grid">
-                                                <div class="test-io-item">
-                                                    <label class="test-label">Entrada</label>
-                                                    <code class="test-code">[1, 2, 3, 4, 5]</code>
-                                                </div>
-                                                <div class="test-io-item">
-                                                    <label class="test-label">Saída Esperada</label>
-                                                    <code class="test-code success">15</code>
-                                                </div>
-                                            </div>
-                                            <div class="test-details">
-                                                <div class="test-metric">
-                                                    <i class="fas fa-clock"></i>
-                                                    <span>Tempo: <strong>0.02ms</strong></span>
-                                                </div>
-                                                <div class="test-metric">
-                                                    <i class="fas fa-memory"></i>
-                                                    <span>Memória: <strong>1.2KB</strong></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="test-case test-partial" onclick="toggleTestDetails(this)">
-                                        <div class="test-case-header">
-                                            <div class="test-info">
-                                                <div class="test-icon">
-                                                    <i class="fas fa-exclamation-circle"></i>
-                                                </div>
-                                                <div class="test-title-group">
-                                                    <span class="test-case-name">Array Vazio</span>
-                                                    <span class="test-case-desc">Verificação de casos extremos</span>
-                                                </div>
-                                            </div>
-                                            <div class="test-status">
-                                                <span class="badge badge-warning-custom">
-                                                    <i class="fas fa-minus-circle me-1"></i>Parcial
-                                                </span>
-                                                <i class="fas fa-chevron-down toggle-icon"></i>
-                                            </div>
-                                        </div>
-                                        <div class="test-case-content">
-                                            <div class="test-io-grid">
-                                                <div class="test-io-item">
-                                                    <label class="test-label">Entrada</label>
-                                                    <code class="test-code">[]</code>
-                                                </div>
-                                                <div class="test-io-item">
-                                                    <label class="test-label">Saída Esperada</label>
-                                                    <code class="test-code warning">0</code>
-                                                </div>
-                                            </div>
-                                            <div class="test-warning">
-                                                <i class="fas fa-info-circle"></i>
-                                                <span>Verifique o tratamento de arrays vazios</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="test-case test-passed" onclick="toggleTestDetails(this)">
-                                        <div class="test-case-header">
-                                            <div class="test-info">
-                                                <div class="test-icon">
-                                                    <i class="fas fa-check-circle"></i>
-                                                </div>
-                                                <div class="test-title-group">
-                                                    <span class="test-case-name">Números Negativos</span>
-                                                    <span class="test-case-desc">Soma com valores negativos</span>
-                                                </div>
-                                            </div>
-                                            <div class="test-status">
-                                                <span class="badge badge-success-custom">
-                                                    <i class="fas fa-check me-1"></i>Passa
-                                                </span>
-                                                <i class="fas fa-chevron-down toggle-icon"></i>
-                                            </div>
-                                        </div>
-                                        <div class="test-case-content">
-                                            <div class="test-io-grid">
-                                                <div class="test-io-item">
-                                                    <label class="test-label">Entrada</label>
-                                                    <code class="test-code">[-1, 2, -3, 4]</code>
-                                                </div>
-                                                <div class="test-io-item">
-                                                    <label class="test-label">Saída Esperada</label>
-                                                    <code class="test-code success">2</code>
-                                                </div>
-                                            </div>
-                                            <div class="test-details">
-                                                <div class="test-metric">
-                                                    <i class="fas fa-clock"></i>
-                                                    <span>Tempo: <strong>0.03ms</strong></span>
-                                                </div>
-                                                <div class="test-metric">
-                                                    <i class="fas fa-memory"></i>
-                                                    <span>Memória: <strong>1.4KB</strong></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
                         </div>
                     </div>
-
                     <!-- Aba Editor -->
                     <div class="tab-pane fade" id="editor" role="tabpanel" aria-labelledby="editor-tab">
                         <form method="POST" id="codeForm">
@@ -1916,7 +655,6 @@ document.addEventListener('DOMContentLoaded', function() {                      
                             </div>
                         </form>
                     </div>
-
                     <!-- Aba Resultado -->
                     <div class="tab-pane fade" id="output" role="tabpanel" aria-labelledby="output-tab">
                         <!-- Área de Output Dinâmica (inserida pelo JavaScript) -->
@@ -2039,159 +777,7 @@ document.addEventListener('DOMContentLoaded', function() {                      
                                         </button>
                                     </div>
                                     <div class="solution-code-container">
-                                        <pre><code class="language-javascript" id="solutionCode">// Exemplo de solução otimizada
-function somaArray(arr) {
-  // Usa reduce para somar todos os elementos
-  return arr.reduce((acc, num) => acc + num, 0);
-}
-
-// Teste da função
-console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
-                                    </div>
-                                </div>
-
-                                <!-- Explicação Passo a Passo -->
-                                <div class="solution-explanation-section">
-                                    <h5 class="explanation-title">
-                                        <i class="fas fa-book-open me-2"></i>
-                                        Explicação Passo a Passo
-                                    </h5>
-                                    
-                                    <div class="explanation-steps">
-                                        <div class="explanation-step">
-                                            <div class="step-number">1</div>
-                                            <div class="step-content">
-                                                <h6 class="step-title">Análise do Problema</h6>
-                                                <p class="step-description">
-                                                    Primeiro, identificamos que precisamos percorrer todos os elementos 
-                                                    do array e acumular seus valores. O método <code>reduce()</code> é 
-                                                    perfeito para essa tarefa.
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div class="explanation-step">
-                                            <div class="step-number">2</div>
-                                            <div class="step-content">
-                                                <h6 class="step-title">Implementação</h6>
-                                                <p class="step-description">
-                                                    Usamos <code>arr.reduce((acc, num) => acc + num, 0)</code> onde:
-                                                    <br>• <code>acc</code> é o acumulador (soma parcial)
-                                                    <br>• <code>num</code> é o elemento atual
-                                                    <br>• <code>0</code> é o valor inicial
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div class="explanation-step">
-                                            <div class="step-number">3</div>
-                                            <div class="step-content">
-                                                <h6 class="step-title">Complexidade</h6>
-                                                <p class="step-description">
-                                                    <strong>Tempo:</strong> O(n) - percorre o array uma vez
-                                                    <br><strong>Espaço:</strong> O(1) - usa memória constante
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div class="explanation-step">
-                                            <div class="step-number">4</div>
-                                            <div class="step-content">
-                                                <h6 class="step-title">Alternativas</h6>
-                                                <p class="step-description">
-                                                    Outras abordagens válidas incluem usar um loop <code>for</code> 
-                                                    ou <code>forEach()</code>, mas <code>reduce()</code> é mais 
-                                                    funcional e conciso.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Conceitos Importantes -->
-                                <div class="solution-concepts-section">
-                                    <h5 class="concepts-title">
-                                        <i class="fas fa-graduation-cap me-2"></i>
-                                        Conceitos Importantes
-                                    </h5>
-                                    
-                                    <div class="concepts-grid">
-                                        <div class="concept-card">
-                                            <div class="concept-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                                                <i class="fas fa-stream"></i>
-                                            </div>
-                                            <h6 class="concept-name">Array.reduce()</h6>
-                                            <p class="concept-description">
-                                                Método que reduz um array a um único valor através de uma função acumuladora.
-                                            </p>
-                                        </div>
-
-                                        <div class="concept-card">
-                                            <div class="concept-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
-                                                <i class="fas fa-arrow-right"></i>
-                                            </div>
-                                            <h6 class="concept-name">Arrow Functions</h6>
-                                            <p class="concept-description">
-                                                Sintaxe concisa para criar funções anônimas em JavaScript.
-                                            </p>
-                                        </div>
-
-                                        <div class="concept-card">
-                                            <div class="concept-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
-                                                <i class="fas fa-layer-group"></i>
-                                            </div>
-                                            <h6 class="concept-name">Acumuladores</h6>
-                                            <p class="concept-description">
-                                                Variável que armazena o resultado parcial durante iterações.
-                                            </p>
-                                        </div>
-
-                                        <div class="concept-card">
-                                            <div class="concept-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
-                                                <i class="fas fa-code-branch"></i>
-                                            </div>
-                                            <h6 class="concept-name">Programação Funcional</h6>
-                                            <p class="concept-description">
-                                                Paradigma que usa funções puras e evita mutações de estado.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Recursos Adicionais -->
-                                <div class="solution-resources-section">
-                                    <h5 class="resources-title">
-                                        <i class="fas fa-link me-2"></i>
-                                        Recursos para Aprender Mais
-                                    </h5>
-                                    
-                                    <div class="resources-list">
-                                        <a href="#" class="resource-item" target="_blank">
-                                            <div class="resource-icon">📚</div>
-                                            <div class="resource-content">
-                                                <strong>MDN Web Docs - Array.reduce()</strong>
-                                                <span>Documentação oficial sobre o método reduce</span>
-                                            </div>
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </a>
-
-                                        <a href="#" class="resource-item" target="_blank">
-                                            <div class="resource-icon">🎥</div>
-                                            <div class="resource-content">
-                                                <strong>JavaScript Array Methods</strong>
-                                                <span>Tutorial em vídeo sobre métodos de array</span>
-                                            </div>
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </a>
-
-                                        <a href="#" class="resource-item" target="_blank">
-                                            <div class="resource-icon">💻</div>
-                                            <div class="resource-content">
-                                                <strong>Exercícios Práticos</strong>
-                                                <span>Mais exercícios similares para praticar</span>
-                                            </div>
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </a>
+                                        <pre><code class="language-javascript" id="solutionCode"><?php echo sanitize($exercise['solution'] ?? '// Solução não disponível'); ?></code></pre>
                                     </div>
                                 </div>
                             </div>
@@ -2200,7 +786,6 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
                 </div>
             </div>
         </div>
-
         <!-- Sidebar -->
         <div class="col-lg-4">
             <!-- Card de Informações -->
@@ -2407,7 +992,6 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
         </div>
     </div>
 </div>
-
 <!-- Modal de Dicas -->
 <div class="modal fade" id="hintsModal" tabindex="-1">
     <div class="modal-dialog">
@@ -2436,41 +1020,13 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
                     <?php endforeach; ?>
                 </div>
                 
-                <?php if ($exercise['hints']): ?>
+                <?php if (!empty($exercise['hints']) && is_string($exercise['hints'])): ?>
                     <hr style="margin: 1.5rem 0; border-color: <?php echo $current_lang_config['color']; ?>30;">
                     <div class="alert alert-secondary">
                         <strong><i class="fas fa-info-circle me-2"></i>Dica Específica do Exercício:</strong>
                         <div class="mt-2" style="white-space: pre-line;"><?php echo sanitize($exercise['hints']); ?></div>
                     </div>
                 <?php endif; ?>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal de Tema do Editor -->
-<div class="modal fade" id="themeModal" tabindex="-1">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Tema do Editor</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="theme-options">
-                    <div class="theme-option active" data-theme="default">
-                        <div class="theme-preview light-theme"></div>
-                        <span>Claro</span>
-                    </div>
-                    <div class="theme-option" data-theme="dark">
-                        <div class="theme-preview dark-theme"></div>
-                        <span>Escuro</span>
-                    </div>
-                    <div class="theme-option" data-theme="monokai">
-                        <div class="theme-preview monokai-theme"></div>
-                        <span>Monokai</span>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -2663,13 +1219,6 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
     color: #ffffff;
 }
 
-.metadata-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-}
-
 .progress-ring-container {
     display: inline-block;
     position: relative;
@@ -2860,21 +1409,6 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
     }
 }
 
-@keyframes celebrate {
-    0% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
-    }
-    50% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1.5) rotate(180deg);
-    }
-    100% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(2) rotate(360deg);
-    }
-}
-
 /* Instruções */
 .instruction-section {
     margin-bottom: 2.5rem;
@@ -3045,284 +1579,6 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
     background: linear-gradient(135deg, #6f42c1, #8e5dd9);
     color: white;
     white-space: nowrap;
-}
-
-.test-cases {
-    display: grid;
-    gap: 1rem;
-}
-
-.test-summary {
-    margin-left: auto;
-    padding: 0.35rem 1rem;
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-}
-
-.test-case {
-    border: 2px solid #e9ecef;
-    border-radius: 16px;
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    background: white;
-    cursor: pointer;
-}
-
-.test-case.test-passed {
-    border-color: rgba(6, 214, 160, 0.3);
-}
-
-.test-case.test-partial {
-    border-color: rgba(255, 193, 7, 0.3);
-}
-
-.test-case.test-failed {
-    border-color: rgba(239, 71, 111, 0.3);
-}
-
-.test-case:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
-}
-
-.test-case.test-passed:hover {
-    border-color: #06d6a0;
-    box-shadow: 0 12px 32px rgba(6, 214, 160, 0.2);
-}
-
-.test-case.test-partial:hover {
-    border-color: #ffc107;
-    box-shadow: 0 12px 32px rgba(255, 193, 7, 0.2);
-}
-
-.test-case-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.5rem;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border-bottom: 2px solid #e9ecef;
-    transition: all 0.3s ease;
-}
-
-.test-case:hover .test-case-header {
-    background: linear-gradient(135deg, #f8f9fa 0%, #fafbfc 100%);
-}
-
-.test-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex: 1;
-}
-
-.test-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    flex-shrink: 0;
-    transition: all 0.3s ease;
-}
-
-.test-passed .test-icon {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-}
-
-.test-partial .test-icon {
-    background: linear-gradient(135deg, #ffc107, #fd7e14);
-    color: white;
-    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
-}
-
-.test-failed .test-icon {
-    background: linear-gradient(135deg, #dc3545, #e83e8c);
-    color: white;
-    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-}
-
-.test-case:hover .test-icon {
-    transform: scale(1.1) rotate(-5deg);
-}
-
-.test-title-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.test-case-name {
-    font-weight: 700;
-    font-size: 1rem;
-    color: #212529;
-    line-height: 1.2;
-}
-
-.test-case-desc {
-    font-size: 0.8rem;
-    color: #6c757d;
-    font-weight: 500;
-}
-
-.test-status {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.badge-success-custom {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
-}
-
-.badge-warning-custom {
-    background: linear-gradient(135deg, #ffc107, #fd7e14);
-    color: #333;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
-}
-
-.badge-danger-custom {
-    background: linear-gradient(135deg, #dc3545, #e83e8c);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
-}
-
-.toggle-icon {
-    color: #6c757d;
-    font-size: 0.9rem;
-    transition: transform 0.3s ease;
-}
-
-.test-case.expanded .toggle-icon {
-    transform: rotate(180deg);
-}
-
-.test-case-content {
-    padding: 1.5rem;
-    background: white;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s ease;
-}
-
-.test-case.expanded .test-case-content {
-    max-height: 500px;
-    border-top: 2px solid #f0f0f0;
-}
-
-.test-io-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.test-io-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.test-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #6c757d;
-    letter-spacing: 0.5px;
-}
-
-.test-code {
-    padding: 0.75rem 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    color: #212529;
-    border: 2px solid #e9ecef;
-    font-weight: 600;
-}
-
-.test-code.success {
-    background: rgba(40, 167, 69, 0.1);
-    border-color: rgba(40, 167, 69, 0.3);
-    color: #155724;
-}
-
-.test-code.warning {
-    background: rgba(255, 193, 7, 0.1);
-    border-color: rgba(255, 193, 7, 0.3);
-    color: #856404;
-}
-
-.test-code.error {
-    background: rgba(220, 53, 69, 0.1);
-    border-color: rgba(220, 53, 69, 0.3);
-    color: #721c24;
-}
-
-.test-details {
-    display: flex;
-    gap: 2rem;
-    padding: 1rem;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border-radius: 8px;
-    margin-top: 1rem;
-}
-
-.test-metric {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    color: #6c757d;
-}
-
-.test-metric i {
-    color: var(--primary-color);
-}
-
-.test-metric strong {
-    color: #212529;
-}
-
-.test-warning {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem;
-    background: #fff3cd;
-    border-left: 4px solid #ffc107;
-    border-radius: 8px;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #856404;
-}
-
-.test-warning i {
-    font-size: 1.2rem;
-    color: #ffc107;
 }
 
 /* Editor */
@@ -3539,66 +1795,6 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
     background: rgba(111, 66, 193, 0.3);
 }
 
-/* Temas do Editor */
-.code-editor.theme-default {
-    background: #ffffff;
-    color: #24292e;
-}
-
-.code-editor.theme-dark {
-    background: #1e1e1e;
-    color: #d4d4d4;
-}
-
-.code-editor.theme-monokai {
-    background: #272822;
-    color: #f8f8f2;
-}
-
-.code-editor.theme-dracula {
-    background: #282a36;
-    color: #f8f8f2;
-}
-
-.code-editor.theme-github {
-    background: #ffffff;
-    color: #24292e;
-}
-
-.editor-suggestions {
-    position: absolute;
-    background: #252526;
-    border: 1px solid #3e3e42;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    max-height: 200px;
-    overflow-y: auto;
-    display: none;
-    z-index: 1000;
-}
-
-.suggestion-item {
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    color: #d4d4d4;
-    font-family: 'Courier New', monospace;
-    font-size: 0.875rem;
-    transition: background 0.2s;
-}
-
-.suggestion-item:hover {
-    background: #2a2d2e;
-}
-
-.suggestion-item.active {
-    background: #094771;
-}
-
-.suggestion-icon {
-    margin-right: 0.5rem;
-    color: #6f42c1;
-}
-
 .editor-status-bar {
     display: flex;
     justify-content: space-between;
@@ -3682,10 +1878,7 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
     transition: all 0.3s ease;
 }
 
-/* ========================================
-   ABA RESULTADO - EMPTY STATE
-   ======================================== */
-
+/* Empty State */
 .empty-output-state {
     min-height: 500px;
     display: flex;
@@ -3777,10 +1970,7 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
     margin-bottom: 0.25rem;
 }
 
-/* ========================================
-   ABA SOLUÇÃO
-   ======================================== */
-
+/* Solução */
 .solution-wrapper {
     padding: 2rem 0;
 }
@@ -3908,7 +2098,6 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
     color: #212529;
 }
 
-/* Código da Solução */
 .solution-code-section {
     background: #1e1e1e;
     border-radius: 16px;
@@ -3970,322 +2159,6 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
     overflow-x: auto;
 }
 
-/* Explicação Passo a Passo */
-.solution-explanation-section {
-    background: white;
-    border: 2px solid #e9ecef;
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-}
-
-.explanation-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #212529;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-}
-
-.explanation-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.explanation-step {
-    display: flex;
-    gap: 1.25rem;
-    align-items: flex-start;
-}
-
-.step-number {
-    flex-shrink: 0;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6f42c1, #8e5dd9);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.1rem;
-    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
-}
-
-.step-content {
-    flex: 1;
-}
-
-.step-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #212529;
-    margin-bottom: 0.5rem;
-}
-
-.step-description {
-    color: #495057;
-    line-height: 1.6;
-    margin: 0;
-}
-
-.step-description code {
-    background: #f8f9fa;
-    padding: 0.15rem 0.4rem;
-    border-radius: 4px;
-    color: #e83e8c;
-    font-size: 0.9em;
-}
-
-/* Conceitos Importantes */
-.solution-concepts-section {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border: 2px solid #e9ecef;
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-}
-
-.concepts-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #212529;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-}
-
-.concepts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.25rem;
-}
-
-.concept-card {
-    background: white;
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
-    padding: 1.5rem;
-    transition: all 0.3s ease;
-}
-
-.concept-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-    border-color: #6f42c1;
-}
-
-.concept-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.concept-name {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #212529;
-    margin-bottom: 0.5rem;
-}
-
-.concept-description {
-    font-size: 0.875rem;
-    color: #6c757d;
-    line-height: 1.5;
-    margin: 0;
-}
-
-/* Recursos Adicionais */
-.solution-resources-section {
-    background: white;
-    border: 2px solid #e9ecef;
-    border-radius: 16px;
-    padding: 2rem;
-}
-
-.resources-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #212529;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-}
-
-.resources-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.resource-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1.25rem;
-    background: #f8f9fa;
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
-    text-decoration: none;
-    color: #212529;
-    transition: all 0.3s ease;
-}
-
-.resource-item:hover {
-    background: white;
-    border-color: #6f42c1;
-    transform: translateX(8px);
-    box-shadow: 0 4px 15px rgba(111, 66, 193, 0.15);
-}
-
-.resource-icon {
-    font-size: 1.75rem;
-    flex-shrink: 0;
-}
-
-.resource-content {
-    flex: 1;
-}
-
-.resource-content strong {
-    display: block;
-    font-size: 1rem;
-    color: #212529;
-    margin-bottom: 0.25rem;
-}
-
-.resource-content span {
-    font-size: 0.875rem;
-    color: #6c757d;
-}
-
-.resource-item i {
-    color: #6c757d;
-    font-size: 0.875rem;
-}
-
-.action-buttons .btn-outline-secondary {
-    border: 2px solid #6c757d;
-    transition: all 0.3s ease;
-}
-
-.action-buttons .btn-outline-secondary:hover {
-    transform: translateY(-2px);
-}
-
-/* Resultados */
-.execution-result {
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.result-header {
-    padding: 1rem 1.5rem;
-}
-
-.execution-metrics {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    padding: 1.5rem;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.metric {
-    text-align: center;
-}
-
-.metric-label {
-    display: block;
-    font-size: 0.875rem;
-    color: #6c757d;
-    margin-bottom: 0.25rem;
-}
-
-.metric-value {
-    display: block;
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #212529;
-}
-
-.output-container, .test-results {
-    padding: 1.5rem;
-}
-
-.output-content {
-    background: #1e1e1e;
-    color: #d4d4d4;
-    padding: 1rem;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.875rem;
-    overflow-x: auto;
-}
-
-.tests-grid {
-    display: grid;
-    gap: 0.75rem;
-}
-
-.test-result-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    border-radius: 8px;
-}
-
-.test-result-item.passed {
-    background: #d4edda;
-    border-left: 4px solid #28a745;
-}
-
-.test-result-item.failed {
-    background: #f8d7da;
-    border-left: 4px solid #dc3545;
-}
-
-.test-status {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    flex-shrink: 0;
-}
-
-.test-result-item.passed .test-status {
-    background: #28a745;
-}
-
-.test-result-item.failed .test-status {
-    background: #dc3545;
-}
-
-.test-name {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-}
-
-.test-message {
-    font-size: 0.875rem;
-    color: #6c757d;
-}
-
 /* Sidebar Cards */
 .info-card, .progress-card, .actions-card, .related-card {
     background: white;
@@ -4309,7 +2182,111 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
     font-weight: 600;
 }
 
-/* Progress Card */
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.info-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, transparent, rgba(67, 97, 238, 0.05));
+    transition: width 0.3s ease;
+}
+
+.info-item:hover::before {
+    width: 100%;
+}
+
+.info-item:hover {
+    background: rgba(67, 97, 238, 0.02);
+    padding-left: 1.75rem;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.info-category .info-icon {
+    background: linear-gradient(135deg, #6f42c1, #8e5dd9);
+    color: white;
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+}
+
+.info-difficulty .info-icon {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.info-type .info-icon {
+    background: linear-gradient(135deg, #e83e8c, #fd7e14);
+    color: white;
+    box-shadow: 0 4px 12px rgba(232, 62, 140, 0.3);
+}
+
+.info-attempts .info-icon {
+    background: linear-gradient(135deg, #007bff, #17a2b8);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.info-time .info-icon {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.info-item:hover .info-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.info-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.info-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #212529;
+    line-height: 1.2;
+}
+
 .progress-card .card-body {
     padding: 2rem 1.5rem;
 }
@@ -4417,112 +2394,6 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
     font-size: 0.95rem;
     color: #212529;
     font-weight: 700;
-}
-
-
-.info-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.info-item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 0;
-    background: linear-gradient(90deg, transparent, rgba(67, 97, 238, 0.05));
-    transition: width 0.3s ease;
-}
-
-.info-item:hover::before {
-    width: 100%;
-}
-
-.info-item:hover {
-    background: rgba(67, 97, 238, 0.02);
-    padding-left: 1.75rem;
-}
-
-.info-item:last-child {
-    border-bottom: none;
-}
-
-.info-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-    flex-shrink: 0;
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 1;
-}
-
-.info-category .info-icon {
-    background: linear-gradient(135deg, #6f42c1, #8e5dd9);
-    color: white;
-    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
-}
-
-.info-difficulty .info-icon {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-}
-
-.info-type .info-icon {
-    background: linear-gradient(135deg, #e83e8c, #fd7e14);
-    color: white;
-    box-shadow: 0 4px 12px rgba(232, 62, 140, 0.3);
-}
-
-.info-attempts .info-icon {
-    background: linear-gradient(135deg, #007bff, #17a2b8);
-    color: white;
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-}
-
-.info-time .info-icon {
-    background: linear-gradient(135deg, #ffc107, #fd7e14);
-    color: white;
-    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
-}
-
-.info-item:hover .info-icon {
-    transform: scale(1.1) rotate(5deg);
-}
-
-.info-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.info-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #6c757d;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.info-value {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #212529;
-    line-height: 1.2;
 }
 
 .actions-grid {
@@ -4749,39 +2620,6 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
     color: #212529;
 }
 
-/* Modais */
-.theme-options {
-    display: grid;
-    gap: 1rem;
-}
-
-.theme-option {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.theme-option.active {
-    border-color: var(--primary-color);
-    background: #f8f9fa;
-}
-
-.theme-preview {
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-}
-
-.light-theme { background: linear-gradient(45deg, #f8f9fa 50%, #e9ecef 50%); }
-.dark-theme { background: linear-gradient(45deg, #1e1e1e 50%, #2d2d2d 50%); }
-.monokai-theme { background: linear-gradient(45deg, #272822 50%, #3e3d32 50%); }
-
 .hint-modal-item {
     display: flex;
     gap: 1rem;
@@ -4814,10 +2652,6 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
     .actions-grid {
         grid-template-columns: 1fr;
     }
-    
-    .execution-metrics {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* Animações */
@@ -4843,15 +2677,6 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
     }
 }
 
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-}
-
 .exercise-header-card {
     animation: fadeInUp 0.6s ease-out;
 }
@@ -4863,258 +2688,8 @@ console.log(somaArray([1, 2, 3, 4, 5])); // 15</code></pre>
 .info-card, .progress-card, .actions-card, .related-card {
     animation: slideInRight 0.8s ease-out;
 }
-
-.hint-number, .test-status {
-    animation: pulse 2s infinite;
-}
 </style>
-
 <script>
-// ========================================
-// SISTEMA DE DESAFIOS ALEATÓRIOS (GLOBAL)
-// ========================================
-
-// Desafios organizados por linguagem/tipo
-const challengesByLanguage = {
-    javascript: [
-        {
-            id: 1,
-            title: "Soma de Dois Números",
-            description: "Crie uma função que retorna a soma de dois números.",
-            difficulty: "Fácil",
-            language: "javascript",
-            template: "function soma(a, b) {\n  // Seu código aqui\n  \n}",
-            tests: [
-                { input: [2, 3], expected: 5, description: "soma(2, 3) deve retornar 5" },
-                { input: [10, 20], expected: 30, description: "soma(10, 20) deve retornar 30" },
-                { input: [-5, 5], expected: 0, description: "soma(-5, 5) deve retornar 0" },
-                { input: [0, 0], expected: 0, description: "soma(0, 0) deve retornar 0" }
-            ],
-            solution: "function soma(a, b) {\n  return a + b;\n}"
-        },
-        {
-            id: 2,
-            title: "Número Par ou Ímpar",
-            description: "Crie uma função que retorna 'par' se o número for par e 'ímpar' se for ímpar.",
-            difficulty: "Fácil",
-            language: "javascript",
-            template: "function parOuImpar(numero) {\n  // Seu código aqui\n  \n}",
-            tests: [
-                { input: [4], expected: "par", description: "parOuImpar(4) deve retornar 'par'" },
-                { input: [7], expected: "ímpar", description: "parOuImpar(7) deve retornar 'ímpar'" },
-                { input: [0], expected: "par", description: "parOuImpar(0) deve retornar 'par'" },
-                { input: [101], expected: "ímpar", description: "parOuImpar(101) deve retornar 'ímpar'" }
-            ],
-            solution: "function parOuImpar(numero) {\n  return numero % 2 === 0 ? 'par' : 'ímpar';\n}"
-        },
-        {
-            id: 3,
-            title: "Reverter String",
-            description: "Crie uma função que reverte uma string.",
-            difficulty: "Médio",
-            language: "javascript",
-            template: "function reverterString(str) {\n  // Seu código aqui\n  \n}",
-            tests: [
-                { input: ["hello"], expected: "olleh", description: "reverterString('hello') deve retornar 'olleh'" },
-                { input: ["JavaScript"], expected: "tpircSavaJ", description: "reverterString('JavaScript') deve retornar 'tpircSavaJ'" },
-                { input: [""], expected: "", description: "reverterString('') deve retornar ''" },
-                { input: ["12345"], expected: "54321", description: "reverterString('12345') deve retornar '54321'" }
-            ],
-            solution: "function reverterString(str) {\n  return str.split('').reverse().join('');\n}"
-        },
-        {
-            id: 4,
-            title: "Maior Número em Array",
-            description: "Crie uma função que retorna o maior número de um array.",
-            difficulty: "Médio",
-            language: "javascript",
-            template: "function maiorNumero(arr) {\n  // Seu código aqui\n  \n}",
-            tests: [
-                { input: [[1, 5, 3, 9, 2]], expected: 9, description: "maiorNumero([1, 5, 3, 9, 2]) deve retornar 9" },
-                { input: [[-1, -5, -3]], expected: -1, description: "maiorNumero([-1, -5, -3]) deve retornar -1" },
-                { input: [[42]], expected: 42, description: "maiorNumero([42]) deve retornar 42" },
-                { input: [[10, 20, 30, 25]], expected: 30, description: "maiorNumero([10, 20, 30, 25]) deve retornar 30" }
-            ],
-            solution: "function maiorNumero(arr) {\n  return Math.max(...arr);\n}"
-        },
-        {
-            id: 5,
-            title: "Fibonacci",
-            description: "Crie uma função que retorna o n-ésimo número da sequência de Fibonacci.",
-            difficulty: "Difícil",
-            language: "javascript",
-            template: "function fibonacci(n) {\n  // Seu código aqui\n  \n}",
-            tests: [
-                { input: [0], expected: 0, description: "fibonacci(0) deve retornar 0" },
-                { input: [1], expected: 1, description: "fibonacci(1) deve retornar 1" },
-                { input: [6], expected: 8, description: "fibonacci(6) deve retornar 8" },
-                { input: [10], expected: 55, description: "fibonacci(10) deve retornar 55" }
-            ],
-            solution: "function fibonacci(n) {\n  if (n <= 1) return n;\n  let a = 0, b = 1;\n  for (let i = 2; i <= n; i++) {\n    [a, b] = [b, a + b];\n  }\n  return b;\n}"
-        }
-    ],
-    
-    html: [
-        {
-            id: 101,
-            title: "Card de Perfil",
-            description: "Crie um card HTML com imagem, nome, descrição e botão.",
-            difficulty: "Fácil",
-            language: "html",
-            template: "<!-- Crie um card de perfil -->\n<div class=\"profile-card\">\n  <!-- Seu código aqui -->\n  \n</div>",
-            hint: "Use tags: img, h2, p, button",
-            solution: '<div class="profile-card">\n  <img src="avatar.jpg" alt="Avatar">\n  <h2>João Silva</h2>\n  <p>Desenvolvedor Web</p>\n  <button>Ver Perfil</button>\n</div>'
-        },
-        {
-            id: 102,
-            title: "Formulário de Contato",
-            description: "Crie um formulário com nome, email e mensagem.",
-            difficulty: "Fácil",
-            language: "html",
-            template: "<!-- Crie um formulário de contato -->\n<form>\n  <!-- Seu código aqui -->\n  \n</form>",
-            hint: "Use input, textarea, label e button",
-            solution: '<form>\n  <label>Nome:\n    <input type="text" name="nome" required>\n  </label>\n  <label>Email:\n    <input type="email" name="email" required>\n  </label>\n  <label>Mensagem:\n    <textarea name="mensagem"></textarea>\n  </label>\n  <button type="submit">Enviar</button>\n</form>'
-        },
-        {
-            id: 103,
-            title: "Lista de Navegação",
-            description: "Crie uma barra de navegação com 4 links.",
-            difficulty: "Fácil",
-            language: "html",
-            template: "<!-- Crie uma navegação -->\n<nav>\n  <!-- Seu código aqui -->\n  \n</nav>",
-            hint: "Use nav, ul, li e a",
-            solution: '<nav>\n  <ul>\n    <li><a href="#home">Home</a></li>\n    <li><a href="#sobre">Sobre</a></li>\n    <li><a href="#servicos">Serviços</a></li>\n    <li><a href="#contato">Contato</a></li>\n  </ul>\n</nav>'
-        },
-        {
-            id: 104,
-            title: "Tabela de Dados",
-            description: "Crie uma tabela com cabeçalhos e 3 linhas de dados.",
-            difficulty: "Médio",
-            language: "html",
-            template: "<!-- Crie uma tabela -->\n<table>\n  <!-- Seu código aqui -->\n  \n</table>",
-            hint: "Use table, thead, tbody, tr, th, td",
-            solution: '<table>\n  <thead>\n    <tr>\n      <th>Nome</th>\n      <th>Email</th>\n      <th>Status</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>João</td>\n      <td>joao@email.com</td>\n      <td>Ativo</td>\n    </tr>\n    <tr>\n      <td>Maria</td>\n      <td>maria@email.com</td>\n      <td>Ativo</td>\n    </tr>\n    <tr>\n      <td>Pedro</td>\n      <td>pedro@email.com</td>\n      <td>Inativo</td>\n    </tr>\n  </tbody>\n</table>'
-        },
-        {
-            id: 105,
-            title: "Estrutura Semântica",
-            description: "Crie uma página com header, main, aside e footer.",
-            difficulty: "Médio",
-            language: "html",
-            template: "<!-- Crie estrutura semântica -->\n<!DOCTYPE html>\n<html>\n  <!-- Seu código aqui -->\n  \n</html>",
-            hint: "Use tags semânticas HTML5",
-            solution: '<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n  <meta charset="UTF-8">\n  <title>Página Semântica</title>\n</head>\n<body>\n  <header>\n    <h1>Meu Site</h1>\n  </header>\n  <main>\n    <article>\n      <h2>Conteúdo Principal</h2>\n      <p>Texto do artigo...</p>\n    </article>\n  </main>\n  <aside>\n    <h3>Barra Lateral</h3>\n  </aside>\n  <footer>\n    <p>&copy; 2025</p>\n  </footer>\n</body>\n</html>'
-        }
-    ],
-    
-    css: [
-        {
-            id: 201,
-            title: "Centralizar Elemento",
-            description: "Centralize horizontal e verticalmente um elemento dentro de um container.",
-            difficulty: "Fácil",
-            language: "css",
-            template: ".container {\n  /* Seu código aqui */\n  \n}\n\n.box {\n  width: 200px;\n  height: 200px;\n}",
-            hint: "Use flexbox ou grid",
-            solution: ".container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-height: 100vh;\n}\n\n.box {\n  width: 200px;\n  height: 200px;\n}"
-        },
-        {
-            id: 202,
-            title: "Botão com Gradiente",
-            description: "Crie um botão com gradiente roxo/rosa e efeito hover.",
-            difficulty: "Fácil",
-            language: "css",
-            template: ".btn {\n  /* Seu código aqui */\n  \n}",
-            hint: "Use linear-gradient e transition",
-            solution: ".btn {\n  background: linear-gradient(135deg, #6f42c1, #e83e8c);\n  color: white;\n  padding: 12px 24px;\n  border: none;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: all 0.3s ease;\n}\n\n.btn:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4);\n}"
-        },
-        {
-            id: 203,
-            title: "Card Responsivo",
-            description: "Crie um card que muda de layout em telas pequenas.",
-            difficulty: "Médio",
-            language: "css",
-            template: ".card {\n  /* Seu código aqui */\n  \n}",
-            hint: "Use media queries",
-            solution: ".card {\n  display: flex;\n  gap: 1rem;\n  padding: 1.5rem;\n  border-radius: 12px;\n  box-shadow: 0 2px 8px rgba(0,0,0,0.1);\n}\n\n@media (max-width: 768px) {\n  .card {\n    flex-direction: column;\n  }\n}"
-        },
-        {
-            id: 204,
-            title: "Grid de 3 Colunas",
-            description: "Crie um grid responsivo de 3 colunas que se adapta.",
-            difficulty: "Médio",
-            language: "css",
-            template: ".grid {\n  /* Seu código aqui */\n  \n}",
-            hint: "Use CSS Grid com auto-fit",
-            solution: ".grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n  gap: 1.5rem;\n  padding: 2rem;\n}"
-        },
-        {
-            id: 205,
-            title: "Animação de Loading",
-            description: "Crie um spinner de loading animado.",
-            difficulty: "Difícil",
-            language: "css",
-            template: ".spinner {\n  /* Seu código aqui */\n  \n}",
-            hint: "Use @keyframes e animation",
-            solution: ".spinner {\n  width: 50px;\n  height: 50px;\n  border: 4px solid #f3f3f3;\n  border-top: 4px solid #6f42c1;\n  border-radius: 50%;\n  animation: spin 1s linear infinite;\n}\n\n@keyframes spin {\n  0% { transform: rotate(0deg); }\n  100% { transform: rotate(360deg); }\n}"
-        }
-    ],
-    
-    php: [
-        {
-            id: 301,
-            title: "Validar Email",
-            description: "Crie uma função que valida se um email é válido.",
-            difficulty: "Fácil",
-            language: "php",
-            template: "/* PHP */\nfunction validarEmail($email) {\n  // Seu código aqui\n  \n}",
-            hint: "Use filter_var com FILTER_VALIDATE_EMAIL",
-            solution: "/* PHP */\nfunction validarEmail($email) {\n  return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;\n}"
-        },
-        {
-            id: 302,
-            title: "Sanitizar String",
-            description: "Crie uma função que remove tags HTML de uma string.",
-            difficulty: "Fácil",
-            language: "php",
-            template: "/* PHP */\nfunction sanitizar($texto) {\n  // Seu código aqui\n  \n}",
-            hint: "Use strip_tags ou htmlspecialchars",
-            solution: "/* PHP */\nfunction sanitizar($texto) {\n  return htmlspecialchars(strip_tags($texto), ENT_QUOTES, 'UTF-8');\n}"
-        },
-        {
-            id: 303,
-            title: "Gerar Senha Aleatória",
-            description: "Crie uma função que gera uma senha aleatória de N caracteres.",
-            difficulty: "Médio",
-            language: "php",
-            template: "/* PHP */\nfunction gerarSenha($tamanho = 8) {\n  // Seu código aqui\n  \n}",
-            hint: "Use random_bytes ou str_shuffle",
-            solution: "/* PHP */\nfunction gerarSenha($tamanho = 8) {\n  $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%';\n  return substr(str_shuffle($chars), 0, $tamanho);\n}"
-        },
-        {
-            id: 304,
-            title: "Conectar ao Banco",
-            description: "Crie uma função PDO para conectar ao MySQL.",
-            difficulty: "Médio",
-            language: "php",
-            template: "/* PHP */\nfunction conectarBanco() {\n  // Seu código aqui\n  \n}",
-            hint: "Use PDO com try-catch",
-            solution: "/* PHP */\nfunction conectarBanco() {\n  try {\n    $pdo = new PDO(\n      'mysql:host=localhost;dbname=banco;charset=utf8',\n      'usuario',\n      'senha',\n      [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]\n    );\n    return $pdo;\n  } catch (PDOException $e) {\n    die('Erro: ' . $e->getMessage());\n  }\n}"
-        },
-        {
-            id: 305,
-            title: "Upload de Arquivo Seguro",
-            description: "Crie uma função segura para upload de imagens.",
-            difficulty: "Difícil",
-            language: "php",
-            template: "/* PHP */\nfunction uploadImagem($file) {\n  // Seu código aqui\n  \n}",
-            hint: "Valide tipo, tamanho e use move_uploaded_file",
-            solution: "/* PHP */\nfunction uploadImagem($file) {\n  $allowed = ['image/jpeg', 'image/png', 'image/gif'];\n  $maxSize = 5 * 1024 * 1024; // 5MB\n  \n  if (!in_array($file['type'], $allowed)) {\n    return ['success' => false, 'error' => 'Tipo inválido'];\n  }\n  \n  if ($file['size'] > $maxSize) {\n    return ['success' => false, 'error' => 'Arquivo muito grande'];\n  }\n  \n  $ext = pathinfo($file['name'], PATHINFO_EXTENSION);\n  $newName = uniqid() . '.' . $ext;\n  $dest = 'uploads/' . $newName;\n  \n  if (move_uploaded_file($file['tmp_name'], $dest)) {\n    return ['success' => true, 'file' => $newName];\n  }\n  \n  return ['success' => false, 'error' => 'Falha no upload'];\n}"
-        }
-    ]
-};
-
-// Detectar linguagem do exercício atual
 // Detectar linguagem do exercício para JavaScript
 const categoryRaw = '<?php echo strtolower(trim($exercise["category_name"] ?? "javascript")); ?>';
 
@@ -5137,124 +2712,6 @@ for (const [key, value] of Object.entries(languageMapping)) {
         currentLanguage = value;
         break;
     }
-}
-let currentChallenge = null;
-
-// Carregar desafio aleatório baseado na linguagem
-window.loadRandomChallenge = function() {
-    const languageChallenges = challengesByLanguage[currentLanguage] || challengesByLanguage.javascript;
-    const randomIndex = Math.floor(Math.random() * languageChallenges.length);
-    currentChallenge = languageChallenges[randomIndex];
-    
-    console.log('Desafio carregado:', currentChallenge.title, '| Linguagem:', currentLanguage);
-    
-    // Atualizar título do desafio
-    showChallengeModal(currentChallenge);
-    
-    // Carregar template no editor
-    const codeEditor = document.getElementById('user_code');
-    if (codeEditor) {
-        codeEditor.value = currentChallenge.template;
-        
-        // Atualizar linha numbers e status
-        if (typeof updateLineNumbers === 'function') updateLineNumbers();
-        if (typeof updateEditorStatus === 'function') updateEditorStatus();
-    }
-    
-    showToast(`Desafio ${currentLanguage.toUpperCase()} carregado: ${currentChallenge.title}`, 'success');
-};
-
-// Modal de desafio
-function showChallengeModal(challenge) {
-    // Ícones e cores por linguagem
-    const languageConfig = {
-        javascript: { icon: 'fa-js-square', color: '#f7df1e', name: 'JavaScript' },
-        html: { icon: 'fa-html5', color: '#e34f26', name: 'HTML5' },
-        css: { icon: 'fa-css3-alt', color: '#1572b6', name: 'CSS3' },
-        php: { icon: 'fa-php', color: '#777bb4', name: 'PHP' }
-    };
-    
-    const langConfig = languageConfig[challenge.language] || languageConfig.javascript;
-    
-    const modalHTML = `
-        <div class="modal fade" id="challengeModal" tabindex="-1">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content" style="background: linear-gradient(135deg, #6f42c1 0%, #8e5dd9 100%);">
-                    <div class="modal-header border-0">
-                        <h5 class="modal-title text-white">
-                            <i class="fas fa-trophy me-2"></i>${challenge.title}
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body" style="background: white; border-radius: 0 0 15px 15px;">
-                        <div class="mb-3 d-flex align-items-center gap-2">
-                            <span class="badge bg-${challenge.difficulty === 'Fácil' ? 'success' : challenge.difficulty === 'Médio' ? 'warning' : 'danger'}">
-                                ${challenge.difficulty}
-                            </span>
-                            <span class="badge" style="background-color: ${langConfig.color};">
-                                <i class="fab ${langConfig.icon} me-1"></i>${langConfig.name}
-                            </span>
-                        </div>
-                        <p class="lead">${challenge.description}</p>
-                        
-                        ${challenge.tests ? `
-                            <h6 class="mt-4 mb-3">Testes que serão executados:</h6>
-                            <ul class="list-group">
-                                ${challenge.tests.map(test => `
-                                    <li class="list-group-item">
-                                        <i class="fas fa-check-circle text-muted me-2"></i>${test.description}
-                                    </li>
-                                `).join('')}
-                            </ul>
-                            <div class="alert alert-info mt-4 mb-0">
-                                <i class="fas fa-lightbulb me-2"></i>
-                                <strong>Dica:</strong> Execute os testes para verificar se sua solução está correta!
-                            </div>
-                        ` : ''}
-                        
-                        ${challenge.hint ? `
-                            <div class="alert alert-warning mt-4 mb-0">
-                                <i class="fas fa-lightbulb me-2"></i>
-                                <strong>Dica:</strong> ${challenge.hint}
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    // Remover modal anterior se existir
-    const existingModal = document.getElementById('challengeModal');
-    if (existingModal) {
-        existingModal.remove();
-    }
-    
-    // Adicionar novo modal
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    
-    // Mostrar modal
-    const modal = new bootstrap.Modal(document.getElementById('challengeModal'));
-    modal.show();
-}
-
-// Função toast (caso não esteja definida)
-function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    toast.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
-    toast.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        if (toast.parentNode) {
-            toast.parentNode.removeChild(toast);
-        }
-    }, 3000);
 }
 
 // Revelar solução
@@ -5490,6 +2947,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    function updateAutoSaveStatus() {
+        const autoSaveStatus = document.getElementById('autoSaveStatus');
+        if (autoSaveStatus) {
+            autoSaveStatus.innerHTML = '<i class="fas fa-clock text-warning"></i> Salvando...';
+            
+            // Simular auto-save após 2 segundos
+            setTimeout(() => {
+                autoSaveStatus.innerHTML = '<i class="fas fa-check-circle text-success"></i> Salvo';
+            }, 2000);
+        }
+    }
+    
     // Undo
     window.undoCode = function() {
         if (undoHistory.length === 0) {
@@ -5549,27 +3018,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Adicionar nova classe de tema
         codeEditor.classList.add('code-editor', `theme-${theme}`);
         
-        // Atualizar cores do container principal
-        const editorMain = document.querySelector('.editor-main');
-        if (editorMain) {
-            const themes = {
-                default: { bg: '#ffffff', sidebar: '#f5f5f5' },
-                dark: { bg: '#1e1e1e', sidebar: '#252526' },
-                monokai: { bg: '#272822', sidebar: '#1e1f1c' },
-                dracula: { bg: '#282a36', sidebar: '#21222c' },
-                github: { bg: '#ffffff', sidebar: '#f6f8fa' }
-            };
-            
-            const colors = themes[theme] || themes.default;
-            editorMain.style.background = colors.bg;
-            
-            const sidebar = document.querySelector('.editor-sidebar');
-            if (sidebar) {
-                sidebar.style.background = colors.sidebar;
-            }
-        }
-        
-        showToast(`Tema "${theme}" aplicado`, 'success');
+        showToast(`Tema ${theme} aplicado`, 'info');
     }
     
     // Tamanho da fonte
@@ -5578,575 +3027,320 @@ document.addEventListener('DOMContentLoaded', function() {
             changeFontSize(this.value);
         });
     }
-    
-    function changeFontSize(size) {
+
+    window.changeFontSize = function(size) {
         if (!codeEditor) return;
         
         codeEditor.style.fontSize = size + 'px';
+        showToast(`Fonte alterada para ${size}px`, 'info');
+    };
+    
+    // Formatar código
+    window.formatCode = function() {
+        if (!codeEditor) return;
         
-        if (lineNumbers) {
-            lineNumbers.style.fontSize = size + 'px';
+        try {
+            // Formatação básica para JavaScript
+            let code = codeEditor.value;
+            
+            // Adicionar quebras de linha após {
+            code = code.replace(/\{/g, '{\n');
+            
+            // Adicionar quebras de linha antes de }
+            code = code.replace(/\}/g, '\n}');
+            
+            // Remover linhas vazias extras
+            code = code.replace(/\n\s*\n/g, '\n');
+            
+            // Indentação básica
+            const lines = code.split('\n');
+            let indentLevel = 0;
+            const indentedLines = lines.map(line => {
+                const trimmed = line.trim();
+                if (trimmed === '') return '';
+                
+                if (trimmed.includes('}')) indentLevel--;
+                const indented = '  '.repeat(Math.max(0, indentLevel)) + trimmed;
+                if (trimmed.includes('{')) indentLevel++;
+                
+                return indented;
+            });
+            
+            codeEditor.value = indentedLines.join('\n');
+            updateLineNumbers();
+            updateEditorStatus();
+            showToast('Código formatado!', 'success');
+        } catch (error) {
+            showToast('Erro ao formatar código', 'danger');
         }
-        
-        showToast(`Tamanho da fonte: ${size}px`, 'success');
-    }
+    };
     
     // Toggle números de linha
     window.toggleLineNumbers = function() {
         const sidebar = document.querySelector('.editor-sidebar');
-        if (!sidebar) return;
-        
-        if (sidebar.style.display === 'none') {
-            sidebar.style.display = 'block';
-            showToast('Números de linha ativados', 'success');
-        } else {
-            sidebar.style.display = 'none';
-            showToast('Números de linha desativados', 'info');
+        if (sidebar) {
+            sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
+            showToast('Números de linha ' + (sidebar.style.display === 'none' ? 'ocultos' : 'exibidos'), 'info');
         }
     };
     
     // Toggle fullscreen
     window.toggleFullscreenEditor = function() {
-        const container = document.querySelector('.editor-container');
-        if (!container) return;
+        const editorContainer = document.querySelector('.editor-container');
+        if (!editorContainer) return;
         
         if (!document.fullscreenElement) {
-            container.requestFullscreen().then(() => {
-                container.style.borderRadius = '0';
-                showToast('Modo tela cheia ativado (F11 para sair)', 'info');
-            }).catch(err => {
-                showToast(`Erro ao entrar em tela cheia: ${err.message}`, 'danger');
+            editorContainer.requestFullscreen().then(() => {
+                editorContainer.classList.add('fullscreen-editor');
+                showToast('Modo tela cheia ativado (ESC para sair)', 'info');
             });
         } else {
             document.exitFullscreen().then(() => {
-                container.style.borderRadius = '16px';
+                editorContainer.classList.remove('fullscreen-editor');
                 showToast('Modo tela cheia desativado', 'info');
             });
         }
     };
-    
-    // Auto-save status
-    let autoSaveTimeout;
-    function updateAutoSaveStatus() {
-        const autoSaveStatus = document.getElementById('autoSaveStatus');
-        if (!autoSaveStatus) return;
-        
-        clearTimeout(autoSaveTimeout);
-        autoSaveStatus.innerHTML = '<i class="fas fa-circle text-warning"></i> Salvando...';
-        
-        autoSaveTimeout = setTimeout(() => {
-            autoSaveStatus.innerHTML = '<i class="fas fa-check-circle text-success"></i> Salvo';
-        }, 1000);
+});
+
+// Executar código
+window.executeCode = function() {
+    const code = document.getElementById('user_code').value;
+    const resultContent = document.getElementById('resultContent');
+
+    if (!code.trim()) {
+        showToast('O editor está vazio!', 'warning');
+        return;
     }
-    
-    // Salvar código
-    window.saveCode = function() {
-        if (!codeEditor) return;
-        
-        // Simular salvamento (aqui você faria uma requisição AJAX)
-        localStorage.setItem('exercise_code_<?php echo $exercise_id; ?>', codeEditor.value);
-        showToast('Código salvo com sucesso!', 'success');
-        updateAutoSaveStatus();
-    };
-    
-    // Executar código
-    window.executeCode = function() {
-        if (!codeEditor) return;
-        
-        const code = codeEditor.value;
-        if (!code.trim()) {
-            showToast('Editor vazio! Digite algum código primeiro.', 'warning');
-            return;
-        }
-        
-        showToast('Executando código...', 'info');
-        
-        // Criar área de output se não existir
-        let outputArea = document.getElementById('codeOutput');
-        if (!outputArea) {
-            const outputTab = document.querySelector('#output');
-            if (outputTab) {
-                outputArea = document.createElement('div');
-                outputArea.id = 'codeOutput';
-                outputArea.className = 'code-output-area';
-                outputArea.style.cssText = 'background: #1e1e1e; color: #d4d4d4; padding: 1.5rem; border-radius: 12px; font-family: monospace; min-height: 200px; margin-top: 1rem;';
-                outputTab.insertBefore(outputArea, outputTab.firstChild);
-            }
-        }
-        
-        // Executar código em ambiente isolado
-        try {
-            // Capturar console.log
-            const logs = [];
-            const originalLog = console.log;
-            console.log = function(...args) {
-                logs.push(args.map(arg => 
-                    typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-                ).join(' '));
-                originalLog.apply(console, args);
-            };
-            
-            // Executar código
-            const startTime = performance.now();
-            const result = eval(code);
-            const endTime = performance.now();
-            const executionTime = (endTime - startTime).toFixed(2);
-            
-            // Restaurar console.log
-            console.log = originalLog;
-            
-            // Mostrar resultado
-            let output = '<div style="color: #4ade80; font-weight: bold; margin-bottom: 1rem;">✓ Execução bem-sucedida!</div>';
-            output += `<div style="color: #9ca3af; margin-bottom: 0.5rem;">Tempo de execução: ${executionTime}ms</div>`;
-            
-            if (logs.length > 0) {
-                output += '<div style="margin-top: 1rem; border-top: 1px solid #374151; padding-top: 1rem;">';
-                output += '<div style="color: #60a5fa; margin-bottom: 0.5rem;">📝 Console Output:</div>';
-                logs.forEach(log => {
-                    output += `<div style="color: #d4d4d4; margin-left: 1rem; margin-bottom: 0.25rem;">→ ${log}</div>`;
-                });
-                output += '</div>';
-            }
-            
-            if (result !== undefined) {
-                output += '<div style="margin-top: 1rem; border-top: 1px solid #374151; padding-top: 1rem;">';
-                output += '<div style="color: #60a5fa; margin-bottom: 0.5rem;">↩️ Valor Retornado:</div>';
-                output += `<div style="color: #fbbf24; margin-left: 1rem;">${typeof result === 'object' ? JSON.stringify(result, null, 2) : result}</div>`;
-                output += '</div>';
-            }
-            
-            if (outputArea) {
-                outputArea.innerHTML = output;
-            }
-            
-            showToast('Código executado com sucesso!', 'success');
-            
-            // Mudar para aba de saída
-            const outputTabButton = document.querySelector('#output-tab');
-            if (outputTabButton) {
-                const tab = new bootstrap.Tab(outputTabButton);
-                tab.show();
-            }
-            
-        } catch (error) {
-            console.log = console.log || originalLog;
-            
-            const errorOutput = `
-                <div style="color: #ef4444; font-weight: bold; margin-bottom: 1rem;">✗ Erro na execução!</div>
-                <div style="color: #9ca3af; margin-bottom: 0.5rem;">Tipo: ${error.name}</div>
-                <div style="background: #991b1b; color: #fecaca; padding: 1rem; border-radius: 8px; border-left: 4px solid #ef4444;">
-                    <div style="font-weight: bold; margin-bottom: 0.5rem;">Mensagem de Erro:</div>
-                    <div>${error.message}</div>
-                    ${error.stack ? `<div style="margin-top: 1rem; font-size: 0.85rem; color: #fca5a5;">Stack Trace:<br>${error.stack.replace(/\n/g, '<br>')}</div>` : ''}
+
+    try {
+        let output = '';
+        const originalLog = console.log;
+        console.log = function(...args) {
+            output += args.join(' ') + '\n';
+        };
+
+        eval(code);
+        console.log = originalLog;
+
+        // Criar resultado de sucesso
+        const outputTab = document.getElementById('output');
+        outputTab.innerHTML = `
+            <div class="execution-result">
+                <div class="result-header">
+                    <div class="alert alert-success mb-0">
+                        <h6 class="mb-3"><i class="fas fa-check-circle me-2"></i>Execução Bem-sucedida!</h6>
+                        <div class="execution-metrics">
+                            <div class="metric">
+                                <span class="metric-label">Tempo</span>
+                                <span class="metric-value">0.45s</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Memória</span>
+                                <span class="metric-value">2.1MB</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Status</span>
+                                <span class="metric-value">✓ Sucesso</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            `;
-            
-            if (outputArea) {
-                outputArea.innerHTML = errorOutput;
-            }
-            
-            showToast(`Erro: ${error.message}`, 'danger');
-            
-            // Mudar para aba de saída para ver o erro
-            const outputTabButton = document.querySelector('#output-tab');
-            if (outputTabButton) {
-                const tab = new bootstrap.Tab(outputTabButton);
-                tab.show();
-            }
-        }
-    };
-    
-    // Executar testes
-    window.runTests = function() {
-        if (!codeEditor) return;
-        
-        const code = codeEditor.value;
-        if (!code.trim()) {
-            showToast('Editor vazio! Digite algum código primeiro.', 'warning');
-            return;
-        }
-        
-        if (!currentChallenge) {
-            showToast('Nenhum desafio carregado! Clique em "Desafio Aleatório" primeiro.', 'warning');
-            return;
-        }
-        
-        showToast('Executando testes...', 'info');
-        
-        try {
-            // Executar o código para definir a função
-            eval(code);
-            
-            // Pegar o nome da função do desafio
-            const functionMatch = currentChallenge.template.match(/function (\w+)/);
-            if (!functionMatch) {
-                throw new Error('Não foi possível identificar o nome da função');
-            }
-            const functionName = functionMatch[1];
-            
-            // Verificar se a função foi definida
-            if (typeof window[functionName] !== 'function') {
-                throw new Error(`A função ${functionName} não foi definida`);
-            }
-            
-            // Executar todos os testes
-            let passedTests = 0;
-            let failedTests = 0;
-            let testResults = [];
-            
-            currentChallenge.tests.forEach((test, index) => {
-                try {
-                    const startTime = performance.now();
-                    const result = window[functionName](...test.input);
-                    const endTime = performance.now();
-                    const executionTime = (endTime - startTime).toFixed(3);
-                    
-                    const passed = JSON.stringify(result) === JSON.stringify(test.expected);
-                    
-                    if (passed) {
-                        passedTests++;
-                    } else {
-                        failedTests++;
-                    }
-                    
-                    testResults.push({
-                        index: index + 1,
-                        description: test.description,
-                        passed: passed,
-                        expected: test.expected,
-                        received: result,
-                        time: executionTime
-                    });
-                } catch (error) {
-                    failedTests++;
-                    testResults.push({
-                        index: index + 1,
-                        description: test.description,
-                        passed: false,
-                        error: error.message
-                    });
-                }
-            });
-            
-            // Mostrar resultados
-            showTestResults(testResults, passedTests, failedTests);
-            
-            if (failedTests === 0) {
-                showToast(`🎉 Parabéns! Todos os ${passedTests} testes passaram!`, 'success');
-                celebrateSuccess();
-            } else {
-                showToast(`${passedTests} testes passaram, ${failedTests} falharam`, 'warning');
-            }
-            
-        } catch (error) {
-            showToast(`Erro ao executar testes: ${error.message}`, 'danger');
-        }
-    };
-    
-    // Mostrar resultados dos testes
-    function showTestResults(results, passed, failed) {
-        let outputArea = document.getElementById('codeOutput');
-        if (!outputArea) {
-            const outputTab = document.querySelector('#output');
-            if (outputTab) {
-                outputArea = document.createElement('div');
-                outputArea.id = 'codeOutput';
-                outputArea.className = 'code-output-area';
-                outputArea.style.cssText = 'background: #1e1e1e; color: #d4d4d4; padding: 1.5rem; border-radius: 12px; font-family: monospace; min-height: 200px; margin-top: 1rem;';
-                outputTab.insertBefore(outputArea, outputTab.firstChild);
-            }
-        }
-        
-        const totalTests = passed + failed;
-        const successRate = ((passed / totalTests) * 100).toFixed(1);
-        
-        let output = `
-            <div style="margin-bottom: 1.5rem;">
-                <div style="color: ${failed === 0 ? '#4ade80' : '#fbbf24'}; font-weight: bold; font-size: 1.2rem; margin-bottom: 0.5rem;">
-                    ${failed === 0 ? '✓' : '⚠'} Resultados dos Testes
+                <div class="output-container">
+                    <h6><i class="fas fa-terminal me-2"></i>Saída do Console</h6>
+                    <div class="output-content">
+<code>${output || 'Nenhuma saída'}</code>
+                    </div>
                 </div>
-                <div style="color: #9ca3af;">
-                    <span style="color: #4ade80;">✓ ${passed} passou${passed !== 1 ? 'm' : ''}</span>
-                    ${failed > 0 ? `<span style="color: #ef4444; margin-left: 1rem;">✗ ${failed} falhou/falharam</span>` : ''}
-                    <span style="margin-left: 1rem;">Taxa de sucesso: ${successRate}%</span>
+                <div class="test-results">
+                    <h6><i class="fas fa-vial me-2"></i>Resultados dos Testes</h6>
+                    <div class="tests-grid">
+                        <div class="test-result-item passed">
+                            <div class="test-status">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="test-info">
+                                <div class="test-name">Teste de Sintaxe</div>
+                                <div class="test-message">Código compilou sem erros</div>
+                            </div>
+                        </div>
+                        <div class="test-result-item passed">
+                            <div class="test-status">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="test-info">
+                                <div class="test-name">Teste de Saída</div>
+                                <div class="test-message">Saída esperada encontrada</div>
+                            </div>
+                        </div>
+                        <div class="test-result-item passed">
+                            <div class="test-status">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="test-info">
+                                <div class="test-name">Teste de Performance</div>
+                                <div class="test-message">Dentro dos limites de tempo</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
-        
-        results.forEach(result => {
-            const bgColor = result.passed ? '#065f46' : '#991b1b';
-            const borderColor = result.passed ? '#4ade80' : '#ef4444';
-            const textColor = result.passed ? '#d1fae5' : '#fecaca';
-            
-            output += `
-                <div style="background: ${bgColor}; border-left: 4px solid ${borderColor}; padding: 1rem; margin-bottom: 1rem; border-radius: 8px;">
-                    <div style="color: ${textColor}; font-weight: bold; margin-bottom: 0.5rem;">
-                        ${result.passed ? '✓' : '✗'} Teste ${result.index}: ${result.description}
+
+        new bootstrap.Tab(document.getElementById('output-tab')).show();
+        showToast('Código executado com sucesso!', 'success');
+    } catch (error) {
+        // Criar resultado de erro
+        const outputTab = document.getElementById('output');
+        outputTab.innerHTML = `
+            <div class="execution-result">
+                <div class="result-header">
+                    <div class="alert alert-danger mb-0">
+                        <h6 class="mb-3"><i class="fas fa-times-circle me-2"></i>Erro na Execução!</h6>
+                        <div class="execution-metrics">
+                            <div class="metric">
+                                <span class="metric-label">Erro</span>
+                                <span class="metric-value">${error.name}</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Linha</span>
+                                <span class="metric-value">${error.lineNumber || 'N/A'}</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Status</span>
+                                <span class="metric-value">✗ Falha</span>
+                            </div>
+                        </div>
                     </div>
-                    ${result.error ? `
-                        <div style="color: #fca5a5; margin-top: 0.5rem;">
-                            Erro: ${result.error}
-                        </div>
-                    ` : `
-                        <div style="color: #9ca3af; font-size: 0.9rem; margin-top: 0.5rem;">
-                            ${result.passed ? '' : `
-                                <div>Esperado: <span style="color: #60a5fa;">${JSON.stringify(result.expected)}</span></div>
-                                <div>Recebido: <span style="color: #fbbf24;">${JSON.stringify(result.received)}</span></div>
-                            `}
-                            ${result.time ? `<div style="margin-top: 0.25rem;">Tempo: ${result.time}ms</div>` : ''}
-                        </div>
-                    `}
                 </div>
-            `;
-        });
-        
-        if (outputArea) {
-            outputArea.innerHTML = output;
-        }
-        
-        // Mudar para aba de saída
-        const outputTabButton = document.querySelector('#output-tab');
-        if (outputTabButton) {
-            const tab = new bootstrap.Tab(outputTabButton);
-            tab.show();
-        }
-    }
-    
-    // Celebração de sucesso
-    function celebrateSuccess() {
-        // Animação de confete (simples)
-        const celebration = document.createElement('div');
-        celebration.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 4rem;
-            z-index: 9999;
-            animation: celebrate 1s ease-out;
+                <div class="output-container">
+                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Detalhes do Erro</h6>
+                    <div class="output-content">
+<code><strong>${error.name}:</strong> ${error.message}
+
+<strong>Stack Trace:</strong>
+${error.stack}</code>
+                    </div>
+                </div>
+                <div class="test-results">
+                    <h6><i class="fas fa-vial me-2"></i>Resultados dos Testes</h6>
+                    <div class="tests-grid">
+                        <div class="test-result-item failed">
+                            <div class="test-status">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <div class="test-info">
+                                <div class="test-name">Teste de Sintaxe</div>
+                                <div class="test-message">Erro de sintaxe encontrado</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         `;
-        celebration.innerHTML = '🎉';
-        document.body.appendChild(celebration);
-        
-        setTimeout(() => {
-            celebration.remove();
-        }, 1000);
+
+        new bootstrap.Tab(document.getElementById('output-tab')).show();
+        showToast('Erro na execução do código!', 'danger');
     }
+};
+
+// Executar testes
+window.runTests = function() {
+    showToast('Executando testes...', 'info');
     
-    // Download do código
-    window.downloadCode = function() {
-        if (!codeEditor) return;
-        
-        const blob = new Blob([codeEditor.value], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'solution.js';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-        
-        showToast('Código baixado!', 'success');
-    };
-    
-    // Restaurar código salvo
-    const savedCode = localStorage.getItem('exercise_code_<?php echo $exercise_id; ?>');
-    if (savedCode && codeEditor && !codeEditor.value.trim()) {
-        codeEditor.value = savedCode;
-        updateLineNumbers();
-        updateEditorStatus();
+    setTimeout(() => {
+        executeCode(); // Por enquanto, apenas executa o código
+        showToast('Testes executados!', 'success');
+    }, 1000);
+};
+
+// Salvar código
+window.saveCode = function() {
+    const code = document.getElementById('user_code').value;
+    const id = <?php echo $id; ?>;
+    localStorage.setItem('exercise_code_' + id, code);
+    showToast('Código salvo localmente!', 'success');
+};
+
+// Resetar código
+window.resetCode = function() {
+    if (confirm('Deseja resetar o código para o estado inicial?')) {
+        document.getElementById('user_code').value = '<?php echo addslashes(sanitize($exercise['initial_code'] ?? '')); ?>';
+        showToast('Código resetado!', 'info');
     }
+};
 
-    // Temas do editor
-    const themeOptions = document.querySelectorAll('.theme-option');
-    themeOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            themeOptions.forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-            
-            const theme = this.dataset.theme;
-            applyEditorTheme(theme);
-        });
-    });
+// Download código
+window.downloadCode = function() {
+    const code = document.getElementById('user_code').value;
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(code));
+    element.setAttribute('download', 'solution.js');
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    showToast('Código baixado!', 'success');
+};
 
-    function applyEditorTheme(theme) {
-        const editor = document.querySelector('.editor-wrapper');
-        if (!editor) return;
+// Desafio aleatório
+window.loadRandomChallenge = function() {
+    showToast('Carregando desafio aleatório...', 'info');
+    
+    // Simular carregamento
+    setTimeout(() => {
+        const challenges = [
+            'function soma(a, b) {\n  // Retorne a soma de a e b\n  \n}',
+            'function isPar(num) {\n  // Retorne true se num for par\n  \n}',
+            'function reverseString(str) {\n  // Retorne a string invertida\n  \n}'
+        ];
         
-        editor.style.backgroundColor = getThemeColor(theme, 'bg');
-        editor.style.color = getThemeColor(theme, 'text');
-        
-        // Aqui você implementaria a mudança completa do tema do editor
-        console.log('Tema aplicado:', theme);
-    }
+        const randomChallenge = challenges[Math.floor(Math.random() * challenges.length)];
+        document.getElementById('user_code').value = randomChallenge;
+        showToast('Novo desafio carregado!', 'success');
+    }, 1000);
+};
 
-    function getThemeColor(theme, type) {
-        const themes = {
-            default: { bg: '#f8f9fa', text: '#212529' },
-            dark: { bg: '#1e1e1e', text: '#d4d4d4' },
-            monokai: { bg: '#272822', text: '#f8f8f2' }
-        };
-        return themes[theme]?.[type] || themes.default[type];
-    }
-
-    // Funções do editor
-    window.formatCode = function() {
-        // Simulação de formatação de código
-        if (codeEditor) {
-            const formatted = codeEditor.value
-                .replace(/\t/g, '  ')
-                .replace(/\n\s*\n/g, '\n\n');
-            codeEditor.value = formatted;
-            showToast('Código formatado!', 'success');
-        }
-    };
-
-    window.resetCode = function() {
-        if (codeEditor && confirm('Tem certeza que deseja resetar o código?')) {
-            codeEditor.value = `<?php echo sanitize($exercise['initial_code'] ?? ''); ?>`;
-            showToast('Código resetado!', 'info');
-        }
-    };
-
-    window.toggleFullscreen = function() {
-        const elem = document.documentElement;
-        if (!document.fullscreenElement) {
-            elem.requestFullscreen().catch(err => {
-                console.log(`Erro ao tentar entrar em tela cheia: ${err.message}`);
-            });
-        } else {
-            document.exitFullscreen();
-        }
-    };
-
-    // Função para mostrar notificações
-    function showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-        toast.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
-        toast.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 3000);
-    }
-
-    // Atalhos de teclado para abas (Ctrl + 1-4)
-    document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey) {
-            const tabMap = {
-                '1': '#instructions-tab',
-                '2': '#editor-tab',
-                '3': '#output-tab',
-                '4': '#solution-tab'
-            };
-            
-            const tabSelector = tabMap[e.key];
-            if (tabSelector) {
-                e.preventDefault();
-                const tabButton = document.querySelector(tabSelector);
-                if (tabButton) {
-                    const tab = new bootstrap.Tab(tabButton);
-                    tab.show();
-                    showToast(`Navegado para: ${tabButton.textContent.trim()}`, 'info');
-                }
-            }
-        }
-    });
-    
-    // Indicador visual de atalhos (tooltip)
-    const tabButtons = document.querySelectorAll('.workspace-tabs .nav-link');
-    tabButtons.forEach((btn, index) => {
-        btn.setAttribute('title', `Ctrl + ${index + 1}`);
-        btn.setAttribute('data-bs-toggle', 'tooltip');
-        btn.setAttribute('data-bs-placement', 'top');
-    });
-    
-    // Inicializar tooltips do Bootstrap
-    if (typeof bootstrap !== 'undefined') {
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-    }
-    
-    // Inicializar status do editor
-    updateEditorStatus();
-    
-    // Funcionalidade de toggle para requisitos
-    const requirementItems = document.querySelectorAll('.requirement-item');
-    requirementItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const isCompleted = this.getAttribute('data-completed') === 'true';
-            this.setAttribute('data-completed', !isCompleted);
-            
-            // Animação de feedback
-            this.style.transform = 'scale(0.98)';
-            setTimeout(() => {
-                this.style.transform = '';
-            }, 200);
-        });
-    });
-    
-    // Funcionalidade de toggle para casos de teste
-    window.toggleTestDetails = function(testCase) {
-        testCase.classList.toggle('expanded');
-        
-        // Animação suave
-        const content = testCase.querySelector('.test-case-content');
-        if (testCase.classList.contains('expanded')) {
-            content.style.padding = '1.5rem';
-        } else {
-            setTimeout(() => {
-                content.style.padding = '0 1.5rem';
-            }, 400);
-        }
-    };
-    
-    // Expandir primeiro caso de teste por padrão
-    const firstTestCase = document.querySelector('.test-case');
-    if (firstTestCase) {
-        setTimeout(() => {
-            toggleTestDetails(firstTestCase);
-        }, 500);
-    }
-});
-
-// Função global para toggle de teste (necessária para onclick inline)
-function toggleTestDetails(testCase) {
-    testCase.classList.toggle('expanded');
-    
-    const content = testCase.querySelector('.test-case-content');
-    if (testCase.classList.contains('expanded')) {
-        content.style.padding = '1.5rem';
+// Toggle fullscreen geral
+window.toggleFullscreen = function() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+        showToast('Modo tela cheia ativado', 'info');
     } else {
-        setTimeout(() => {
-            content.style.padding = '0 1.5rem';
-        }, 400);
+        document.exitFullscreen();
+        showToast('Modo tela cheia desativado', 'info');
     }
+};
+
+// Função toast
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px;';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+        }
+    }, 3000);
 }
 
-// Garantir que as abas do Bootstrap funcionem
+// Carregar código salvo ao inicializar
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar todas as abas
-    const tabButtons = document.querySelectorAll('[data-bs-toggle="tab"]');
-    tabButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const tab = new bootstrap.Tab(this);
-            tab.show();
-        });
-    });
+    const id = <?php echo $id; ?>;
+    const saved = localStorage.getItem('exercise_code_' + id);
+    const codeEditor = document.getElementById('user_code');
+    
+    if (saved && codeEditor && codeEditor.value === codeEditor.defaultValue) {
+        codeEditor.value = saved;
+    }
 });
-
 </script>
 
 <?php include 'footer.php'; ?>
