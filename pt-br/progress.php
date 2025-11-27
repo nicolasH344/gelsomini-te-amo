@@ -21,23 +21,35 @@ try {
     
     // Total de exercícios
     $result = $conn->query("SELECT COUNT(*) as total FROM exercises");
-    $total_exercises = $result->fetch_assoc()['total'];
+    $total_exercises = $result ? $result->fetch_assoc()['total'] : 0;
     
     // Exercícios completados
     $stmt = $conn->prepare("SELECT COUNT(*) as completed FROM user_progress WHERE user_id = ? AND status = 'completed'");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $completed_exercises = $stmt->get_result()->fetch_assoc()['completed'];
+    if ($stmt) {
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $completed_exercises = $result ? $result->fetch_assoc()['completed'] : 0;
+        $stmt->close();
+    } else {
+        $completed_exercises = 0;
+    }
     
     // Total de tutoriais
     $result = $conn->query("SELECT COUNT(*) as total FROM tutorials WHERE status = 'Publicado'");
-    $total_tutorials = $result->fetch_assoc()['total'];
+    $total_tutorials = $result ? $result->fetch_assoc()['total'] : 0;
     
     // Tutoriais completados
     $stmt = $conn->prepare("SELECT COUNT(*) as completed FROM tutorial_progress WHERE user_id = ? AND status = 'completed'");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $completed_tutorials = $stmt->get_result()->fetch_assoc()['completed'];
+    if ($stmt) {
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $completed_tutorials = $result ? $result->fetch_assoc()['completed'] : 0;
+        $stmt->close();
+    } else {
+        $completed_tutorials = 0;
+    }
     
     // Atividades recentes (exercícios + tutoriais)
     $activities = [];
@@ -51,11 +63,16 @@ try {
         ORDER BY up.completed_at DESC
         LIMIT 3
     ");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) {
-        $activities[] = $row;
+    if ($stmt) {
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $activities[] = $row;
+            }
+        }
+        $stmt->close();
     }
     
     // Tutoriais recentes
@@ -67,11 +84,16 @@ try {
         ORDER BY tp.completed_at DESC
         LIMIT 3
     ");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) {
-        $activities[] = $row;
+    if ($stmt) {
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $activities[] = $row;
+            }
+        }
+        $stmt->close();
     }
     
     // Ordenar atividades por data
@@ -107,6 +129,7 @@ try {
 }
 
 $progress_percentage = $stats['exercises_total'] > 0 ? round(($stats['exercises_completed'] / $stats['exercises_total']) * 100) : 0;
+$tutorial_percentage = $stats['tutorials_total'] > 0 ? round(($stats['tutorials_read'] / $stats['tutorials_total']) * 100) : 0;
 
 include 'header.php';
 ?>
@@ -185,10 +208,10 @@ include 'header.php';
                     <div class="mb-3">
                         <div class="d-flex justify-content-between">
                             <span>Tutoriais Lidos</span>
-                            <span><?php echo round(($stats['tutorials_read'] / $stats['tutorials_total']) * 100); ?>%</span>
+                            <span><?php echo $tutorial_percentage; ?>%</span>
                         </div>
                         <div class="progress">
-                            <div class="progress-bar bg-success" style="width: <?php echo round(($stats['tutorials_read'] / $stats['tutorials_total']) * 100); ?>%"></div>
+                            <div class="progress-bar bg-success" style="width: <?php echo $tutorial_percentage; ?>%"></div>
                         </div>
                     </div>
                 </div>
