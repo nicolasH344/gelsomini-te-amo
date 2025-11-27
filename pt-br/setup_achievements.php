@@ -1,95 +1,57 @@
 <?php
+// Script para configurar o sistema de conquistas
 require_once 'config.php';
+require_once 'achievements_system.php';
 
-// Verificar se é admin
-if (!isLoggedIn() || !isAdmin()) {
-    die('Acesso negado. Apenas administradores podem executar este script.');
-}
-
-$conn = getDBConnection();
-if (!$conn) {
-    die('Erro de conexão com o banco de dados.');
-}
-
-// Ler e executar o arquivo SQL
-$sql = file_get_contents('setup_achievements.sql');
-$statements = explode(';', $sql);
-
-$success = 0;
-$errors = [];
-
-foreach ($statements as $statement) {
-    $statement = trim($statement);
-    if (empty($statement)) continue;
+try {
+    require_once 'database.php';
+    $db = new Database();
     
-    if ($conn->query($statement)) {
-        $success++;
-    } else {
-        $errors[] = $conn->error;
-    }
+    // Criar tabelas necessárias se não existirem
+    
+    // Tabela user_progress (se não existir)
+    $db->conn->query("
+        CREATE TABLE IF NOT EXISTS user_progress (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            exercise_id INT NOT NULL,
+            status ENUM('started', 'completed') DEFAULT 'started',
+            score INT DEFAULT 0,
+            completed_at TIMESTAMP NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY unique_user_exercise (user_id, exercise_id)
+        )
+    ");
+    
+    // Tabela tutorial_progress (se não existir)
+    $db->conn->query("
+        CREATE TABLE IF NOT EXISTS tutorial_progress (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            tutorial_id INT NOT NULL,
+            status ENUM('started', 'completed') DEFAULT 'started',
+            completed_at TIMESTAMP NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY unique_user_tutorial (user_id, tutorial_id)
+        )
+    ");
+    
+    // Inicializar sistema de conquistas
+    $achievementsSystem = new AchievementsSystem($db);
+    
+    echo "✅ Sistema de conquistas configurado com sucesso!\n";
+    echo "📊 Tabelas criadas:\n";
+    echo "   - achievements\n";
+    echo "   - user_achievements\n";
+    echo "   - user_coins\n";
+    echo "   - user_progress\n";
+    echo "   - tutorial_progress\n";
+    
+    $db->closeConnection();
+    
+} catch (Exception $e) {
+    echo "❌ Erro ao configurar sistema: " . $e->getMessage() . "\n";
 }
-
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Setup Sistema de Conquistas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h3 class="mb-0">Setup Sistema de Conquistas</h3>
-                    </div>
-                    <div class="card-body">
-                        <?php if ($success > 0): ?>
-                            <div class="alert alert-success">
-                                <i class="fas fa-check-circle me-2"></i>
-                                <strong>Sucesso!</strong> <?php echo $success; ?> comandos executados com sucesso.
-                            </div>
-                        <?php endif; ?>
-                        
-                        <?php if (!empty($errors)): ?>
-                            <div class="alert alert-warning">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                <strong>Avisos:</strong>
-                                <ul class="mb-0 mt-2">
-                                    <?php foreach ($errors as $error): ?>
-                                        <li><?php echo htmlspecialchars($error); ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <div class="alert alert-info">
-                            <h5>Sistema de Conquistas Configurado!</h5>
-                            <p class="mb-2">As seguintes funcionalidades foram instaladas:</p>
-                            <ul>
-                                <li>✅ Sistema de níveis e XP</li>
-                                <li>✅ Badges e conquistas</li>
-                                <li>✅ Desafios dinâmicos</li>
-                                <li>✅ Loja de recompensas</li>
-                                <li>✅ Sistema de moedas</li>
-                                <li>✅ Ranking global</li>
-                                <li>✅ Sequência de estudos</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="d-flex gap-2">
-                            <a href="badges.php" class="btn btn-primary">
-                                <i class="fas fa-trophy me-1"></i> Ver Conquistas
-                            </a>
-                            <a href="index.php" class="btn btn-secondary">
-                                <i class="fas fa-home me-1"></i> Voltar ao Início
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-</html>

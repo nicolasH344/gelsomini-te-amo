@@ -238,7 +238,7 @@ include 'header.php';
                             <h3 class="card-title h5 fw-bold mb-3">
                                 <?php echo sanitize($tutorial['title']); ?>
                             </h3>
-                            <p class="card-text text-muted flex-grow-1 mb-3">
+                            <p class="card-text flex-grow-1 mb-3" style="color: black;">
                                 <?php echo sanitize($tutorial['description']); ?>
                             </p>
                             
@@ -309,31 +309,31 @@ include 'header.php';
     </div>
 
     <!-- Informações adicionais -->
-    <div class="row mt-5 g-4">
-        <div class="col-md-6">
+    <div class="row mt-5 g-3 g-md-4">
+        <div class="col-12 col-lg-6">
             <div class="info-card card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="icon-circle bg-success bg-opacity-10 text-success me-3">
-                            <i class="fas fa-graduation-cap fa-2x"></i>
+                <div class="card-body p-3 p-md-4">
+                    <div class="d-flex align-items-start align-items-md-center mb-3 mb-md-4 flex-column flex-md-row">
+                        <div class="icon-circle bg-success bg-opacity-10 text-success me-0 me-md-3 mb-2 mb-md-0 align-self-center">
+                            <i class="fas fa-graduation-cap fa-lg fa-md-2x"></i>
                         </div>
-                        <h2 class="h5 mb-0 fw-bold">Como Aproveitar os Tutoriais</h2>
+                        <h2 class="h6 h5-md mb-0 fw-bold text-center text-md-start">Como Aproveitar os Tutoriais</h2>
                     </div>
                     <ul class="list-unstyled mb-0">
-                        <li class="d-flex align-items-center mb-3 tip-item">
-                            <div class="tip-icon me-3">
+                        <li class="d-flex align-items-start mb-3 tip-item">
+                            <div class="tip-icon me-2 me-md-3 mt-1">
                                 <i class="fas fa-check-circle text-success"></i>
                             </div>
                             <span class="tip-text">Leia com atenção e pratique os exemplos de código</span>
                         </li>
-                        <li class="d-flex align-items-center mb-3 tip-item">
-                            <div class="tip-icon me-3">
+                        <li class="d-flex align-items-start mb-3 tip-item">
+                            <div class="tip-icon me-2 me-md-3 mt-1">
                                 <i class="fas fa-check-circle text-success"></i>
                             </div>
                             <span class="tip-text">Faça anotações dos pontos importantes</span>
                         </li>
-                        <li class="d-flex align-items-center tip-item">
-                            <div class="tip-icon me-3">
+                        <li class="d-flex align-items-start tip-item">
+                            <div class="tip-icon me-2 me-md-3 mt-1">
                                 <i class="fas fa-check-circle text-success"></i>
                             </div>
                             <span class="tip-text">Aplique o conhecimento nos exercícios práticos</span>
@@ -343,19 +343,19 @@ include 'header.php';
             </div>
         </div>
         
-        <div class="col-md-6">
+        <div class="col-12 col-lg-6">
             <div class="help-card card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="icon-circle bg-info bg-opacity-10 text-info me-3">
-                            <i class="fas fa-question-circle fa-2x"></i>
+                <div class="card-body p-3 p-md-4 text-center text-md-start">
+                    <div class="d-flex align-items-start align-items-md-center mb-3 mb-md-4 flex-column flex-md-row">
+                        <div class="icon-circle bg-info bg-opacity-10 text-info me-0 me-md-3 mb-2 mb-md-0 align-self-center">
+                            <i class="fas fa-question-circle fa-lg fa-md-2x"></i>
                         </div>
-                        <h2 class="h5 mb-0 fw-bold">Precisa de Ajuda?</h2>
+                        <h2 class="h6 h5-md mb-0 fw-bold">Precisa de Ajuda?</h2>
                     </div>
-                    <p class="mb-4 text-muted">
+                    <p class="mb-3 mb-md-4 text-muted">
                         Tem dúvidas sobre algum tutorial? Nossa comunidade está aqui para ajudar!
                     </p>
-                    <a href="forum_index.php" class="btn btn-info w-100 rounded-pill">
+                    <a href="forum_index.php" class="btn btn-info w-100 rounded-pill" onclick="testForumLink(event)">
                         <i class="fas fa-comments me-2"></i> Ir para o Fórum
                     </a>
                 </div>
@@ -367,25 +367,90 @@ include 'header.php';
 <script>
 function showTutorialPreview(id) {
     // Implementar preview do tutorial
-    alert('Preview do tutorial ' + id);
+    if (id) {
+        alert('Preview do tutorial ' + id);
+        console.log('Tutorial preview solicitado:', id);
+    } else {
+        console.error('ID do tutorial não fornecido');
+    }
+}
+
+function testForumLink(event) {
+    // Teste do link do fórum
+    console.log('Link do fórum clicado');
+    
+    // Verificar se a página existe
+    fetch('forum_index.php', { method: 'HEAD' })
+        .then(response => {
+            if (!response.ok) {
+                event.preventDefault();
+                alert('Página do fórum ainda não está disponível.');
+                console.warn('Fórum não encontrado:', response.status);
+            }
+        })
+        .catch(error => {
+            console.log('Redirecionando para o fórum...');
+        });
+}
+
+// Teste de responsividade
+function testResponsiveness() {
+    const breakpoints = {
+        mobile: 576,
+        tablet: 768,
+        desktop: 992
+    };
+    
+    const width = window.innerWidth;
+    let device = 'desktop';
+    
+    if (width < breakpoints.mobile) device = 'mobile';
+    else if (width < breakpoints.tablet) device = 'tablet';
+    
+    console.log('Dispositivo detectado:', device, '- Largura:', width + 'px');
+    return device;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Teste inicial
+    console.log('Página de tutoriais carregada');
+    testResponsiveness();
+    
     // Filtros em tempo real
     const categorySelect = document.getElementById('category');
     const levelSelect = document.getElementById('level');
     
     if (categorySelect) {
         categorySelect.addEventListener('change', function() {
+            console.log('Filtro de categoria alterado:', this.value);
             this.closest('form').submit();
         });
+    } else {
+        console.warn('Seletor de categoria não encontrado');
     }
 
     if (levelSelect) {
         levelSelect.addEventListener('change', function() {
+            console.log('Filtro de nível alterado:', this.value);
             this.closest('form').submit();
         });
+    } else {
+        console.warn('Seletor de nível não encontrado');
     }
+    
+    // Teste de hover nos cards
+    const cards = document.querySelectorAll('.info-card, .help-card');
+    cards.forEach((card, index) => {
+        card.addEventListener('mouseenter', function() {
+            console.log('Hover no card', index + 1);
+        });
+    });
+    
+    // Teste de redimensionamento
+    window.addEventListener('resize', function() {
+        clearTimeout(this.resizeTimeout);
+        this.resizeTimeout = setTimeout(testResponsiveness, 250);
+    });
 });
 </script>
 
@@ -498,6 +563,7 @@ document.addEventListener('DOMContentLoaded', function() {
 .tutorial-card .card-text {
     font-size: 0.9rem;
     line-height: 1.6;
+    color: black !important; /* Garante que o texto fique preto */
 }
 
 .tutorial-card .btn {
@@ -548,6 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
 .info-card, .help-card {
     border-radius: 15px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-height: 280px;
 }
 
 .info-card:hover, .help-card:hover {
@@ -556,8 +623,8 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .icon-circle {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -566,27 +633,28 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .tip-item {
-    padding: 0.75rem 0;
+    padding: 0.5rem 0;
     transition: all 0.3s ease;
 }
 
 .tip-item:hover {
-    transform: translateX(5px);
+    transform: translateX(3px);
 }
 
 .tip-icon {
     flex-shrink: 0;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1rem;
 }
 
 .tip-text {
-    line-height: 1.6;
+    line-height: 1.5;
     color: #4a5568;
+    font-size: 0.9rem;
 }
 
 /* Animações */
@@ -625,13 +693,52 @@ document.addEventListener('DOMContentLoaded', function() {
 .tutorial-card:nth-child(6) { animation-delay: 0.6s; }
 
 /* Responsividade */
-@media (max-width: 768px) {
-    .tutorials-header .display-4 {
-        font-size: 2rem;
+@media (max-width: 575.98px) {
+    .tutorials-header {
+        padding: 1.5rem 0;
+        margin: -1rem -15px 1.5rem -15px;
     }
     
-    .filters-card .row > div {
-        margin-bottom: 0.5rem;
+    .tutorials-header .display-4 {
+        font-size: 1.75rem;
+    }
+    
+    .tutorials-header .lead {
+        font-size: 1rem;
+    }
+    
+    .info-card, .help-card {
+        min-height: auto;
+        margin-bottom: 1rem;
+    }
+    
+    .icon-circle {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .icon-circle i {
+        font-size: 1.25rem !important;
+    }
+    
+    .tip-text {
+        font-size: 0.85rem;
+    }
+    
+    .tip-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 0.9rem;
+    }
+    
+    .card-body {
+        padding: 1rem !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .tutorials-header .display-4 {
+        font-size: 2rem;
     }
     
     .icon-circle {
@@ -642,9 +749,51 @@ document.addEventListener('DOMContentLoaded', function() {
     .icon-circle i {
         font-size: 1.5rem !important;
     }
+}
+
+@media (min-width: 768px) {
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .icon-circle i {
+        font-size: 2rem !important;
+    }
+    
+    .tip-item {
+        padding: 0.75rem 0;
+    }
+    
+    .tip-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 1.25rem;
+    }
+    
+    .tip-text {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .filters-card .row > div {
+        margin-bottom: 0.5rem;
+    }
     
     .category-icon {
         font-size: 2.5rem;
+    }
+}
+
+/* Utilitárias responsivas customizadas */
+@media (min-width: 768px) {
+    .h5-md {
+        font-size: 1.25rem !important;
+    }
+    
+    .fa-md-2x {
+        font-size: 2em !important;
     }
 }
 </style>

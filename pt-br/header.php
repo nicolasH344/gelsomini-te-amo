@@ -98,9 +98,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'badges.php' ? 'active' : ''; ?>" 
-                           href="badges.php"
-                           <?php echo basename($_SERVER['PHP_SELF']) === 'badges.php' ? 'aria-current="page"' : ''; ?>>
+                        <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) === 'achievements.php' ? 'active' : ''; ?>" 
+                           href="achievements.php"
+                           <?php echo basename($_SERVER['PHP_SELF']) === 'achievements.php' ? 'aria-current="page"' : ''; ?>>
                             <i class="fas fa-trophy me-1" aria-hidden="true"></i>
                             Conquistas
                         </a>

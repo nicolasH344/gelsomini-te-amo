@@ -16,8 +16,10 @@ $user_id = $user['id'];
 // Obter dados do progresso usando mysqli
 try {
     require_once 'database.php';
+    require_once 'achievements_system.php';
     $db = new Database();
     $conn = $db->conn;
+    $achievementsSystem = new AchievementsSystem($db);
     
     // Total de exercícios
     $result = $conn->query("SELECT COUNT(*) as total FROM exercises");
@@ -102,13 +104,19 @@ try {
     });
     $activities = array_slice($activities, 0, 5);
     
+    // Obter conquistas e moedas
+    $userAchievements = $achievementsSystem->getUserAchievements($user_id);
+    $allAchievements = $achievementsSystem->getAllAchievements();
+    $totalCoins = $achievementsSystem->getUserCoins($user_id);
+    
     $stats = [
         'exercises_completed' => $completed_exercises,
         'exercises_total' => $total_exercises,
         'tutorials_read' => $completed_tutorials,
         'tutorials_total' => $total_tutorials,
         'hours_studied' => ($completed_exercises + $completed_tutorials) * 1.5,
-        'streak_days' => min($completed_exercises + $completed_tutorials, 7)
+        'total_coins' => $totalCoins,
+        'achievements_earned' => count($userAchievements)
     ];
     
     $categories = [];
@@ -176,9 +184,9 @@ include 'header.php';
         <div class="col-md-3">
             <div class="card bg-warning text-white">
                 <div class="card-body text-center">
-                    <i class="fas fa-fire fa-2x mb-2"></i>
-                    <h4><?php echo $stats['streak_days']; ?></h4>
-                    <p class="mb-0">Dias seguidos</p>
+                    <i class="fas fa-coins fa-2x mb-2"></i>
+                    <h4><?php echo $stats['total_coins']; ?></h4>
+                    <p class="mb-0">Moedas</p>
                 </div>
             </div>
         </div>
@@ -231,7 +239,7 @@ include 'header.php';
                 </div>
                 <div class="card-body">
                     <?php if (empty($categories)): ?>
-                        <p class="text-muted">Nenhum progresso registrado ainda.</p>
+                        <p  style="color: #333333">Nenhum progresso registrado ainda.</p>
                         <a href="exercises_index.php" class="btn btn-primary btn-sm">
                             <i class="fas fa-play me-1"></i>Começar Exercícios
                         </a>
@@ -264,33 +272,40 @@ include 'header.php';
                 <div class="card-header">
                     <h6 class="mb-0">
                         <i class="fas fa-trophy"></i>
-                        Conquistas
+                        Conquistas (<?php echo count($userAchievements); ?>/<?php echo count($allAchievements); ?>)
                     </h6>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fas fa-medal text-warning fa-2x me-3"></i>
-                        <div>
-                            <h6 class="mb-0">Primeiro Exercício</h6>
-                            <small class="text-muted">Completou seu primeiro exercício</small>
-                        </div>
-                    </div>
+                    <?php 
+                    $earnedIds = array_column($userAchievements, 'id');
+                    $displayAchievements = array_slice($allAchievements, 0, 5); // Mostrar apenas 5
                     
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fas fa-fire text-danger fa-2x me-3"></i>
-                        <div>
-                            <h6 class="mb-0">Sequência de 7 dias</h6>
-                            <small class="text-muted">Estudou por 7 dias consecutivos</small>
+                    foreach ($displayAchievements as $achievement): 
+                        $isEarned = in_array($achievement['id'], $earnedIds);
+                    ?>
+                    <div class="d-flex align-items-center mb-3 <?php echo !$isEarned ? 'opacity-50' : ''; ?>">
+                        <i class="<?php echo $achievement['icon']; ?> <?php echo $achievement['color']; ?> fa-2x me-3"></i>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0"><?php echo sanitize($achievement['name']); ?></h6>
+                            <small class="text-muted"><?php echo sanitize($achievement['description']); ?></small>
+                        </div>
+                        <div class="text-end">
+                            <?php if ($isEarned): ?>
+                                <span class="badge bg-success">+<?php echo $achievement['coins_reward']; ?> <i class="fas fa-coins"></i></span>
+                            <?php else: ?>
+                                <span class="badge bg-secondary"><?php echo $achievement['coins_reward']; ?> <i class="fas fa-coins"></i></span>
+                            <?php endif; ?>
                         </div>
                     </div>
+                    <?php endforeach; ?>
                     
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-star text-primary fa-2x me-3"></i>
-                        <div>
-                            <h6 class="mb-0">10 Exercícios</h6>
-                            <small class="text-muted">Completou 10 exercícios</small>
-                        </div>
+                    <?php if (count($allAchievements) > 5): ?>
+                    <div class="text-center mt-3">
+                        <a href="achievements.php" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-trophy me-1"></i>Ver Todas as Conquistas
+                        </a>
                     </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -308,7 +323,7 @@ include 'header.php';
                 </div>
                 <div class="card-body">
                     <?php if (empty($activities)): ?>
-                        <p class="text-muted">Nenhuma atividade recente.</p>
+                        <p  style="color: #333333">Nenhuma atividade recente.</p>
                         <a href="exercises_index.php" class="btn btn-primary btn-sm">
                             <i class="fas fa-play me-1"></i>Começar Agora
                         </a>

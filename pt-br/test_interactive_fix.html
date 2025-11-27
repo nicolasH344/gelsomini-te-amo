@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Correção Layout Interativo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .exercise-layout {
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .container-fluid {
+            min-height: 100vh;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        .exercise-header {
+            border-radius: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .code-editor-container {
+            position: relative;
+            min-height: 450px;
+        }
+
+        .code-textarea {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+        }
+
+        .code-textarea:focus {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            box-shadow: none;
+        }
+
+        .editor-toolbar {
+            background: #f8f9fa !important;
+            border-bottom: 1px solid #dee2e6 !important;
+        }
+
+        .output-panel, .validation-panel {
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .output-panel *, .validation-panel * {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .output-panel pre, .validation-panel pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .nav-tabs .nav-link {
+            border-radius: 10px 10px 0 0;
+            border: none;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: white;
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+        }
+
+        @media (max-width: 1199.98px) {
+            .exercise-layout .row {
+                flex-direction: column;
+            }
+            
+            .col-xl-4, .col-xl-8 {
+                max-width: 100%;
+                flex: 0 0 100%;
+                width: 100%;
+            }
+            
+            .instructions-panel {
+                order: 2;
+                margin-top: 1rem;
+            }
+            
+            .code-textarea {
+                min-height: 350px;
+            }
+            
+            .output-panel, .validation-panel {
+                min-height: 250px;
+                max-height: 400px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .exercise-layout {
+                padding: 0 10px;
+            }
+            
+            .code-textarea {
+                font-size: 12px;
+                min-height: 300px;
+            }
+            
+            .output-panel, .validation-panel {
+                min-height: 200px;
+                max-height: 300px;
+                padding: 0.75rem;
+            }
+        }
+
+        .test-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-controls">
+        <h6>Testes</h6>
+        <div class="d-grid gap-2">
+            <button class="btn btn-sm btn-primary" onclick="testExecute()">Testar Execução</button>
+            <button class="btn btn-sm btn-success" onclick="testValidate()">Testar Validação</button>
+            <button class="btn btn-sm btn-warning" onclick="testResize()">Testar Resize</button>
+            <button class="btn btn-sm btn-info" onclick="testTabs()">Testar Tabs</button>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-4">
+        <div class="exercise-layout">
+            <!-- Cabeçalho do Exercício -->
+            <div class="exercise-header card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div>
+                            <h2 class="h4 mb-2 fw-bold text-primary">
+                                <i class="fas fa-code me-2"></i>
+                                Teste de Layout - Lista de Compras
+                            </h2>
+                            <p class="text-muted mb-0">Crie uma lista não ordenada com itens de compras</p>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <span class="badge bg-primary fs-6 px-3 py-2">HTML</span>
+                            <span class="badge bg-warning fs-6 px-3 py-2">Iniciante</span>
+                            <span class="badge bg-info fs-6 px-3 py-2">
+                                <i class="fas fa-star me-1"></i>10 pts
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-12 col-xl-4 order-2 order-xl-1">
+                    <!-- Painel de Instruções -->
+                    <div class="instructions-panel">
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0 fw-bold text-dark">
+                                    <i class="fas fa-list-ol me-2"></i>Instruções
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="instructions-content">
+                                    <p>Crie uma página HTML com:</p>
+                                    <ul>
+                                        <li>Um título &lt;h2&gt; "Minha Lista de Compras"</li>
+                                        <li>Uma lista não ordenada &lt;ul&gt; com pelo menos 5 itens</li>
+                                        <li>Cada item deve estar dentro de uma tag &lt;li&gt;</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Painel de Ações -->
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0 fw-bold text-dark">
+                                    <i class="fas fa-tools me-2"></i>Ações
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-3">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <button class="btn btn-success w-100" onclick="runCode()">
+                                                <i class="fas fa-play me-1"></i>Executar
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-primary w-100" onclick="validateCode()">
+                                                <i class="fas fa-check me-1"></i>Validar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-8 order-1 order-xl-2">
+                    <!-- Editor de Código -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-dark text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-code me-2"></i>Editor de Código
+                                </h6>
+                                <div class="editor-controls d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-light" onclick="toggleFullscreen()">
+                                        <i class="fas fa-expand"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="editor-toolbar d-flex justify-content-between align-items-center p-2 bg-light border-bottom">
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-secondary">HTML</span>
+                                    <small class="text-muted">Linhas: <span id="lineCount">5</span></small>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-outline-success" onclick="runCode()">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="validateCode()">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-editor-container">
+                                <textarea id="codeEditor" class="form-control border-0 code-textarea" rows="18" 
+                                          placeholder="Digite seu código aqui..."><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Compras</title>
+</head>
+<body>
+    <h2>Minha Lista de Compras</h2>
+    <!-- Crie a lista aqui -->
+</body>
+</html></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Resultados em Tabs -->
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header p-0">
+                            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#output-pane" type="button">
+                                        <i class="fas fa-terminal me-2"></i>Resultado
+                                    </button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#validation-pane" type="button">
+                                        <i class="fas fa-check-circle me-2"></i>Validação
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="output-pane">
+                                    <div id="output" class="output-panel">
+                                        <div class="text-muted text-center py-5">
+                                            <i class="fas fa-play-circle fa-3x mb-3 text-success"></i>
+                                            <h6>Pronto para executar</h6>
+                                            <p class="mb-0">Clique em "Executar" ou pressione Ctrl+Enter</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="validation-pane">
+                                    <div id="validation" class="validation-panel">
+                                        <div class="text-muted text-center py-5">
+                                            <i class="fas fa-clipboard-check fa-3x mb-3 text-info"></i>
+                                            <h6>Pronto para validar</h6>
+                                            <p class="mb-0">Clique em "Validar" para verificar sua solução</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function runCode() {
+            const code = document.getElementById('codeEditor').value;
+            const output = document.getElementById('output');
+            
+            // Mudar para aba de resultado
+            const outputTab = document.querySelector('[data-bs-target="#output-pane"]');
+            if (outputTab) {
+                const tab = new bootstrap.Tab(outputTab);
+                tab.show();
+            }
+            
+            output.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Executando...</span>
+                    </div>
+                    <p class="text-muted">Executando código...</p>
+                </div>`;
+            
+            setTimeout(() => {
+                output.innerHTML = `
+                    <div class="alert alert-success d-flex align-items-center">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Preview HTML:</strong>
+                    </div>
+                    <div class="border rounded p-3 bg-white" style="max-height: 400px; overflow: auto;">
+                        ${code}
+                    </div>`;
+            }, 800);
+        }
+
+        function validateCode() {
+            const validation = document.getElementById('validation');
+            
+            // Mudar para aba de validação
+            const validationTab = document.querySelector('[data-bs-target="#validation-pane"]');
+            if (validationTab) {
+                const tab = new bootstrap.Tab(validationTab);
+                tab.show();
+            }
+            
+            validation.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-info mb-3" role="status">
+                        <span class="visually-hidden">Validando...</span>
+                    </div>
+                    <p class="text-muted">Analisando seu código...</p>
+                </div>`;
+            
+            setTimeout(() => {
+                validation.innerHTML = `
+                    <div class="alert alert-success mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>Exercício validado com sucesso!</strong>
+                            <span class="badge bg-success fs-6">85%</span>
+                        </div>
+                    </div>
+                    <div class="tests-results">
+                        <h6 class="fw-bold mb-3"><i class="fas fa-list-check me-2"></i>Testes:</h6>
+                        <div class="test-item d-flex justify-content-between align-items-center mb-2 p-2 rounded" style="background: #d4edda">
+                            <span>Tag h2 presente</span>
+                            <i class="fas fa-check text-success"></i>
+                        </div>
+                        <div class="test-item d-flex justify-content-between align-items-center mb-2 p-2 rounded" style="background: #d4edda">
+                            <span>Tag ul presente</span>
+                            <i class="fas fa-check text-success"></i>
+                        </div>
+                        <div class="test-item d-flex justify-content-between align-items-center mb-2 p-2 rounded" style="background: #f8d7da">
+                            <span>Pelo menos 5 itens li</span>
+                            <i class="fas fa-times text-danger"></i>
+                        </div>
+                    </div>`;
+            }, 1000);
+        }
+
+        function testExecute() {
+            console.log('Testando execução...');
+            runCode();
+        }
+
+        function testValidate() {
+            console.log('Testando validação...');
+            validateCode();
+        }
+
+        function testResize() {
+            console.log('Testando redimensionamento...');
+            const container = document.querySelector('.exercise-layout');
+            container.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                container.style.transform = 'scale(1)';
+            }, 2000);
+        }
+
+        function testTabs() {
+            console.log('Testando navegação entre tabs...');
+            setTimeout(() => validateCode(), 500);
+            setTimeout(() => runCode(), 2000);
+        }
+
+        function toggleFullscreen() {
+            const editor = document.querySelector('.code-editor-container');
+            const button = event.target.closest('button');
+            const icon = button.querySelector('i');
+            
+            if (editor.classList.contains('fullscreen')) {
+                editor.classList.remove('fullscreen');
+                icon.className = 'fas fa-expand';
+                button.title = 'Tela cheia';
+            } else {
+                editor.classList.add('fullscreen');
+                icon.className = 'fas fa-compress';
+                button.title = 'Sair da tela cheia';
+            }
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Página de teste carregada');
+            
+            // Teste de contador de linhas
+            const codeEditor = document.getElementById('codeEditor');
+            codeEditor.addEventListener('input', function() {
+                const lines = this.value.split('\n').length;
+                const lineCountElement = document.getElementById('lineCount');
+                if (lineCountElement) {
+                    lineCountElement.textContent = lines;
+                }
+            });
+            
+            console.log('Testes disponíveis no painel lateral');
+        });
+    </script>
+</body>
+</html>

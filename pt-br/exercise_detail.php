@@ -3,14 +3,33 @@ session_start();
 
 require_once 'config.php';
 require_once 'exercise_functions.php';
+require_once 'learning_system.php';
 
 // Validações iniciais
 $id = (int)($_GET['id'] ?? 0);
 if (!$id) redirect('exercises_index.php');
 
-// Buscar exercício
+// Buscar exercício com metodologia
 $exercise = getExercise($id);
 if (!$exercise) redirect('exercises_index.php');
+
+// Inicializar sistema de aprendizado
+$learningSystem = null;
+try {
+    require_once 'database.php';
+    $db = new Database();
+    $learningSystem = new LearningSystem($db);
+    
+    if (isLoggedIn()) {
+        $user_id = getCurrentUser()['id'];
+        $exerciseMethodology = $learningSystem->getExerciseWithMethodology($id, $user_id);
+        if ($exerciseMethodology) {
+            $exercise = array_merge($exercise, $exerciseMethodology);
+        }
+    }
+} catch (Exception $e) {
+    // Continuar sem sistema adaptativo
+}
 
 $title = $exercise['title'] ?? 'Exercício';
 
@@ -635,7 +654,7 @@ include 'header.php';
                                 <button type="button" onclick="loadRandomChallenge()" class="btn btn-warning btn-lg">
                                     <i class="fas fa-random me-2"></i>Desafio Aleatório
                                 </button>
-                                <button type="button" onclick="executeCode()" class="btn btn-success btn-lg">
+                                <button type="button" onclick="executeCodeAdaptive()" class="btn btn-success btn-lg">
                                     <i class="fas fa-play me-2"></i>Executar Código
                                     <kbd>Ctrl+Enter</kbd>
                                 </button>
@@ -2688,6 +2707,188 @@ include 'header.php';
 .info-card, .progress-card, .actions-card, .related-card {
     animation: slideInRight 0.8s ease-out;
 }
+.achievement-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    border: 2px solid #e9ecef;
+    animation: slideInUp 0.5s ease-out;
+}
+
+.achievement-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.achievement-content h6 {
+    margin: 0 0 0.5rem 0;
+    color: #212529;
+    font-weight: 700;
+}
+
+.achievement-content p {
+    margin: 0 0 0.5rem 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.achievement-content .coins {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.coins-earned {
+    animation: bounceIn 0.8s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.execution-result {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.test-result-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.test-result-item.passed {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.05) 100%);
+    border-left: 4px solid #28a745;
+}
+
+.test-result-item.failed {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(239, 71, 111, 0.05) 100%);
+    border-left: 4px solid #dc3545;
+}
+
+.test-status {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+}
+
+.test-result-item.passed .test-status {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.test-result-item.failed .test-status {
+    background: linear-gradient(135deg, #dc3545, #ef476f);
+}
+
+.test-name {
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 0.25rem;
+}
+
+.test-message {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.execution-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.metric {
+    text-align: center;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+}
+
+.metric-label {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.9;
+    margin-bottom: 0.25rem;
+}
+
+.metric-value {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.output-container, .test-results {
+    margin-top: 2rem;
+}
+
+.output-content {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1.5rem;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.tests-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
 </style>
 <script>
 // Detectar linguagem do exercício para JavaScript
@@ -2870,7 +3071,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         break;
                     case 'Enter': // Execute
                         e.preventDefault();
-                        executeCode();
+                        executeCodeAdaptive();
                         break;
                 }
             }
@@ -3103,146 +3304,221 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 });
 
-// Executar código
-window.executeCode = function() {
+let hintsUsed = 0;
+let startTime = Date.now();
+
+// Executar código adaptativo
+window.executeCodeAdaptive = function() {
     const code = document.getElementById('user_code').value;
-    const resultContent = document.getElementById('resultContent');
+    const exerciseId = <?php echo $id; ?>;
 
     if (!code.trim()) {
         showToast('O editor está vazio!', 'warning');
         return;
     }
 
-    try {
-        let output = '';
-        const originalLog = console.log;
-        console.log = function(...args) {
-            output += args.join(' ') + '\n';
-        };
-
-        eval(code);
-        console.log = originalLog;
-
-        // Criar resultado de sucesso
-        const outputTab = document.getElementById('output');
-        outputTab.innerHTML = `
-            <div class="execution-result">
-                <div class="result-header">
-                    <div class="alert alert-success mb-0">
-                        <h6 class="mb-3"><i class="fas fa-check-circle me-2"></i>Execução Bem-sucedida!</h6>
-                        <div class="execution-metrics">
-                            <div class="metric">
-                                <span class="metric-label">Tempo</span>
-                                <span class="metric-value">0.45s</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-label">Memória</span>
-                                <span class="metric-value">2.1MB</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-label">Status</span>
-                                <span class="metric-value">✓ Sucesso</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="output-container">
-                    <h6><i class="fas fa-terminal me-2"></i>Saída do Console</h6>
-                    <div class="output-content">
-<code>${output || 'Nenhuma saída'}</code>
-                    </div>
-                </div>
-                <div class="test-results">
-                    <h6><i class="fas fa-vial me-2"></i>Resultados dos Testes</h6>
-                    <div class="tests-grid">
-                        <div class="test-result-item passed">
-                            <div class="test-status">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="test-info">
-                                <div class="test-name">Teste de Sintaxe</div>
-                                <div class="test-message">Código compilou sem erros</div>
-                            </div>
-                        </div>
-                        <div class="test-result-item passed">
-                            <div class="test-status">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="test-info">
-                                <div class="test-name">Teste de Saída</div>
-                                <div class="test-message">Saída esperada encontrada</div>
-                            </div>
-                        </div>
-                        <div class="test-result-item passed">
-                            <div class="test-status">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="test-info">
-                                <div class="test-name">Teste de Performance</div>
-                                <div class="test-message">Dentro dos limites de tempo</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        new bootstrap.Tab(document.getElementById('output-tab')).show();
-        showToast('Código executado com sucesso!', 'success');
-    } catch (error) {
-        // Criar resultado de erro
-        const outputTab = document.getElementById('output');
-        outputTab.innerHTML = `
-            <div class="execution-result">
-                <div class="result-header">
-                    <div class="alert alert-danger mb-0">
-                        <h6 class="mb-3"><i class="fas fa-times-circle me-2"></i>Erro na Execução!</h6>
-                        <div class="execution-metrics">
-                            <div class="metric">
-                                <span class="metric-label">Erro</span>
-                                <span class="metric-value">${error.name}</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-label">Linha</span>
-                                <span class="metric-value">${error.lineNumber || 'N/A'}</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-label">Status</span>
-                                <span class="metric-value">✗ Falha</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="output-container">
-                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Detalhes do Erro</h6>
-                    <div class="output-content">
-<code><strong>${error.name}:</strong> ${error.message}
-
-<strong>Stack Trace:</strong>
-${error.stack}</code>
-                    </div>
-                </div>
-                <div class="test-results">
-                    <h6><i class="fas fa-vial me-2"></i>Resultados dos Testes</h6>
-                    <div class="tests-grid">
-                        <div class="test-result-item failed">
-                            <div class="test-status">
-                                <i class="fas fa-times"></i>
-                            </div>
-                            <div class="test-info">
-                                <div class="test-name">Teste de Sintaxe</div>
-                                <div class="test-message">Erro de sintaxe encontrado</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        new bootstrap.Tab(document.getElementById('output-tab')).show();
-        showToast('Erro na execução do código!', 'danger');
-    }
+    showToast('Executando código...', 'info');
+    
+    fetch('execute_exercise.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            exercise_id: exerciseId,
+            user_code: code,
+            hints_used: hintsUsed,
+            start_time: Math.floor(startTime / 1000)
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displayExecutionResult(data);
+            
+            if (data.mastery_score !== undefined) {
+                const masteryPercent = Math.round(data.mastery_score * 100);
+                showToast(`Maestria: ${masteryPercent}% | ${data.learning_suggestion || ''}`, 'info');
+            }
+            
+            if (data.new_achievements && data.new_achievements.length > 0) {
+                showAchievements(data.new_achievements, data.coins_earned);
+            }
+            
+            showToast(`Código executado! Score: ${data.execution_result.score}`, 'success');
+        } else {
+            showToast('Erro: ' + data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        showToast('Erro de conexão', 'danger');
+    });
 };
+
+// Executar código (compatibilidade)
+window.executeCode = function() {
+    const code = document.getElementById('user_code').value;
+    const exerciseId = <?php echo $id; ?>;
+
+    if (!code.trim()) {
+        showToast('O editor está vazio!', 'warning');
+        return;
+    }
+
+    showToast('Executando código...', 'info');
+    
+    // Fazer requisição para o backend
+    fetch('execute_exercise.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            exercise_id: exerciseId,
+            user_code: code
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displayExecutionResult(data);
+            
+            // Mostrar conquistas se houver
+            if (data.new_achievements && data.new_achievements.length > 0) {
+                showAchievements(data.new_achievements, data.coins_earned);
+            }
+            
+            showToast(`Código executado! Score: ${data.execution_result.score}`, 'success');
+        } else {
+            showToast('Erro: ' + data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        showToast('Erro de conexão', 'danger');
+    });
+};
+
+function displayExecutionResult(data) {
+    const result = data.execution_result;
+    const tests = data.test_results;
+    
+    const outputTab = document.getElementById('output');
+    
+    let testsHTML = '';
+    tests.forEach(test => {
+        testsHTML += `
+            <div class="test-result-item ${test.passed ? 'passed' : 'failed'}">
+                <div class="test-status">
+                    <i class="fas fa-${test.passed ? 'check' : 'times'}"></i>
+                </div>
+                <div class="test-info">
+                    <div class="test-name">${test.name}</div>
+                    <div class="test-message">${test.message}</div>
+                </div>
+            </div>
+        `;
+    });
+    
+    outputTab.innerHTML = `
+        <div class="execution-result">
+            <div class="result-header">
+                <div class="alert alert-${result.success ? 'success' : 'danger'} mb-0">
+                    <h6 class="mb-3"><i class="fas fa-${result.success ? 'check' : 'times'}-circle me-2"></i>${result.success ? 'Execução Bem-sucedida!' : 'Erro na Execução!'}</h6>
+                    <div class="execution-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Tempo</span>
+                            <span class="metric-value">${result.execution_time}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Memória</span>
+                            <span class="metric-value">${result.memory_used}</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Score</span>
+                            <span class="metric-value">${result.score}/100</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="output-container">
+                <h6><i class="fas fa-terminal me-2"></i>Saída do Console</h6>
+                <div class="output-content">
+                    <code>${result.output}</code>
+                </div>
+            </div>
+            <div class="test-results">
+                <h6><i class="fas fa-vial me-2"></i>Resultados dos Testes</h6>
+                <div class="tests-grid">
+                    ${testsHTML}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    new bootstrap.Tab(document.getElementById('output-tab')).show();
+}
+
+function showAchievements(achievements, coinsEarned) {
+    let achievementsHTML = '';
+    
+    achievements.forEach(achievement => {
+        achievementsHTML += `
+            <div class="achievement-item">
+                <div class="achievement-icon">
+                    <i class="${achievement.icon} ${achievement.color}"></i>
+                </div>
+                <div class="achievement-content">
+                    <h6>${achievement.name}</h6>
+                    <p>${achievement.description}</p>
+                    <span class="coins">+${achievement.coins_reward} <i class="fas fa-coins"></i></span>
+                </div>
+            </div>
+        `;
+    });
+    
+    // Criar modal de conquistas
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-trophy me-2"></i>
+                        Parabéns! Novas Conquistas!
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <div class="coins-earned">
+                            <i class="fas fa-coins fa-3x text-warning mb-2"></i>
+                            <h4>+${coinsEarned} Moedas Ganhas!</h4>
+                        </div>
+                    </div>
+                    <div class="achievements-list">
+                        ${achievementsHTML}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+                        <i class="fas fa-check me-1"></i>Continuar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+    
+    // Remover modal após fechar
+    modal.addEventListener('hidden.bs.modal', () => {
+        document.body.removeChild(modal);
+    });
+}
 
 // Executar testes
 window.runTests = function() {

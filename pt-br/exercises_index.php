@@ -1,8 +1,18 @@
 <?php
 require_once 'config.php';
 require_once 'exercise_functions.php';
+require_once 'learning_system.php';
 
 $title = 'Exercícios';
+
+// Inicializar sistema de aprendizado
+try {
+    require_once 'database.php';
+    $db = new Database();
+    $learningSystem = new LearningSystem($db);
+} catch (Exception $e) {
+    $learningSystem = null;
+}
 
 // Parâmetros de filtro
 $category = sanitize($_GET['category'] ?? '');
@@ -11,8 +21,26 @@ $search = sanitize($_GET['search'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 9;
 
-// Buscar exercícios
-$exercises = getExercises($category, $difficulty, $search, $page, $perPage);
+// Buscar exercícios com metodologia adaptativa
+if ($learningSystem && isLoggedIn() && !$category && !$difficulty && !$search && $page == 1) {
+    try {
+        // Mostrar exercícios personalizados na primeira página sem filtros
+        $user_id = getCurrentUser()['id'];
+        $personalizedExercises = $learningSystem->getPersonalizedExercises($user_id, 6);
+        if (!empty($personalizedExercises)) {
+            $regularExercises = getExercises($category, $difficulty, $search, 1, $perPage - count($personalizedExercises));
+            $exercises = array_merge($personalizedExercises, $regularExercises);
+            $exercises = array_slice($exercises, 0, $perPage);
+        } else {
+            $exercises = getExercises($category, $difficulty, $search, $page, $perPage);
+        }
+    } catch (Exception $e) {
+        $exercises = getExercises($category, $difficulty, $search, $page, $perPage);
+    }
+} else {
+    $exercises = getExercises($category, $difficulty, $search, $page, $perPage);
+}
+
 $totalResults = countExercises($category, $difficulty, $search);
 $totalPages = $totalResults > 0 ? ceil($totalResults / $perPage) : 1;
 
@@ -39,6 +67,41 @@ include 'header.php';
         <p class="lead text-muted">
             Pratique e aprimore suas habilidades com exercícios interativos
         </p>
+        
+        <!-- Botões de Navegação -->
+        <div class="mt-4">
+            <a href="interactive_exercises.php" class="btn btn-primary btn-lg me-3">
+                <i class="fas fa-laptop-code me-2"></i>Exercícios Interativos
+            </a>
+            <a href="exercises_index.php" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-list me-2"></i>Lista Completa
+            </a>
+        </div>
+        
+        <?php if ($learningSystem && isLoggedIn() && !$category && !$difficulty && !$search): ?>
+        <!-- Recomendação personalizada -->
+        <?php 
+        $user_id = getCurrentUser()['id'];
+        $recommendation = null;
+        try {
+            $recommendation = $learningSystem->getNextRecommendation($user_id);
+        } catch (Exception $e) {
+            $recommendation = null;
+        }
+        if ($recommendation): 
+        ?>
+        <div class="alert alert-info mx-auto" style="max-width: 600px; border-radius: 15px; border: none; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);">
+            <h6 class="fw-bold mb-2">
+                <i class="fas fa-lightbulb text-warning me-2"></i>
+                Recomendado para você
+            </h6>
+            <p class="mb-2"><?php echo sanitize($recommendation['title']); ?></p>
+            <a href="exercise_detail.php?id=<?php echo $recommendation['id']; ?>" class="btn btn-sm btn-primary rounded-pill">
+                <i class="fas fa-play me-1"></i>Começar Agora
+            </a>
+        </div>
+        <?php endif; ?>
+        <?php endif; ?>
     </div>
 
     <!-- Filtros -->
@@ -194,8 +257,11 @@ include 'header.php';
                 $display_difficulty = $exercise['difficulty'] ?? 'Iniciante';
                 $category = $exercise['category'] ?? 'Geral';
                 
-                // Verificar progresso do usuário
+                // Verificar progresso do usuário e nível de maestria
                 $completed = false;
+                $mastery_level = 0;
+                $is_recommended = false;
+                
                 if (isLoggedIn()) {
                     $user_id = getCurrentUser()['id'];
                     $conn = getDBConnection();
@@ -206,6 +272,27 @@ include 'header.php';
                         $result = $stmt->get_result();
                         $row = $result->fetch_assoc();
                         $completed = $row && $row['status'] === 'completed';
+                        
+                        // Verificar maestria adaptativa
+                        if ($learningSystem) {
+                            try {
+                                $stmt2 = $conn->prepare("SELECT mastery_level FROM adaptive_progress WHERE user_id = ? AND exercise_id = ?");
+                                if ($stmt2) {
+                                    $stmt2->bind_param("ii", $user_id, $exercise['id']);
+                                    $stmt2->execute();
+                                    $result2 = $stmt2->get_result();
+                                    $row2 = $result2 ? $result2->fetch_assoc() : null;
+                                    $mastery_level = $row2 ? $row2['mastery_level'] : 0;
+                                    $stmt2->close();
+                                }
+                                
+                                // Marcar como recomendado se está nos exercícios personalizados
+                                $is_recommended = isset($exercise['mastery_level']);
+                            } catch (Exception $e) {
+                                $mastery_level = 0;
+                                $is_recommended = false;
+                            }
+                        }
                     }
                 }
                 
@@ -218,10 +305,20 @@ include 'header.php';
                 $levelColor = $levelMap[$display_difficulty] ?? 'secondary';
             ?>
                 <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card exercise-card h-100 shadow-sm border-0 <?php echo $completed ? 'completed' : ''; ?>">
+                    <div class="card exercise-card h-100 shadow-sm border-0 <?php echo $completed ? 'completed' : ''; ?> <?php echo $is_recommended ? 'recommended' : ''; ?>">
                         <?php if ($completed): ?>
                             <div class="completed-badge">
                                 <i class="fas fa-check-circle"></i>
+                            </div>
+                        <?php elseif ($is_recommended): ?>
+                            <div class="recommended-badge">
+                                <i class="fas fa-star"></i>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if ($mastery_level > 0): ?>
+                            <div class="mastery-indicator" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 10px; font-size: 0.7rem;">
+                                <?php echo round($mastery_level * 100); ?>% maestria
                             </div>
                         <?php endif; ?>
                         
@@ -245,14 +342,33 @@ include 'header.php';
                             <p class="card-text text-muted flex-grow-1 mb-3">
                                 <?php echo htmlspecialchars($exercise['description'] ?? 'Descrição do exercício'); ?>
                             </p>
+                            
+                            <?php if ($is_recommended): ?>
+                                <div class="recommendation-reason mb-2">
+                                    <small class="text-primary fw-bold">
+                                        <i class="fas fa-bullseye me-1"></i>
+                                        Recomendado: <?php 
+                                        if ($mastery_level == 0) echo 'Novo conteúdo';
+                                        elseif ($mastery_level < 0.3) echo 'Precisa praticar mais';
+                                        elseif ($mastery_level < 0.7) echo 'Quase dominando';
+                                        else echo 'Revisão recomendada';
+                                        ?>
+                                    </small>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         
                         <div class="card-footer bg-white border-0 pt-0 pb-3">
                             <div class="d-flex gap-2">
+                                <a href="interactive_exercises.php?id=<?php echo $exercise['id'] ?? 1; ?>" 
+                                   class="btn btn-primary flex-fill rounded-pill">
+                                    <i class="fas fa-laptop-code me-1"></i>
+                                    Interativo
+                                </a>
                                 <a href="exercise_detail.php?id=<?php echo $exercise['id'] ?? 1; ?>" 
-                                   class="btn btn-<?php echo $completed ? 'outline-primary' : 'primary'; ?> flex-fill rounded-pill">
-                                    <i class="fas fa-<?php echo $completed ? 'redo' : 'play'; ?> me-1"></i>
-                                    <?php echo $completed ? 'Revisar' : 'Começar'; ?>
+                                   class="btn btn-<?php echo $completed ? 'outline-primary' : 'outline-secondary'; ?> flex-fill rounded-pill">
+                                    <i class="fas fa-<?php echo $completed ? 'redo' : 'eye'; ?> me-1"></i>
+                                    <?php echo $completed ? 'Revisar' : 'Ver'; ?>
                                 </a>
                                 <?php if (isLoggedIn() && !$completed): ?>
                                 <button onclick="completeExercise(<?php echo $exercise['id'] ?? 1; ?>)" 
@@ -326,37 +442,37 @@ include 'header.php';
     <?php endif; ?>
 
     <!-- Informações adicionais -->
-    <div class="row mt-5 g-4">
-        <div class="col-md-6">
+    <div class="row mt-5 g-3 g-md-4">
+        <div class="col-12 col-lg-6">
             <div class="info-card card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="icon-circle bg-warning bg-opacity-10 text-warning me-3">
-                            <i class="fas fa-lightbulb fa-2x"></i>
+                <div class="card-body p-3 p-md-4">
+                    <div class="d-flex align-items-start align-items-md-center mb-3 mb-md-4 flex-column flex-md-row">
+                        <div class="icon-circle bg-warning bg-opacity-10 text-warning me-0 me-md-3 mb-2 mb-md-0 align-self-center">
+                            <i class="fas fa-lightbulb fa-lg fa-md-2x"></i>
                         </div>
-                        <h2 class="h5 mb-0 fw-bold">Dicas para Estudar</h2>
+                        <h2 class="h6 h5-md mb-0 fw-bold text-center text-md-start">Dicas para Estudar</h2>
                     </div>
                     <ul class="list-unstyled mb-0">
-                        <li class="d-flex align-items-center mb-3 tip-item">
-                            <div class="tip-icon me-3">
+                        <li class="d-flex align-items-start mb-3 tip-item">
+                            <div class="tip-icon me-2 me-md-3 mt-1">
                                 <i class="fas fa-check-circle text-success"></i>
                             </div>
                             <span class="tip-text">Comece pelos exercícios de nível iniciante e evolua gradualmente</span>
                         </li>
-                        <li class="d-flex align-items-center mb-3 tip-item">
-                            <div class="tip-icon me-3">
+                        <li class="d-flex align-items-start mb-3 tip-item">
+                            <div class="tip-icon me-2 me-md-3 mt-1">
                                 <i class="fas fa-check-circle text-success"></i>
                             </div>
                             <span class="tip-text">Pratique regularmente para fixar o conhecimento adquirido</span>
                         </li>
-                        <li class="d-flex align-items-center mb-3 tip-item">
-                            <div class="tip-icon me-3">
+                        <li class="d-flex align-items-start mb-3 tip-item">
+                            <div class="tip-icon me-2 me-md-3 mt-1">
                                 <i class="fas fa-check-circle text-success"></i>
                             </div>
                             <span class="tip-text">Use a comunidade para compartilhar soluções e tirar dúvidas</span>
                         </li>
-                        <li class="d-flex align-items-center tip-item">
-                            <div class="tip-icon me-3">
+                        <li class="d-flex align-items-start tip-item">
+                            <div class="tip-icon me-2 me-md-3 mt-1">
                                 <i class="fas fa-check-circle text-success"></i>
                             </div>
                             <span class="tip-text">Revise exercícios concluídos para reforçar o aprendizado</span>
@@ -366,14 +482,14 @@ include 'header.php';
             </div>
         </div>
         
-        <div class="col-md-6">
+        <div class="col-12 col-lg-6">
             <div class="progress-card card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="icon-circle bg-info bg-opacity-10 text-info me-3">
-                            <i class="fas fa-chart-line fa-2x"></i>
+                <div class="card-body p-3 p-md-4">
+                    <div class="d-flex align-items-start align-items-md-center mb-3 mb-md-4 flex-column flex-md-row">
+                        <div class="icon-circle bg-info bg-opacity-10 text-info me-0 me-md-3 mb-2 mb-md-0 align-self-center">
+                            <i class="fas fa-chart-line fa-lg fa-md-2x"></i>
                         </div>
-                        <h2 class="h5 mb-0 fw-bold">Seu Progresso</h2>
+                        <h2 class="h6 h5-md mb-0 fw-bold text-center text-md-start">Seu Progresso</h2>
                     </div>
                     <?php 
                     $user_completed = 0;
@@ -435,28 +551,138 @@ include 'header.php';
 
 <script>
 function completeExercise(exerciseId) {
-    if (!confirm('Marcar este exercício como concluído?')) return;
+    console.log('Tentativa de completar exercício:', exerciseId);
     
-    fetch('api/mark_complete.php', {
+    if (!confirm('Marcar este exercício como concluído?')) {
+        console.log('Usuário cancelou a conclusão');
+        return;
+    }
+    
+    console.log('Enviando requisição para completar exercício...');
+    
+    fetch('execute_exercise.php', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
         },
-        body: 'exercise_id=' + exerciseId + '&score=10'
+        body: JSON.stringify({
+            exercise_id: exerciseId,
+            user_code: '// Marcado como concluído',
+            quick_complete: true
+        })
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Resposta recebida:', response.status);
+        return response.json();
+    })
     .then(data => {
+        console.log('Dados da resposta:', data);
+        
         if (data.success) {
-            alert('Exercício marcado como concluído!');
-            location.reload();
+            showToast('Exercício concluído! +' + (data.coins_earned || 0) + ' moedas', 'success');
+            console.log('Exercício concluído com sucesso');
+            
+            // Mostrar conquistas se houver
+            if (data.new_achievements && data.new_achievements.length > 0) {
+                console.log('Novas conquistas desbloqueadas:', data.new_achievements.length);
+                setTimeout(() => {
+                    alert('Parabéns! Você desbloqueou ' + data.new_achievements.length + ' nova(s) conquista(s)!');
+                }, 1000);
+            }
+            
+            setTimeout(() => location.reload(), 2000);
         } else {
-            alert('Erro: ' + data.message);
+            console.error('Erro ao completar exercício:', data.message);
+            showToast('Erro: ' + data.message, 'danger');
         }
     })
     .catch(error => {
-        alert('Erro de conexão: ' + error);
+        console.error('Erro de conexão:', error);
+        showToast('Erro de conexão', 'danger');
     });
 }
+
+// Teste de responsividade para exercícios
+function testExerciseResponsiveness() {
+    const breakpoints = {
+        mobile: 576,
+        tablet: 768,
+        desktop: 992
+    };
+    
+    const width = window.innerWidth;
+    let device = 'desktop';
+    
+    if (width < breakpoints.mobile) device = 'mobile';
+    else if (width < breakpoints.tablet) device = 'tablet';
+    
+    console.log('Exercícios - Dispositivo detectado:', device, '- Largura:', width + 'px');
+    
+    // Testar elementos específicos dos exercícios
+    const exerciseCards = document.querySelectorAll('.exercise-card');
+    const infoCards = document.querySelectorAll('.info-card, .progress-card');
+    
+    console.log('Cards de exercício encontrados:', exerciseCards.length);
+    console.log('Cards de informação encontrados:', infoCards.length);
+    
+    return { device, width, exerciseCards: exerciseCards.length, infoCards: infoCards.length };
+}
+
+function showToast(message, type = 'info') {
+    console.log('Exibindo toast:', message, 'tipo:', type);
+    
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 1050; min-width: 300px; border-radius: 10px;';
+    toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    console.log('Toast adicionado ao DOM');
+    
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+            console.log('Toast removido do DOM');
+        }
+    }, 4000);
+}
+
+// Teste inicial dos exercícios
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Página de exercícios carregada');
+    
+    // Teste de responsividade inicial
+    testExerciseResponsiveness();
+    
+    // Teste de elementos da página
+    const buttons = document.querySelectorAll('button');
+    const links = document.querySelectorAll('a');
+    const forms = document.querySelectorAll('form');
+    
+    console.log('Elementos encontrados:');
+    console.log('- Botões:', buttons.length);
+    console.log('- Links:', links.length);
+    console.log('- Formulários:', forms.length);
+    
+    // Teste de hover nos cards
+    const cards = document.querySelectorAll('.exercise-card, .info-card, .progress-card');
+    cards.forEach((card, index) => {
+        card.addEventListener('mouseenter', function() {
+            console.log('Hover detectado no card', index + 1);
+        });
+    });
+    
+    // Teste de redimensionamento
+    window.addEventListener('resize', function() {
+        clearTimeout(this.resizeTimeout);
+        this.resizeTimeout = setTimeout(testExerciseResponsiveness, 250);
+    });
+    
+    console.log('Testes de exercícios inicializados');
+});
 </script>
 
 <style>
@@ -564,6 +790,36 @@ function completeExercise(exerciseId) {
     background: white;
 }
 
+.exercise-card.recommended {
+    border: 2px solid #ffc107;
+    background: linear-gradient(135deg, #fff 0%, #fff9e6 100%);
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.3) !important;
+}
+
+.recommended-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ffc107;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    z-index: 10;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.recommendation-reason {
+    background: rgba(255, 193, 7, 0.1);
+    padding: 0.5rem;
+    border-radius: 8px;
+    border-left: 3px solid #ffc107;
+}
+
 .exercise-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 15px 40px rgba(0,0,0,0.15) !important;
@@ -626,6 +882,7 @@ function completeExercise(exerciseId) {
 .info-card, .progress-card {
     border-radius: 15px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-height: 280px;
 }
 
 .info-card:hover, .progress-card:hover {
@@ -634,8 +891,8 @@ function completeExercise(exerciseId) {
 }
 
 .icon-circle {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -644,27 +901,28 @@ function completeExercise(exerciseId) {
 }
 
 .tip-item {
-    padding: 0.75rem 0;
+    padding: 0.5rem 0;
     transition: all 0.3s ease;
 }
 
 .tip-item:hover {
-    transform: translateX(5px);
+    transform: translateX(3px);
 }
 
 .tip-icon {
     flex-shrink: 0;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1rem;
 }
 
 .tip-text {
-    line-height: 1.6;
+    line-height: 1.5;
     color: #4a5568;
+    font-size: 0.9rem;
 }
 
 .stat-item {
@@ -721,13 +979,56 @@ function completeExercise(exerciseId) {
 }
 
 /* Responsividade */
-@media (max-width: 768px) {
-    .exercises-header .display-4 {
-        font-size: 2rem;
+@media (max-width: 575.98px) {
+    .exercises-header {
+        padding: 1.5rem 0;
+        margin: -1rem -15px 1.5rem -15px;
     }
     
-    .filters-card .row > div {
-        margin-bottom: 0.5rem;
+    .exercises-header .display-4 {
+        font-size: 1.75rem;
+    }
+    
+    .exercises-header .lead {
+        font-size: 1rem;
+    }
+    
+    .info-card, .progress-card {
+        min-height: auto;
+        margin-bottom: 1rem;
+    }
+    
+    .icon-circle {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .icon-circle i {
+        font-size: 1.25rem !important;
+    }
+    
+    .tip-text {
+        font-size: 0.85rem;
+    }
+    
+    .tip-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 0.9rem;
+    }
+    
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .stat-item {
+        padding: 0.75rem !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .exercises-header .display-4 {
+        font-size: 2rem;
     }
     
     .icon-circle {
@@ -737,6 +1038,48 @@ function completeExercise(exerciseId) {
     
     .icon-circle i {
         font-size: 1.5rem !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .icon-circle i {
+        font-size: 2rem !important;
+    }
+    
+    .tip-item {
+        padding: 0.75rem 0;
+    }
+    
+    .tip-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 1.25rem;
+    }
+    
+    .tip-text {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .filters-card .row > div {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Utilitárias responsivas customizadas */
+@media (min-width: 768px) {
+    .h5-md {
+        font-size: 1.25rem !important;
+    }
+    
+    .fa-md-2x {
+        font-size: 2em !important;
     }
 }
 
