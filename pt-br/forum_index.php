@@ -83,11 +83,11 @@ include 'header.php';
     
     <!-- Header do fórum -->
     <div class="forum-header text-center mb-5">
-        <h1 class="display-4 fw-bold mb-3">
+        <h1 class="display-4 fw-bold mb-3" style="color: #000000;">
             <i class="fas fa-comments"></i>
             Fórum da Comunidade
         </h1>
-        <p class="lead">
+        <p class="lead" style="color: #000000;">
             Tire dúvidas, compartilhe conhecimento e conecte-se com outros desenvolvedores
         </p>
         <?php if (isLoggedIn()): ?>
@@ -109,7 +109,7 @@ include 'header.php';
                 <div class="card-body p-4">
                     <form method="GET" action="forum_index.php" id="forumFilterForm" class="row g-3 align-items-end">
                         <div class="col-md-5">
-                            <label for="category" class="form-label fw-semibold">
+                            <label for="category" class="form-label fw-semibold" style="color: #000000;">
                                 <i class="fas fa-tag text-primary me-1"></i>
                                 Categoria
                             </label>
@@ -124,7 +124,7 @@ include 'header.php';
                         </div>
                         
                         <div class="col-md-5">
-                            <label for="search" class="form-label fw-semibold">
+                            <label for="search" class="form-label fw-semibold" style="color: #000000;">
                                 <i class="fas fa-search text-info me-1"></i>
                                 Buscar
                             </label>
@@ -153,7 +153,7 @@ include 'header.php';
                     <!-- Filtros ativos -->
                     <?php if ($category || $search): ?>
                         <div class="active-filters mt-3 pt-3 border-top">
-                            <small class="text-muted fw-semibold d-block mb-2">
+                            <small class="fw-semibold d-block mb-2" style="color: #000000;">
                                 <i class="fas fa-filter me-1"></i>
                                 Filtros ativos:
                             </small>
@@ -205,7 +205,7 @@ include 'header.php';
             <!-- Lista de posts -->
             <div class="posts-card card shadow-sm border-0">
                 <div class="card-header bg-white border-0 pt-4 pb-3">
-                    <h2 class="h5 mb-0 fw-bold">
+                    <h2 class="h5 mb-0 fw-bold" style="color: #000000;">
                         <i class="fas fa-fire text-danger me-2"></i>
                         Posts Recentes
                     </h2>
@@ -213,8 +213,8 @@ include 'header.php';
                 <div class="card-body p-0">
                     <?php if (empty($forum_posts)): ?>
                         <div class="text-center p-5">
-                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                            <p class="text-muted">Nenhum post encontrado. Seja o primeiro a postar!</p>
+                            <i class="fas fa-inbox fa-3x mb-3" style="color: #000000;"></i>
+                            <p style="color: #000000;">Nenhum post encontrado. Seja o primeiro a postar!</p>
                         </div>
                     <?php else: ?>
                         <?php foreach ($forum_posts as $index => $post): ?>
@@ -246,16 +246,16 @@ include 'header.php';
                                         
                                         <h3 class="h5 fw-bold mb-2">
                                             <a href="show.php?type=forum&id=<?php echo $post['id']; ?>" 
-                                               class="text-decoration-none text-dark post-title-link">
+                                               class="text-decoration-none post-title-link" style="color: #000000;">
                                                 <?php echo sanitize($post['title']); ?>
                                             </a>
                                         </h3>
                                         
-                                        <p class="text-muted mb-3">
+                                        <p class="mb-3" style="color: #000000;">
                                             <?php echo sanitize(substr($post['content'], 0, 150)) . '...'; ?>
                                         </p>
                                         
-                                        <div class="d-flex align-items-center text-muted small">
+                                        <div class="d-flex align-items-center small" style="color: #000000;">
                                             <span class="me-3 d-flex align-items-center">
                                                 <i class="fas fa-user-circle me-2 text-primary"></i>
                                                 <strong><?php echo sanitize($post['author'] ?? 'Usuário Anônimo'); ?></strong>
@@ -272,13 +272,13 @@ include 'header.php';
                                             <div class="col-4">
                                                 <div class="stat-box p-3 rounded-3 bg-light">
                                                     <div class="text-primary fw-bold fs-4"><?php echo $post['replies']; ?></div>
-                                                    <small class="text-muted">Respostas</small>
+                                                    <small style="color: #000000;">Respostas</small>
                                                 </div>
                                             </div>
                                             <div class="col-4">
                                                 <div class="stat-box p-3 rounded-3 bg-light">
                                                     <div class="text-info fw-bold fs-4"><?php echo $post['views']; ?></div>
-                                                    <small class="text-muted">Views</small>
+                                                    <small style="color: #000000;">Views</small>
                                                 </div>
                                             </div>
                                             <div class="col-4 d-flex align-items-center justify-content-center">
@@ -328,7 +328,7 @@ include 'header.php';
             <!-- Estatísticas do fórum -->
             <div class="stats-card card shadow-sm border-0 mb-4">
                 <div class="card-header bg-white border-0 pt-3">
-                    <h2 class="h6 mb-0 fw-bold">
+                    <h2 class="h6 mb-0 fw-bold" style="color: #000000;">
                         <i class="fas fa-chart-bar text-primary me-2"></i> Estatísticas
                     </h2>
                 </div>
@@ -343,7 +343,7 @@ include 'header.php';
                                     echo count($total_posts);
                                     ?>
                                 </div>
-                                <small class="text-muted fw-semibold">Posts</small>
+                                <small class="fw-semibold" style="color: #000000;">Posts</small>
                             </div>
                         </div>
                         <div class="col-6">
@@ -360,7 +360,7 @@ include 'header.php';
                                     echo count($authors);
                                     ?>
                                 </div>
-                                <small class="text-muted fw-semibold">Membros Ativos</small>
+                                <small class="fw-semibold" style="color: #000000;">Membros Ativos</small>
                             </div>
                         </div>
                     </div>
@@ -370,7 +370,7 @@ include 'header.php';
             <!-- Categorias -->
             <div class="categories-card card shadow-sm border-0 mb-4">
                 <div class="card-header bg-white border-0 pt-3">
-                    <h2 class="h6 mb-0 fw-bold">
+                    <h2 class="h6 mb-0 fw-bold" style="color: #000000;">
                         <i class="fas fa-tags text-warning me-2"></i> Categorias
                     </h2>
                 </div>
@@ -389,11 +389,11 @@ include 'header.php';
                         <div class="category-item d-flex justify-content-between align-items-center mb-3 p-3 rounded-3">
                             <a href="?category=<?php echo $category['id']; ?>" class="text-decoration-none d-flex align-items-center">
                                 <i class="fas fa-folder text-<?php echo $category['color']; ?> me-2 fs-5"></i>
-                                <span class="category-name fw-semibold text-dark">
+                                <span class="category-name fw-semibold" style="color: #000000;">
                                     <?php echo sanitize($category['name']); ?>
                                 </span>
                             </a>
-                            <span class="badge bg-light text-dark border px-3 py-2">
+                            <span class="badge bg-light border px-3 py-2" style="color: #000000;">
                                 <strong><?php echo $count; ?></strong> posts
                             </span>
                         </div>
@@ -404,7 +404,7 @@ include 'header.php';
             <!-- Posts populares -->
             <div class="popular-card card shadow-sm border-0">
                 <div class="card-header bg-white border-0 pt-3">
-                    <h2 class="h6 mb-0 fw-bold">
+                    <h2 class="h6 mb-0 fw-bold" style="color: #000000;">
                         <i class="fas fa-fire text-danger me-2"></i> Posts Populares
                     </h2>
                 </div>
@@ -416,11 +416,11 @@ include 'header.php';
                         <div class="popular-post-item mb-3 pb-3 border-bottom">
                             <h3 class="h6 mb-2">
                                 <a href="show.php?type=forum&id=<?php echo $post['id']; ?>" 
-                                   class="text-decoration-none text-dark popular-post-link">
+                                   class="text-decoration-none popular-post-link" style="color: #000000;">
                                     <?php echo sanitize($post['title']); ?>
                                 </a>
                             </h3>
-                            <div class="d-flex align-items-center text-muted small">
+                            <div class="d-flex align-items-center small" style="color: #000000;">
                                 <i class="fas fa-eye me-2 text-info"></i>
                                 <strong><?php echo $post['views']; ?> visualizações</strong>
                             </div>
@@ -449,11 +449,11 @@ include 'header.php';
                                     <div class="icon-badge success mb-3">
                                         <i class="fas fa-thumbs-up fa-2x"></i>
                                     </div>
-                                    <h3 class="h5 fw-bold text-success mb-2">
+                                    <h3 class="h5 fw-bold mb-2" style="color: #000000;">
                                         <i class="fas fa-check-double me-2"></i>
                                         Boas Práticas
                                     </h3>
-                                    <p class="text-muted small mb-0">Faça isso para ajudar a comunidade</p>
+                                    <p class="small mb-0" style="color: #000000;">Faça isso para ajudar a comunidade</p>
                                 </div>
                                 
                                 <div class="rule-item-modern">
@@ -461,8 +461,8 @@ include 'header.php';
                                         <i class="fas fa-heart"></i>
                                     </div>
                                     <div class="rule-content">
-                                        <h4 class="rule-title">Seja Respeitoso</h4>
-                                        <p class="rule-description">Trate outros membros com cortesia e empatia</p>
+                                        <h4 class="rule-title" style="color: #000000;">Seja Respeitoso</h4>
+                                        <p class="rule-description" style="color: #000000;">Trate outros membros com cortesia e empatia</p>
                                     </div>
                                 </div>
                                 
@@ -471,8 +471,8 @@ include 'header.php';
                                         <i class="fas fa-lightbulb"></i>
                                     </div>
                                     <div class="rule-content">
-                                        <h4 class="rule-title">Títulos Claros</h4>
-                                        <p class="rule-description">Use títulos descritivos e objetivos</p>
+                                        <h4 class="rule-title" style="color: #000000;">Títulos Claros</h4>
+                                        <p class="rule-description" style="color: #000000;">Use títulos descritivos e objetivos</p>
                                     </div>
                                 </div>
                                 
@@ -481,8 +481,8 @@ include 'header.php';
                                         <i class="fas fa-search"></i>
                                     </div>
                                     <div class="rule-content">
-                                        <h4 class="rule-title">Pesquise Primeiro</h4>
-                                        <p class="rule-description">Verifique se sua dúvida já foi respondida</p>
+                                        <h4 class="rule-title" style="color: #000000;">Pesquise Primeiro</h4>
+                                        <p class="rule-description" style="color: #000000;">Verifique se sua dúvida já foi respondida</p>
                                     </div>
                                 </div>
                             </div>
@@ -495,11 +495,11 @@ include 'header.php';
                                     <div class="icon-badge danger mb-3">
                                         <i class="fas fa-ban fa-2x"></i>
                                     </div>
-                                    <h3 class="h5 fw-bold text-danger mb-2">
+                                    <h3 class="h5 fw-bold mb-2" style="color: #000000;">
                                         <i class="fas fa-exclamation-triangle me-2"></i>
                                         Evite Fazer
                                     </h3>
-                                    <p class="text-muted small mb-0">Práticas que prejudicam a comunidade</p>
+                                    <p class="small mb-0" style="color: #000000;">Práticas que prejudicam a comunidade</p>
                                 </div>
                                 
                                 <div class="rule-item-modern">
@@ -507,8 +507,8 @@ include 'header.php';
                                         <i class="fas fa-clone"></i>
                                     </div>
                                     <div class="rule-content">
-                                        <h4 class="rule-title">Sem Spam</h4>
-                                        <p class="rule-description">Evite posts repetitivos ou desnecessários</p>
+                                        <h4 class="rule-title" style="color: #000000;">Sem Spam</h4>
+                                        <p class="rule-description" style="color: #000000;">Evite posts repetitivos ou desnecessários</p>
                                     </div>
                                 </div>
                                 
@@ -517,8 +517,8 @@ include 'header.php';
                                         <i class="fas fa-comment-slash"></i>
                                     </div>
                                     <div class="rule-content">
-                                        <h4 class="rule-title">Linguagem Apropriada</h4>
-                                        <p class="rule-description">Mantenha o conteúdo profissional e respeitoso</p>
+                                        <h4 class="rule-title" style="color: #000000;">Linguagem Apropriada</h4>
+                                        <p class="rule-description" style="color: #000000;">Mantenha o conteúdo profissional e respeitoso</p>
                                     </div>
                                 </div>
                                 
@@ -527,8 +527,8 @@ include 'header.php';
                                         <i class="fas fa-user-lock"></i>
                                     </div>
                                     <div class="rule-content">
-                                        <h4 class="rule-title">Privacidade</h4>
-                                        <p class="rule-description">Não compartilhe dados pessoais sensíveis</p>
+                                        <h4 class="rule-title" style="color: #000000;">Privacidade</h4>
+                                        <p class="rule-description" style="color: #000000;">Não compartilhe dados pessoais sensíveis</p>
                                     </div>
                                 </div>
                             </div>
@@ -540,21 +540,21 @@ include 'header.php';
                         <div class="d-flex justify-content-center align-items-center flex-wrap gap-4">
                             <div class="footer-stat">
                                 <i class="fas fa-users text-primary fa-2x mb-2"></i>
-                                <div class="fw-bold text-dark">Comunidade Ativa</div>
-                                <small class="text-muted">Milhares de desenvolvedores</small>
+                                <div class="fw-bold" style="color: #000000;">Comunidade Ativa</div>
+                                <small style="color: #000000;">Milhares de desenvolvedores</small>
                             </div>
                             <div class="footer-stat">
                                 <i class="fas fa-handshake text-info fa-2x mb-2"></i>
-                                <div class="fw-bold text-dark">Respeito Mútuo</div>
-                                <small class="text-muted">Base da nossa comunidade</small>
+                                <div class="fw-bold" style="color: #000000;">Respeito Mútuo</div>
+                                <small style="color: #000000;">Base da nossa comunidade</small>
                             </div>
                             <div class="footer-stat">
                                 <i class="fas fa-graduation-cap text-success fa-2x mb-2"></i>
-                                <div class="fw-bold text-dark">Aprendizado Contínuo</div>
-                                <small class="text-muted">Compartilhe conhecimento</small>
+                                <div class="fw-bold" style="color: #000000;">Aprendizado Contínuo</div>
+                                <small style="color: #000000;">Compartilhe conhecimento</small>
                             </div>
                         </div>
-                        <p class="text-muted mt-4 mb-0">
+                        <p class="mt-4 mb-0" style="color: #000000;">
                             <i class="fas fa-info-circle me-2"></i>
                             Dúvidas sobre as regras? Entre em contato com a moderação.
                         </p>
@@ -571,7 +571,7 @@ include 'header.php';
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="newPostModalLabel">
+                <h5 class="modal-title fw-bold" id="newPostModalLabel" style="color: #000000;">
                     <i class="fas fa-plus me-2"></i>
                     Criar Novo Post
                 </h5>
@@ -581,18 +581,18 @@ include 'header.php';
                 <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                 <div class="modal-body">
                     <div class="mb-4">
-                        <label for="title" class="form-label fw-semibold text-dark">
+                        <label for="title" class="form-label fw-semibold" style="color: #000000;">
                             <i class="fas fa-heading text-primary me-2"></i>
                             Título do Post
                         </label>
                         <input type="text" class="form-control form-control-lg" id="title" name="title" 
                                placeholder="Digite um título descritivo para seu post" 
                                required minlength="5" maxlength="200">
-                        <small class="text-muted">Mínimo 5 caracteres</small>
+                        <small style="color: #000000;">Mínimo 5 caracteres</small>
                     </div>
                     
                     <div class="mb-4">
-                        <label for="category_id" class="form-label fw-semibold text-dark">
+                        <label for="category_id" class="form-label fw-semibold" style="color: #000000;">
                             <i class="fas fa-tag text-warning me-2"></i>
                             Categoria
                         </label>
@@ -604,18 +604,18 @@ include 'header.php';
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <small class="text-muted">Escolha a categoria mais adequada ao seu tópico</small>
+                        <small style="color: #000000;">Escolha a categoria mais adequada ao seu tópico</small>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="content" class="form-label fw-semibold text-dark">
+                        <label for="content" class="form-label fw-semibold" style="color: #000000;">
                             <i class="fas fa-edit text-info me-2"></i>
                             Conteúdo
                         </label>
                         <textarea class="form-control" id="content" name="content" rows="8" 
                                   placeholder="Descreva sua dúvida ou compartilhe seu conhecimento. Seja claro e detalhado para receber melhores respostas."
                                   required minlength="20"></textarea>
-                        <small class="text-muted">Mínimo 20 caracteres. Use formatação clara e exemplos quando possível.</small>
+                        <small style="color: #000000;">Mínimo 20 caracteres. Use formatação clara e exemplos quando possível.</small>
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
@@ -650,7 +650,6 @@ include 'header.php';
 }
 
 .forum-header .lead {
-    color: #000000;
     font-size: 1.1rem;
 }
 /* Cards gerais */
@@ -767,7 +766,6 @@ include 'header.php';
 
 .category-name {
     font-size: 0.95rem;
-    color: #2d3748 !important;
     transition: color 0.3s ease;
 }
 
@@ -903,14 +901,12 @@ include 'header.php';
 .rule-title {
     font-size: 1rem;
     font-weight: 700;
-    color: #2d3748;
     margin-bottom: 0.35rem;
     line-height: 1.4;
 }
 
 .rule-description {
     font-size: 0.875rem;
-    color: #718096;
     margin-bottom: 0;
     line-height: 1.5;
 }
@@ -1005,7 +1001,6 @@ include 'header.php';
 
 .rule-text {
     line-height: 1.6;
-    color: #4a5568;
 }
 
 .rules-card ul li {
@@ -1030,7 +1025,6 @@ include 'header.php';
 }
 
 .modal-title {
-    color: #2d3748;
     font-size: 1.25rem;
 }
 
@@ -1041,7 +1035,6 @@ include 'header.php';
 .modal-body .form-label {
     font-size: 0.95rem;
     margin-bottom: 0.5rem;
-    color: #2d3748;
 }
 
 .modal-body .form-control,
@@ -1050,7 +1043,6 @@ include 'header.php';
     border-radius: 10px;
     padding: 0.75rem 1rem;
     font-size: 1rem;
-    color: #2d3748;
     transition: all 0.3s ease;
 }
 
@@ -1058,7 +1050,6 @@ include 'header.php';
 .modal-body .form-select:focus {
     border-color: #667eea;
     box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
-    color: #2d3748;
 }
 
 .modal-body .form-control::placeholder {
@@ -1070,11 +1061,10 @@ include 'header.php';
     min-height: 150px;
 }
 
-.modal-body small.text-muted {
+.modal-body small {
     display: block;
     margin-top: 0.5rem;
     font-size: 0.875rem;
-    color: #718096;
 }
 
 .modal-footer {
@@ -1152,6 +1142,89 @@ include 'header.php';
 .forum-post-item:nth-child(3) { animation-delay: 0.3s; }
 .forum-post-item:nth-child(4) { animation-delay: 0.4s; }
 .forum-post-item:nth-child(5) { animation-delay: 0.5s; }
+
+/* Adicionando cor preta para textos principais, mas mantendo footer e ícones */
+body, .text-muted, .text-dark, .form-label, .form-control, .form-select, 
+small, .lead, .display-4, .h1, .h2, .h3, .h4, .h5, .h6, p, span, div, 
+label, input, textarea, select, option {
+    color: #000000 !important;
+}
+
+/* Mantendo cores originais para footer, ícones e cookies */
+footer, .footer, #footer,
+.cookie-consent, .cookies-message, .cookie-notice,
+.fa-comments, .fa-tag, .fa-search, .fa-filter, .fa-fire, .fa-chart-bar, 
+.fa-tags, .fa-shield-alt, .fa-thumbs-up, .fa-ban, .fa-heart, .fa-lightbulb, 
+.fa-search, .fa-clone, .fa-comment-slash, .fa-user-lock, .fa-users, 
+.fa-handshake, .fa-graduation-cap, .fa-info-circle, .fa-plus, 
+.fa-sign-in-alt, .fa-heading, .fa-edit, .fa-paper-plane, .fa-times,
+.fa-user-circle, .fa-clock, .fa-eye, .fa-arrow-right, .fa-chevron-left,
+.fa-chevron-right, .fa-check, .fa-check-circle, .fa-exclamation-circle,
+.fa-check-double, .fa-exclamation-triangle, .fa-inbox, .fa-folder,
+i, .fas, .far, .fab, .bi {
+    color: inherit !important;
+}
+
+/* Mantendo cores de fundo originais */
+.bg-primary, .bg-success, .bg-danger, .bg-warning, .bg-info, .bg-secondary,
+.bg-light, .bg-white, .bg-gradient, .bg-dark,
+footer, .footer, #footer {
+    background-color: inherit !important;
+    background: inherit !important;
+}
+
+.btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-warning, 
+.btn-info, .btn-light, .btn-dark {
+    color: #ffffff !important;
+}
+
+.btn-outline-secondary {
+    color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+.btn-outline-secondary:hover {
+    color: #ffffff !important;
+    background-color: #6c757d !important;
+}
+
+.alert-success, .alert-danger {
+    color: #000000 !important;
+}
+
+.alert-success {
+    background-color: #d1edff !important;
+    border-color: #b6e0ff !important;
+}
+
+.alert-danger {
+    background-color: #ffe0e0 !important;
+    border-color: #ffcccc !important;
+}
+
+.badge {
+    color: #ffffff !important;
+}
+
+.badge.bg-light {
+    color: #000000 !important;
+}
+
+.page-link {
+    color: #667eea !important;
+}
+
+.page-item.active .page-link {
+    color: #ffffff !important;
+}
+
+/* Mensagem de cookies - mantendo cor original */
+.cookie-consent, .cookies-message, .cookie-notice,
+.alert-info, .alert-warning {
+    color: inherit !important;
+    background-color: inherit !important;
+    border-color: inherit !important;
+}
 </style>
 
 <?php include 'footer.php'; ?>
