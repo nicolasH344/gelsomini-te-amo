@@ -297,7 +297,7 @@ include 'header.php';
                                 </div>
                                 <h3 class="h5 fw-bold mb-2 text-dark"><?php echo sanitize($cat['name']); ?></h3>
                                 <span class="btn btn-outline-<?php echo $cat['color']; ?> btn-sm rounded-pill">
-                                    <i class="fas fa-arrow-right me-1"></i>
+                                    <i class="fas fa-arrow-right me-1" style="border: none"></i>
                                     Ver Tutoriais
                                 </span>
                             </div>
@@ -693,52 +693,13 @@ document.addEventListener('DOMContentLoaded', function() {
 .tutorial-card:nth-child(6) { animation-delay: 0.6s; }
 
 /* Responsividade */
-@media (max-width: 575.98px) {
-    .tutorials-header {
-        padding: 1.5rem 0;
-        margin: -1rem -15px 1.5rem -15px;
-    }
-    
-    .tutorials-header .display-4 {
-        font-size: 1.75rem;
-    }
-    
-    .tutorials-header .lead {
-        font-size: 1rem;
-    }
-    
-    .info-card, .help-card {
-        min-height: auto;
-        margin-bottom: 1rem;
-    }
-    
-    .icon-circle {
-        width: 45px;
-        height: 45px;
-    }
-    
-    .icon-circle i {
-        font-size: 1.25rem !important;
-    }
-    
-    .tip-text {
-        font-size: 0.85rem;
-    }
-    
-    .tip-icon {
-        width: 20px;
-        height: 20px;
-        font-size: 0.9rem;
-    }
-    
-    .card-body {
-        padding: 1rem !important;
-    }
-}
-
-@media (min-width: 576px) and (max-width: 767.98px) {
+@media (max-width: 768px) {
     .tutorials-header .display-4 {
         font-size: 2rem;
+    }
+    
+    .filters-card .row > div {
+        margin-bottom: 0.5rem;
     }
     
     .icon-circle {
@@ -749,52 +710,45 @@ document.addEventListener('DOMContentLoaded', function() {
     .icon-circle i {
         font-size: 1.5rem !important;
     }
-}
-
-@media (min-width: 768px) {
-    .icon-circle {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .icon-circle i {
-        font-size: 2rem !important;
-    }
-    
-    .tip-item {
-        padding: 0.75rem 0;
-    }
-    
-    .tip-icon {
-        width: 28px;
-        height: 28px;
-        font-size: 1.25rem;
-    }
-    
-    .tip-text {
-        font-size: 0.95rem;
-    }
-}
-
-@media (max-width: 991.98px) {
-    .filters-card .row > div {
-        margin-bottom: 0.5rem;
-    }
     
     .category-icon {
         font-size: 2.5rem;
     }
 }
 
-/* Utilitárias responsivas customizadas */
-@media (min-width: 768px) {
-    .h5-md {
-        font-size: 1.25rem !important;
-    }
-    
-    .fa-md-2x {
-        font-size: 2em !important;
-    }
+/* Efeito hover para cards de categoria - Cores individuais */
+.category-card:hover .btn-outline-danger { /* HTML - Vermelho */
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+}
+
+.category-card:hover .btn-outline-primary { /* CSS - Azul */
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: white !important;
+}
+
+.category-card:hover .btn-outline-warning { /* JavaScript - Amarelo/Laranja */
+    background-color: #ffc107 !important;
+    border-color: #ffc107 !important;
+    color: black !important;
+}
+
+.category-card:hover .btn-outline-info { /* PHP - Azul Claro */
+    background-color: #0dcaf0 !important;
+    border-color: #0dcaf0 !important;
+    color: white !important;
+}
+/* Efeito hover para cards de categoria - Apenas CSS fica roxo */
+.category-card:hover .btn-outline-primary { /* CSS - Roxo */
+    background-color: #6f42c1 !important;
+    color: white !important;
+}
+
+/* Remove as bordas de todos os botões de categoria no hover */
+.category-card:hover .btn {
+    border: none !important;
 }
 </style>
 
