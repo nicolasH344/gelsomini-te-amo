@@ -1,9 +1,9 @@
 <?php
 class Database {
-    private $host = "localhost";
-    private $user = "root";
-    private $password = "momohiki"; // Senha original que estava funcionando
-    private $database = "Aims-sub2";
+    private $host = "sh-pro66.hostgator.com.br";
+    private $user = "devgom44_aims-sub2";
+    private $password = "aims-sub2@1234!";
+    private $database = "devgom44_aims-sub2";
     public $conn;
 
     public function __construct() {
