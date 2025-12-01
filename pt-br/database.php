@@ -1,28 +1,32 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 class Database {
-    private $host = "sh-pro66.hostgator.com.br";
-    private $user = "devgom44_aims-sub2";
-    private $password = "aims-sub2@1234!";
-    private $database = "devgom44_aims-sub2";
+    private $host = "localhost";
+    private $user = "root";
+    private $password = "Home@spSENAI2025!";
+    private $database = "cursinho";
     public $conn;
 
     public function __construct() {
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+        
         try {
-            $this->conn = new mysqli(
-                $this->host,
-                $this->user,
-                $this->password,
-                $this->database
-            );
-
-            if ($this->conn->connect_error) {
-                throw new Exception("Erro de conexão: " . $this->conn->connect_error);
-            }
-
+            // Primeiro conectar sem banco para criar se necessário
+            $this->conn = new mysqli($this->host, $this->user, $this->password);
             $this->conn->set_charset("utf8mb4");
             
-        } catch (Exception $e) {
-            die("❌ Falha na conexão: " . $e->getMessage() . "\n");
+            // Criar banco se não existir
+            $this->conn->query("CREATE DATABASE IF NOT EXISTS `{$this->database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+            
+            // Selecionar banco
+            $this->conn->select_db($this->database);
+            
+        } catch (mysqli_sql_exception $e) {
+            error_log("Database connection failed: " . $e->getMessage());
+            throw new Exception("Erro de conexão com o banco de dados");
         }
     }
 

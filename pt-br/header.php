@@ -7,6 +7,8 @@
     <meta name="keywords" content="desenvolvimento web, HTML, CSS, JavaScript, PHP, exercícios, tutoriais, programação">
     <meta name="author" content="WebLearn">
     <meta name="google" content="notranslate">
+    <meta name="notification" content="disabled">
+    <meta name="push-notification" content="disabled">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -34,6 +36,10 @@
     <link rel="stylesheet" href="../animations.css">
     <!-- Estilos do componente de informações do curso -->
     <link rel="stylesheet" href="components/course-info.css">
+    
+    <!-- Bloqueador de notificações externas -->
+    <script src="notification-blocker.js"></script>
+    <link rel="stylesheet" href="notification-override.css">
     
     <!-- Preload critical resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -110,6 +116,11 @@
                 <ul class="navbar-nav">
                     <?php if (isLoggedIn()): ?>
                         <?php $user = getCurrentUser(); ?>
+                        <!-- Widget de Notificações -->
+                        <li class="nav-item dropdown">
+                            <?php include 'notification-widget.php'; ?>
+                        </li>
+                        
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
                                data-bs-toggle="dropdown" aria-expanded="false" 
@@ -136,6 +147,14 @@
                                         <?php echo t('progress'); ?>
                                     </a>
                                 </li>
+                                <?php if (isAdmin()): ?>
+                                <li>
+                                    <a class="dropdown-item" href="admin_panel.php">
+                                        <i class="fas fa-cogs me-2" aria-hidden="true"></i>
+                                        👑 Painel Admin
+                                    </a>
+                                </li>
+                                <?php endif; ?>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item" href="#" onclick="toggleSettings()">

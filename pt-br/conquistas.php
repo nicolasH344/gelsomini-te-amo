@@ -11,17 +11,20 @@ $conn = getDBConnection();
 if ($conn && isLoggedIn()) {
     $user_id = getCurrentUser()['id'];
     
-    // Badges do usuário
-    $stmt = $conn->prepare("SELECT b.*, ub.earned_at FROM user_badges ub 
-                           JOIN badges b ON ub.badge_id = b.id 
-                           WHERE ub.user_id = ? ORDER BY ub.earned_at DESC");
+    // Conquistas do usuário
+    $stmt = $conn->prepare("SELECT * FROM user_achievements WHERE user_id = ? ORDER BY earned_at DESC");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $user_badges = $result->fetch_all(MYSQLI_ASSOC);
     
-    // Todos os badges disponíveis
-    $available_badges = $conn->query("SELECT * FROM badges ORDER BY name")->fetch_all(MYSQLI_ASSOC);
+    // Conquistas disponíveis
+    $available_badges = [
+        ['name' => 'Primeiro Exercício', 'description' => 'Complete seu primeiro exercício'],
+        ['name' => 'Praticante', 'description' => 'Complete 5 exercícios'],
+        ['name' => 'Dedicado', 'description' => 'Complete 10 exercícios'],
+        ['name' => 'Expert', 'description' => 'Complete 20 exercícios']
+    ];
 }
 
 include 'header.php';
@@ -64,8 +67,13 @@ include 'header.php';
                     <div class="badge-icon mb-3">
                         <i class="fas fa-trophy fa-3x text-warning"></i>
                     </div>
-                    <h5 class="card-title"><?php echo htmlspecialchars($badge['name']); ?></h5>
-                    <p class="card-text text-muted"><?php echo htmlspecialchars($badge['description']); ?></p>
+                    <h5 class="card-title"><?php echo htmlspecialchars($badge['achievement_type']); ?></h5>
+                    <p class="card-text text-muted">
+                        <?php 
+                        $data = json_decode($badge['achievement_data'], true);
+                        echo "Exercícios completados: " . ($data['exercises_completed'] ?? 0);
+                        ?>
+                    </p>
                     <small class="text-success">
                         <i class="fas fa-check-circle"></i>
                         Desbloqueado em <?php echo date('d/m/Y', strtotime($badge['earned_at'])); ?>
@@ -92,9 +100,9 @@ include 'header.php';
         </div>
         <?php else: ?>
             <?php 
-            $earned_badge_ids = array_column($user_badges, 'id');
+            $earned_badge_names = array_column($user_badges, 'achievement_type');
             foreach ($available_badges as $badge): 
-                $is_earned = in_array($badge['id'], $earned_badge_ids);
+                $is_earned = in_array($badge['name'], $earned_badge_names);
             ?>
             <div class="col-md-4 col-sm-6 mb-3">
                 <div class="card <?php echo $is_earned ? 'border-success' : 'border-secondary'; ?>">

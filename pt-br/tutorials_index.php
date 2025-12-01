@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'progress_tracker.php';
 require_once 'data/tutorials.php';
 
 $title = 'Tutoriais';
@@ -752,4 +753,5 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 </style>
 
+<script src="tutorial_progress.js"></script>
 <?php include 'footer.php'; ?>

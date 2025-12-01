@@ -1,0 +1,28 @@
+/* Ocultar qualquer notificação do sistema/navegador */
+.chrome-notification,
+.firefox-notification,
+.safari-notification,
+.edge-notification,
+[class*="notification"]:not(.notification-widget):not(.notification-item):not(.notification-dropdown) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Garantir que apenas nosso widget seja visível */
+.notification-widget {
+    z-index: 9999 !important;
+    position: relative !important;
+}
+
+.notification-dropdown {
+    z-index: 9998 !important;
+}
+
+/* Bloquear overlays de notificação externa */
+[data-notification],
+[data-push],
+[data-alert]:not([data-alert="internal"]) {
+    display: none !important;
+}

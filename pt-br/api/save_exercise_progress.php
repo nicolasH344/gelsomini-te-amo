@@ -33,18 +33,18 @@ try {
     }
     
     // Verificar se já existe progresso para este exercício
-    $stmt = $conn->prepare("SELECT id FROM exercise_progress WHERE user_id = ? AND exercise_id = ?");
+    $stmt = $conn->prepare("SELECT id FROM user_progress WHERE user_id = ? AND content_id = ? AND content_type = 'exercise'");
     $stmt->bind_param("ii", $userId, $exerciseId);
     $stmt->execute();
     $result = $stmt->get_result();
     
     if ($result->num_rows > 0) {
         // Atualizar progresso existente
-        $stmt = $conn->prepare("UPDATE exercise_progress SET code = ?, updated_at = NOW() WHERE user_id = ? AND exercise_id = ?");
+        $stmt = $conn->prepare("UPDATE user_progress SET code = ?, updated_at = NOW() WHERE user_id = ? AND content_id = ? AND content_type = 'exercise'");
         $stmt->bind_param("sii", $code, $userId, $exerciseId);
     } else {
         // Criar novo progresso
-        $stmt = $conn->prepare("INSERT INTO exercise_progress (user_id, exercise_id, code, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())");
+        $stmt = $conn->prepare("INSERT INTO user_progress (user_id, content_id, content_type, code, created_at, updated_at) VALUES (?, ?, 'exercise', ?, NOW(), NOW())");
         $stmt->bind_param("iis", $userId, $exerciseId, $code);
     }
     

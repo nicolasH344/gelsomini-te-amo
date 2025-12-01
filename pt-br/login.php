@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Se "Lembrar de mim" for marcado, estende a duração do cookie da sessão
         if (!empty($_POST['remember'])) {
             $lifetime = 60 * 60 * 24 * 30; // 30 dias
-            SecurityHelper::setSecureCookie(session_name(), session_id(), time() + $lifetime);
+            ini_set('session.cookie_lifetime', $lifetime);
         }
 
         $result = processLogin($_POST['username'] ?? '', $_POST['password'] ?? '');

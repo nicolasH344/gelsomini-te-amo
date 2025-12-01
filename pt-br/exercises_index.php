@@ -1,18 +1,8 @@
 <?php
 require_once 'config.php';
-require_once 'exercise_functions.php';
-require_once 'learning_system.php';
+require_once 'progress_tracker.php';
 
 $title = 'Exercícios';
-
-// Inicializar sistema de aprendizado
-try {
-    require_once 'database.php';
-    $db = new Database();
-    $learningSystem = new LearningSystem($db);
-} catch (Exception $e) {
-    $learningSystem = null;
-}
 
 // Parâmetros de filtro
 $category = sanitize($_GET['category'] ?? '');
@@ -21,27 +11,74 @@ $search = sanitize($_GET['search'] ?? '');
 $page = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 9;
 
-// Buscar exercícios com metodologia adaptativa
-if ($learningSystem && isLoggedIn() && !$category && !$difficulty && !$search && $page == 1) {
-    try {
-        // Mostrar exercícios personalizados na primeira página sem filtros
-        $user_id = getCurrentUser()['id'];
-        $personalizedExercises = $learningSystem->getPersonalizedExercises($user_id, 6);
-        if (!empty($personalizedExercises)) {
-            $regularExercises = getExercises($category, $difficulty, $search, 1, $perPage - count($personalizedExercises));
-            $exercises = array_merge($personalizedExercises, $regularExercises);
-            $exercises = array_slice($exercises, 0, $perPage);
-        } else {
-            $exercises = getExercises($category, $difficulty, $search, $page, $perPage);
-        }
-    } catch (Exception $e) {
-        $exercises = getExercises($category, $difficulty, $search, $page, $perPage);
+// Buscar dados do banco
+$exercises = [];
+$totalResults = 0;
+$conn = getDBConnection();
+
+if ($conn) {
+    $where = [];
+    $params = [];
+    $types = '';
+    
+    if ($category) {
+        $where[] = "c.name = ?";
+        $params[] = $category;
+        $types .= 's';
     }
-} else {
-    $exercises = getExercises($category, $difficulty, $search, $page, $perPage);
+    
+    if ($difficulty) {
+        $where[] = "e.difficulty = ?";
+        $params[] = $difficulty;
+        $types .= 's';
+    }
+    
+    if ($search) {
+        $where[] = "(e.title LIKE ? OR e.description LIKE ?)";
+        $params[] = "%$search%";
+        $params[] = "%$search%";
+        $types .= 'ss';
+    }
+    
+    $whereClause = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+    
+    $sql = "SELECT e.*, c.name as category 
+            FROM exercises e 
+            LEFT JOIN categories c ON e.category_id = c.id 
+            $whereClause 
+            ORDER BY e.created_at DESC 
+            LIMIT ? OFFSET ?";
+    
+    $params[] = $perPage;
+    $params[] = ($page - 1) * $perPage;
+    $types .= 'ii';
+    
+    $stmt = $conn->prepare($sql);
+    if ($stmt && $types) {
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $exercises = $result->fetch_all(MYSQLI_ASSOC);
+    } elseif ($stmt) {
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $exercises = $result->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    // Contar total
+    $countSql = "SELECT COUNT(*) FROM exercises e LEFT JOIN categories c ON e.category_id = c.id $whereClause";
+    if ($where) {
+        $countParams = array_slice($params, 0, -2);
+        $countTypes = substr($types, 0, -2);
+        $countStmt = $conn->prepare($countSql);
+        $countStmt->bind_param($countTypes, ...$countParams);
+        $countStmt->execute();
+        $totalResults = $countStmt->get_result()->fetch_row()[0];
+    } else {
+        $totalResults = $conn->query($countSql)->fetch_row()[0];
+    }
 }
 
-$totalResults = countExercises($category, $difficulty, $search);
 $totalPages = $totalResults > 0 ? ceil($totalResults / $perPage) : 1;
 
 include 'header.php';
@@ -78,7 +115,7 @@ include 'header.php';
             </a>
         </div>
         
-        <?php if ($learningSystem && isLoggedIn() && !$category && !$difficulty && !$search): ?>
+        <?php if (isset($learningSystem) && $learningSystem && isLoggedIn() && !$category && !$difficulty && !$search): ?>
         <!-- Recomendação personalizada -->
         <?php 
         $user_id = getCurrentUser()['id'];
@@ -257,43 +294,14 @@ include 'header.php';
                 $display_difficulty = $exercise['difficulty'] ?? 'Iniciante';
                 $category = $exercise['category'] ?? 'Geral';
                 
-                // Verificar progresso do usuário e nível de maestria
+                // Verificar progresso do usuário
                 $completed = false;
-                $mastery_level = 0;
-                $is_recommended = false;
+                $progress = null;
                 
                 if (isLoggedIn()) {
                     $user_id = getCurrentUser()['id'];
-                    $conn = getDBConnection();
-                    if ($conn) {
-                        $stmt = $conn->prepare("SELECT status FROM user_progress WHERE user_id = ? AND exercise_id = ?");
-                        $stmt->bind_param("ii", $user_id, $exercise['id']);
-                        $stmt->execute();
-                        $result = $stmt->get_result();
-                        $row = $result->fetch_assoc();
-                        $completed = $row && $row['status'] === 'completed';
-                        
-                        // Verificar maestria adaptativa
-                        if ($learningSystem) {
-                            try {
-                                $stmt2 = $conn->prepare("SELECT mastery_level FROM adaptive_progress WHERE user_id = ? AND exercise_id = ?");
-                                if ($stmt2) {
-                                    $stmt2->bind_param("ii", $user_id, $exercise['id']);
-                                    $stmt2->execute();
-                                    $result2 = $stmt2->get_result();
-                                    $row2 = $result2 ? $result2->fetch_assoc() : null;
-                                    $mastery_level = $row2 ? $row2['mastery_level'] : 0;
-                                    $stmt2->close();
-                                }
-                                
-                                // Marcar como recomendado se está nos exercícios personalizados
-                                $is_recommended = isset($exercise['mastery_level']);
-                            } catch (Exception $e) {
-                                $mastery_level = 0;
-                                $is_recommended = false;
-                            }
-                        }
-                    }
+                    $progress = getExerciseProgress($user_id, $exercise['id']);
+                    $completed = $progress && $progress['status'] === 'completed';
                 }
                 
                 // Cores das categorias
@@ -305,20 +313,16 @@ include 'header.php';
                 $levelColor = $levelMap[$display_difficulty] ?? 'secondary';
             ?>
                 <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card exercise-card h-100 shadow-sm border-0 <?php echo $completed ? 'completed' : ''; ?> <?php echo $is_recommended ? 'recommended' : ''; ?>">
+                    <div class="card exercise-card h-100 shadow-sm border-0 <?php echo $completed ? 'completed' : ''; ?>">
                         <?php if ($completed): ?>
                             <div class="completed-badge">
                                 <i class="fas fa-check-circle"></i>
                             </div>
-                        <?php elseif ($is_recommended): ?>
-                            <div class="recommended-badge">
-                                <i class="fas fa-star"></i>
-                            </div>
                         <?php endif; ?>
                         
-                        <?php if ($mastery_level > 0): ?>
-                            <div class="mastery-indicator" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 10px; font-size: 0.7rem;">
-                                <?php echo round($mastery_level * 100); ?>% maestria
+                        <?php if ($progress && $progress['score'] > 0): ?>
+                            <div class="score-indicator" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 10px; font-size: 0.7rem;">
+                                Score: <?php echo $progress['score']; ?>
                             </div>
                         <?php endif; ?>
                         
@@ -343,16 +347,11 @@ include 'header.php';
                                 <?php echo htmlspecialchars($exercise['description'] ?? 'Descrição do exercício'); ?>
                             </p>
                             
-                            <?php if ($is_recommended): ?>
-                                <div class="recommendation-reason mb-2">
-                                    <small class="text-primary fw-bold">
-                                        <i class="fas fa-bullseye me-1"></i>
-                                        Recomendado: <?php 
-                                        if ($mastery_level == 0) echo 'Novo conteúdo';
-                                        elseif ($mastery_level < 0.3) echo 'Precisa praticar mais';
-                                        elseif ($mastery_level < 0.7) echo 'Quase dominando';
-                                        else echo 'Revisão recomendada';
-                                        ?>
+                            <?php if ($progress && $progress['status'] === 'started'): ?>
+                                <div class="progress-info mb-2">
+                                    <small class="text-info fw-bold">
+                                        <i class="fas fa-play-circle me-1"></i>
+                                        Em progresso
                                     </small>
                                 </div>
                             <?php endif; ?>
@@ -360,15 +359,15 @@ include 'header.php';
                         
                         <div class="card-footer bg-white border-0 pt-0 pb-3">
                             <div class="d-flex gap-2">
-                                <a href="interactive_exercises.php?id=<?php echo $exercise['id'] ?? 1; ?>" 
+                                <a href="exercise_area.php?id=<?php echo $exercise['id'] ?? 1; ?>" 
                                    class="btn btn-primary flex-fill rounded-pill">
-                                    <i class="fas fa-laptop-code me-1"></i>
-                                    Interativo
+                                    <i class="fas fa-code me-1"></i>
+                                    <?php echo $completed ? 'Revisar' : 'Praticar'; ?>
                                 </a>
                                 <a href="exercise_detail.php?id=<?php echo $exercise['id'] ?? 1; ?>" 
-                                   class="btn btn-<?php echo $completed ? 'outline-primary' : 'outline-secondary'; ?> flex-fill rounded-pill">
-                                    <i class="fas fa-<?php echo $completed ? 'redo' : 'eye'; ?> me-1"></i>
-                                    <?php echo $completed ? 'Revisar' : 'Ver'; ?>
+                                   class="btn btn-outline-secondary flex-fill rounded-pill">
+                                    <i class="fas fa-info me-1"></i>
+                                    Detalhes
                                 </a>
                                 <?php if (isLoggedIn() && !$completed): ?>
                                 <button onclick="completeExercise(<?php echo $exercise['id'] ?? 1; ?>)" 
@@ -499,7 +498,7 @@ include 'header.php';
                         $user_id = getCurrentUser()['id'];
                         $conn = getDBConnection();
                         if ($conn) {
-                            $stmt = $conn->prepare("SELECT COUNT(*) FROM user_progress WHERE user_id = ? AND status = 'completed'");
+                            $stmt = $conn->prepare("SELECT COUNT(*) FROM exercise_progress WHERE user_id = ? AND status = 'completed'");
                             $stmt->bind_param("i", $user_id);
                             $stmt->execute();
                             $result = $stmt->get_result();
@@ -551,54 +550,24 @@ include 'header.php';
 
 <script>
 function completeExercise(exerciseId) {
-    console.log('Tentativa de completar exercício:', exerciseId);
+    if (!confirm('Marcar este exercício como concluído?')) return;
     
-    if (!confirm('Marcar este exercício como concluído?')) {
-        console.log('Usuário cancelou a conclusão');
-        return;
-    }
-    
-    console.log('Enviando requisição para completar exercício...');
-    
-    fetch('execute_exercise.php', {
+    fetch('exercise_handler.php', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            exercise_id: exerciseId,
-            user_code: '// Marcado como concluído',
-            quick_complete: true
-        })
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'action=complete&exercise_id=' + exerciseId + '&score=10'
     })
-    .then(response => {
-        console.log('Resposta recebida:', response.status);
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('Dados da resposta:', data);
-        
         if (data.success) {
-            showToast('Exercício concluído! +' + (data.coins_earned || 0) + ' moedas', 'success');
-            console.log('Exercício concluído com sucesso');
-            
-            // Mostrar conquistas se houver
-            if (data.new_achievements && data.new_achievements.length > 0) {
-                console.log('Novas conquistas desbloqueadas:', data.new_achievements.length);
-                setTimeout(() => {
-                    alert('Parabéns! Você desbloqueou ' + data.new_achievements.length + ' nova(s) conquista(s)!');
-                }, 1000);
+            alert('Exercício concluído! Score: ' + data.score);
+            if (data.achievements && data.achievements.length > 0) {
+                alert('Parabéns! Novas conquistas: ' + data.achievements.join(', '));
             }
-            
-            setTimeout(() => location.reload(), 2000);
+            location.reload();
         } else {
-            console.error('Erro ao completar exercício:', data.message);
-            showToast('Erro: ' + data.message, 'danger');
+            alert('Erro: ' + data.message);
         }
-    })
-    .catch(error => {
-        console.error('Erro de conexão:', error);
-        showToast('Erro de conexão', 'danger');
     });
 }
 
